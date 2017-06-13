@@ -11,16 +11,21 @@ const WEIGHTS = {
 };
 
 function filterNOAAValuesByDate(values, date) {
-  const filtered = values.filter(value => {
-    return moment(new Date(value.validTime.split('/')[0])).isSame(date, 'day')
-  }).map(v => v.value);
+  const filtered = values
+    .filter(value => {
+      return moment(new Date(value.validTime.split('/')[0])).isSame(
+        date,
+        'day'
+      );
+    })
+    .map(v => v.value);
   return filtered;
 }
 
 function average(nums) {
   let s = 0;
   nums.forEach(n => s += n);
-  return s/nums.length;
+  return s / nums.length;
 }
 
 function getAverageNOAAValueForDate(property, date) {
@@ -183,7 +188,9 @@ class PointToCompare {
 
   static fromJSON(data) {
     const pointToCompare = new PointToCompare(data);
-    pointToCompare.noaaPoint = data.noaaPoint ? NOAAPoint.fromJSON(data.noaaPoint) : null;
+    pointToCompare.noaaPoint = data.noaaPoint
+      ? NOAAPoint.fromJSON(data.noaaPoint)
+      : null;
     return pointToCompare;
   }
 
@@ -199,15 +206,21 @@ class PointToCompare {
 
   getScoreForDate(date) {
     const props = this.noaaPoint.gridDataForecast.data.properties;
-    const precipAvg = getAverageNOAAValueForDate(props.probabilityOfPrecipitation, date);
-    const windSpeedAvg = getAverageNOAAValueForDate(props.windSpeed, date);
-    const precipQuantityAvg = getAverageNOAAValueForDate(props.quantitativePrecipitation, date);
-
-    const score = (
-      (isNaN(precipQuantityAvg) ? 0 : WEIGHTS.PRECIPITATION_QUANTITY * precipQuantityAvg) +
-      WEIGHTS.PRECIPITATION_PERCENT * precipAvg +
-      WEIGHTS.WIND_SPEED * windSpeedAvg
+    const precipAvg = getAverageNOAAValueForDate(
+      props.probabilityOfPrecipitation,
+      date
     );
+    const windSpeedAvg = getAverageNOAAValueForDate(props.windSpeed, date);
+    const precipQuantityAvg = getAverageNOAAValueForDate(
+      props.quantitativePrecipitation,
+      date
+    );
+
+    const score = (isNaN(precipQuantityAvg)
+      ? 0
+      : WEIGHTS.PRECIPITATION_QUANTITY * precipQuantityAvg) +
+      WEIGHTS.PRECIPITATION_PERCENT * precipAvg +
+      WEIGHTS.WIND_SPEED * windSpeedAvg;
     return {
       score: 100 + Math.round(score),
       probabilityOfPrecipitation: precipAvg,
@@ -230,7 +243,10 @@ class Comparison {
 
   getSortedPointsForDate(date) {
     const sorted = [...this.pointsToCompare];
-    sorted.sort((p1, p2) => p2.getScoreForDate(date).score - p1.getScoreForDate(date).score);
+    sorted.sort(
+      (p1, p2) =>
+        p2.getScoreForDate(date).score - p1.getScoreForDate(date).score
+    );
     return sorted;
   }
 
@@ -244,7 +260,8 @@ class Comparison {
   static fromJSON(data) {
     return new Comparison({
       ...data,
-      pointsToCompare: data.pointsToCompare.map(p => PointToCompare.fromJSON(p)),
+      pointsToCompare: data.pointsToCompare.map(p =>
+        PointToCompare.fromJSON(p)),
     });
   }
 
@@ -310,13 +327,15 @@ async function run() {
 
     const sorted = comparison.getSortedPointsForDate(date);
     console.log('');
-    console.log(chalk.underline(chalk.bold(moment(date).format('dddd, MMMM Do'))));
+    console.log(
+      chalk.underline(chalk.bold(moment(date).format('dddd, MMMM Do')))
+    );
     console.table(
       sorted.map((point, index) => {
         const periods = point.noaaPoint.dailyForecast.data.properties.periods;
         const [day, night] = periods[0].isDaytime
-                           ? [periods[0], periods[1]]
-                           : [periods[1], periods[2]];
+          ? [periods[0], periods[1]]
+          : [periods[1], periods[2]];
         const score = point.getScoreForDate(date);
         return {
           Rank: index + 1,
@@ -326,7 +345,9 @@ async function run() {
           Low: night.temperature,
           Wind: Math.round(score.windSpeed),
           PoP: Math.round(score.probabilityOfPrecipitation) + '%',
-          Precip: isNaN(score.quantitativePrecipitation) ? '-' : Math.round(score.quantitativePrecipitation*100)/100,
+          Precip: isNaN(score.quantitativePrecipitation)
+            ? '-'
+            : Math.round(score.quantitativePrecipitation * 100) / 100,
           Forecast: day.shortForecast,
         };
       })
