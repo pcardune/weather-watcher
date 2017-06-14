@@ -1,35 +1,12 @@
 import 'console.table';
 import chalk from 'chalk';
-import fs from 'fs';
 import moment from 'moment';
 
 import {Comparison} from 'weather-watcher-core';
-
-function saveToFile(comparison) {
-  fs.writeFileSync(
-    comparison.filename,
-    JSON.stringify(comparison.toJSON(), null, 2)
-  );
-}
-
-async function loadFromFile({name, pointsToCompare}) {
-  const backup = Comparison.fromJSON({name, pointsToCompare});
-  try {
-    const result = Comparison.fromJSON(
-      JSON.parse(fs.readFileSync(`${name}.comparison.json`))
-    );
-    if (result.pointsToCompare.length !== pointsToCompare.length) {
-      return backup.fetch();
-    }
-    return result;
-  } catch (e) {
-    console.warn(e.message);
-    return backup.fetch();
-  }
-}
+import {saveNOAAGridDataForecast} from './storage';
 
 async function run() {
-  const comparison = await loadFromFile({
+  const comparison = Comparison.fromJSON({
     name: 'climbing',
     pointsToCompare: [
       {
@@ -65,6 +42,8 @@ async function run() {
     ],
   });
 
+  await comparison.fetch();
+
   for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
     const date = moment(new Date()).add(dayOffset, 'days').toDate();
 
@@ -96,9 +75,10 @@ async function run() {
       })
     );
   }
-  saveToFile(comparison);
+  return Promise.all(
+    comparison.pointsToCompare.map(pointToCompare =>
+      saveNOAAGridDataForecast(pointToCompare.noaaPoint.gridDataForecast))
+  );
 }
 
 run();
-
-console.log('all done?');
