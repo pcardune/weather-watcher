@@ -41,13 +41,23 @@ export function* getRepos() {
 }
 
 export function* fetchComparison() {
-  const comparison = Comparison.fromJSON(DEFAULT_COMPARISON_DATA);
+  const cached = localStorage.getItem('comparisonCache');
+  let comparisonData = DEFAULT_COMPARISON_DATA;
+  if (cached) {
+    try {
+      comparisonData = JSON.parse(cached);
+    } catch (e) {
+      // just leave it as the default
+    }
+  }
+  const comparison = Comparison.fromJSON(comparisonData);
   yield apply(comparison, comparison.fetch);
+  localStorage.setItem('comparisonCache', JSON.stringify(comparison.toJSON()));
   yield put(receiveComparison(comparison));
 }
 
 export function* comparisonSaga() {
-  const watcher = yield takeLatest(REFRESH_COMPARISON, fetchComparison);
+  yield takeLatest(REFRESH_COMPARISON, fetchComparison);
 }
 
 /**

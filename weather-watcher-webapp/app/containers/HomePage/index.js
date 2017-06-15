@@ -11,6 +11,7 @@ import {createStructuredSelector} from 'reselect';
 import {FormattedMessage} from 'react-intl';
 
 import {Comparison} from 'weather-watcher-core';
+import ForecastComparison from 'components/ForecastComparison';
 
 import Section from './Section';
 import {refreshComparison} from './actions';
@@ -34,21 +35,13 @@ export class HomePage extends React.PureComponent {
   render() {
     return (
       <article>
-        <Helmet
-          title="Home Page"
-          meta={[
-            {
-              name: 'description',
-              content: 'A React.js Boilerplate application homepage',
-            },
-          ]}
-        />
         <div>
           <Section>
             <div>
               <FormattedMessage {...messages.comparisonHeader} />
             </div>
-            {this.props.comparison && <span>I have a comparison!</span>}
+            {this.props.comparison &&
+              <ForecastComparison comparison={this.props.comparison} />}
           </Section>
         </div>
       </article>

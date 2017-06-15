@@ -9,7 +9,6 @@
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
 
-export const CHANGE_USERNAME = 'boilerplate/Home/CHANGE_USERNAME';
 export const REFRESH_COMPARISON = 'weather-watcher/Home/REFRESH_COMPARISON';
 export const RECEIVE_COMPARISON = 'weather-watcher/Home/RECEIVE_COMPARISON';
 export const DEFAULT_COMPARISON_DATA = {

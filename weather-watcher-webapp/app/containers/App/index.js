@@ -11,7 +11,6 @@ import Helmet from 'react-helmet';
 import styled from 'styled-components';
 
 import Header from 'components/Header';
-import Footer from 'components/Footer';
 import withProgressBar from 'components/ProgressBar';
 
 const AppWrapper = styled.div`
@@ -29,13 +28,10 @@ export function App(props) {
       <Helmet
         titleTemplate="%s - Weather Watcher"
         defaultTitle="Weather Watcher"
-        meta={[
-          { name: 'description', content: 'A React.js Boilerplate application' },
-        ]}
+        meta={[{name: 'description', content: 'Watch the weather'}]}
       />
       <Header />
       {React.Children.toArray(props.children)}
-      <Footer />
     </AppWrapper>
   );
 }

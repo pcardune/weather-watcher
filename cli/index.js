@@ -1,6 +1,6 @@
 import 'console.table';
 import chalk from 'chalk';
-import moment from 'moment';
+import moment from 'moment-mini';
 
 import {Comparison} from 'weather-watcher-core';
 import {saveNOAAGridDataForecast} from './storage';

@@ -1,5 +1,5 @@
 import 'isomorphic-fetch';
-import moment from 'moment';
+import moment from 'moment-mini';
 
 const WEIGHTS = {
   WIND_SPEED: -1,

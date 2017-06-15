@@ -15,25 +15,7 @@
  *    }
  */
 
-import {
-  CHANGE_USERNAME,
-  REFRESH_COMPARISON,
-  RECEIVE_COMPARISON,
-} from './constants';
-
-/**
- * Changes the input field of the form
- *
- * @param  {name} name The new text of the input field
- *
- * @return {object}    An action object with a type of CHANGE_USERNAME
- */
-export function changeUsername(name) {
-  return {
-    type: CHANGE_USERNAME,
-    name,
-  };
-}
+import {REFRESH_COMPARISON, RECEIVE_COMPARISON} from './constants';
 
 export function refreshComparison() {
   return {type: REFRESH_COMPARISON};

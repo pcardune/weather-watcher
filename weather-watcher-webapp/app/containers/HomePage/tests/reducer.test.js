@@ -1,13 +1,13 @@
 import {fromJS} from 'immutable';
 
 import homeReducer from '../reducer';
-import {changeUsername} from '../actions';
+import {receiveComparison} from '../actions';
+import {Comparison} from 'weather-watcher-core';
 
 describe('homeReducer', () => {
   let state;
   beforeEach(() => {
     state = fromJS({
-      username: '',
       comparison: null,
     });
   });
@@ -17,10 +17,12 @@ describe('homeReducer', () => {
     expect(homeReducer(undefined, {})).toEqual(expectedResult);
   });
 
-  it('should handle the changeUsername action correctly', () => {
-    const fixture = 'mxstbr';
-    const expectedResult = state.set('username', fixture);
+  it('should handle the receiveComparison action correctly', () => {
+    const comparison = new Comparison({});
+    const expectedResult = state.set('comparison', comparison);
 
-    expect(homeReducer(state, changeUsername(fixture))).toEqual(expectedResult);
+    expect(homeReducer(state, receiveComparison(comparison))).toEqual(
+      expectedResult
+    );
   });
 });
