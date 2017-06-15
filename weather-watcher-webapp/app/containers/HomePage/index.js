@@ -5,13 +5,12 @@
  */
 
 import React from 'react';
-import Helmet from 'react-helmet';
 import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 import {FormattedMessage} from 'react-intl';
 
 import {Comparison} from 'weather-watcher-core';
-import ForecastComparison from 'components/ForecastComparison';
+import MultiDayForecastComparison from 'components/MultiDayForecastComparison';
 
 import Section from './Section';
 import {refreshComparison} from './actions';
@@ -41,7 +40,7 @@ export class HomePage extends React.PureComponent {
               <FormattedMessage {...messages.comparisonHeader} />
             </div>
             {this.props.comparison &&
-              <ForecastComparison comparison={this.props.comparison} />}
+              <MultiDayForecastComparison comparison={this.props.comparison} />}
           </Section>
         </div>
       </article>
