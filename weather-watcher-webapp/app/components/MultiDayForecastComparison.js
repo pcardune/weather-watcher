@@ -1,6 +1,6 @@
 import React from 'react';
 import moment from 'moment-mini';
-import {Comparison} from 'weather-watcher-core';
+import Comparison from 'models/Comparison';
 import SingleDayForecastComparison from './SingleDayForecastComparison';
 
 export default function MultiDayForecastComparison({comparison}) {
@@ -18,5 +18,5 @@ export default function MultiDayForecastComparison({comparison}) {
 }
 
 MultiDayForecastComparison.propTypes = {
-  comparison: React.PropTypes.instanceOf(Comparison),
+  comparison: React.PropTypes.instanceOf(Comparison).isRequired,
 };

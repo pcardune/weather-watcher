@@ -1,7 +1,9 @@
 import styled from 'styled-components';
-import React from 'react';
+import React, {PropTypes} from 'react';
 import moment from 'moment-mini';
 import convert from 'convert-units';
+
+import Comparison from 'models/Comparison';
 
 const ComparisonTable = styled.table`
   margin-bottom: 20px;
@@ -112,3 +114,8 @@ export default function SingleDayForecastComparison({comparison, date}) {
     </ComparisonTable>
   );
 }
+
+SingleDayForecastComparison.propTypes = {
+  comparison: PropTypes.instanceOf(Comparison).isRequired,
+  date: PropTypes.instanceOf(Date).isRequired,
+};

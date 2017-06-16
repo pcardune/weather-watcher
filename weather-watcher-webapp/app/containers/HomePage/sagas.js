@@ -10,18 +10,24 @@ import {
   select,
   cancel,
   takeLatest,
+  takeEvery,
 } from 'redux-saga/effects';
 import {LOCATION_CHANGE} from 'react-router-redux';
-import {LOAD_REPOS} from 'containers/App/constants';
-import {reposLoaded, repoLoadingError} from 'containers/App/actions';
+import {LOAD_REPOS} from 'app/containers/App/constants';
+import {reposLoaded, repoLoadingError} from 'app/containers/App/actions';
 
-import {Comparison} from 'weather-watcher-core';
+import Comparison from 'app/models/Comparison';
 
-import request from 'utils/request';
-import {makeSelectUsername} from 'containers/HomePage/selectors';
+import request from 'app/utils/request';
+import {makeSelectUsername} from 'app/containers/HomePage/selectors';
+import {NOAAClient} from 'app/noaa';
 
-import {DEFAULT_COMPARISON_DATA, REFRESH_COMPARISON} from './constants';
-import {receiveComparison} from './actions';
+import {
+  DEFAULT_COMPARISON_DATA,
+  REFRESH_COMPARISON,
+  ADD_POINT_TO_COMPARE,
+} from './constants';
+import {receiveComparison, receiveNOAAPoint, setNOAAPoint} from './actions';
 
 /**
  * Github repos request/response handler
@@ -41,23 +47,36 @@ export function* getRepos() {
 }
 
 export function* fetchComparison() {
-  const cached = localStorage.getItem('comparisonCache');
-  let comparisonData = DEFAULT_COMPARISON_DATA;
-  if (cached) {
-    try {
-      comparisonData = JSON.parse(cached);
-    } catch (e) {
-      // just leave it as the default
-    }
-  }
-  const comparison = Comparison.fromJSON(comparisonData);
-  yield apply(comparison, comparison.fetch);
-  localStorage.setItem('comparisonCache', JSON.stringify(comparison.toJSON()));
-  yield put(receiveComparison(comparison));
+  //  const cached = localStorage.getItem('comparisonCache');
+  //  let comparisonData = DEFAULT_COMPARISON_DATA;
+  //  if (cached) {
+  //    try {
+  //      comparisonData = JSON.parse(cached);
+  //    } catch (e) {
+  //      // just leave it as the default
+  //    }
+  //  }
+  //  const comparison = Comparison.fromJSON(comparisonData);
+  //  yield apply(comparison, comparison.fetch);
+  //  localStorage.setItem('comparisonCache', JSON.stringify(comparison.toJSON()));
+  //  yield put(receiveComparison(comparison));
 }
 
 export function* comparisonSaga() {
   yield takeLatest(REFRESH_COMPARISON, fetchComparison);
+}
+
+export function* addPointToCompare({pointToCompare}) {
+  const noaaPoint = yield call(NOAAClient.fetchNOAAPoint, {
+    latitude: pointToCompare.latitude,
+    longitude: pointToCompare.longitude,
+  });
+  yield put(receiveNOAAPoint(noaaPoint));
+  yield put(setNOAAPoint(pointToCompare, noaaPoint));
+}
+
+export function* addPointToCompareSaga() {
+  yield takeEvery(ADD_POINT_TO_COMPARE, addPointToCompare);
 }
 
 /**
@@ -75,4 +94,4 @@ export function* githubData() {
 }
 
 // Bootstrap sagas
-export default [githubData, comparisonSaga];
+export default [githubData, comparisonSaga, addPointToCompareSaga];

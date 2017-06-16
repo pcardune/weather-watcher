@@ -15,7 +15,11 @@
  *    }
  */
 
-import {REFRESH_COMPARISON, RECEIVE_COMPARISON} from './constants';
+import {
+  REFRESH_COMPARISON,
+  RECEIVE_COMPARISON,
+  ADD_POINT_TO_COMPARE,
+} from './constants';
 
 export function refreshComparison() {
   return {type: REFRESH_COMPARISON};
@@ -23,4 +27,8 @@ export function refreshComparison() {
 
 export function receiveComparison(comparison) {
   return {type: RECEIVE_COMPARISON, comparison};
+}
+
+export function addPointToCompare(pointToCompare) {
+  return {type: ADD_POINT_TO_COMPARE, pointToCompare};
 }

@@ -11,6 +11,7 @@
 
 export const REFRESH_COMPARISON = 'weather-watcher/Home/REFRESH_COMPARISON';
 export const RECEIVE_COMPARISON = 'weather-watcher/Home/RECEIVE_COMPARISON';
+export const ADD_POINT_TO_COMPARE = 'weather-watcher/Home/ADD_POINT_TO_COMPARE';
 export const DEFAULT_COMPARISON_DATA = {
   name: 'climbing',
   pointsToCompare: [

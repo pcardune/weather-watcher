@@ -11,18 +11,19 @@ import 'babel-polyfill';
 // Import all the third party stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { applyRouterMiddleware, Router, browserHistory } from 'react-router';
-import { syncHistoryWithStore } from 'react-router-redux';
+import {Provider} from 'react-redux';
+import {applyRouterMiddleware, Router, browserHistory} from 'react-router';
+import {syncHistoryWithStore} from 'react-router-redux';
 import FontFaceObserver from 'fontfaceobserver';
-import { useScroll } from 'react-router-scroll';
+import {useScroll} from 'react-router-scroll';
 import 'sanitize.css/sanitize.css';
+import firebase from 'firebase';
 
 // Import root app
 import App from 'containers/App';
 
 // Import selector for `syncHistoryWithStore`
-import { makeSelectLocationState } from 'containers/App/selectors';
+import {makeSelectLocationState} from 'containers/App/selectors';
 
 // Import Language Provider
 import LanguageProvider from 'containers/LanguageProvider';
@@ -37,7 +38,7 @@ import 'file-loader?name=[name].[ext]!./.htaccess'; // eslint-disable-line impor
 import configureStore from './store';
 
 // Import i18n messages
-import { translationMessages } from './i18n';
+import {translationMessages} from './i18n';
 
 // Import CSS reset and Global Styles
 import './global-styles';
@@ -50,11 +51,24 @@ import createRoutes from './routes';
 const openSansObserver = new FontFaceObserver('Open Sans', {});
 
 // When Open Sans is loaded, add a font-family using Open Sans to the body
-openSansObserver.load().then(() => {
-  document.body.classList.add('fontLoaded');
-}, () => {
-  document.body.classList.remove('fontLoaded');
-});
+openSansObserver.load().then(
+  () => {
+    document.body.classList.add('fontLoaded');
+  },
+  () => {
+    document.body.classList.remove('fontLoaded');
+  }
+);
+
+var config = {
+  apiKey: 'AIzaSyDnmrQ7fly13bzqOZlNfhBA3ml1juw5d-8',
+  authDomain: 'weather-watcher-2e593.firebaseapp.com',
+  databaseURL: 'https://weather-watcher-2e593.firebaseio.com',
+  projectId: 'weather-watcher-2e593',
+  storageBucket: 'weather-watcher-2e593.appspot.com',
+  messagingSenderId: '236272840837',
+};
+firebase.initializeApp(config);
 
 // Create redux store with history
 // this uses the singleton browserHistory provided by react-router
@@ -76,18 +90,16 @@ const rootRoute = {
   childRoutes: createRoutes(store),
 };
 
-const render = (messages) => {
+const render = messages => {
   ReactDOM.render(
     <Provider store={store}>
       <LanguageProvider messages={messages}>
         <Router
           history={history}
           routes={rootRoute}
-          render={
-            // Scroll to top when going to a new page, imitating default browser
-            // behaviour
-            applyRouterMiddleware(useScroll())
-          }
+          render={// Scroll to top when going to a new page, imitating default browser
+          // behaviour
+          applyRouterMiddleware(useScroll())}
         />
       </LanguageProvider>
     </Provider>,
@@ -106,15 +118,16 @@ if (module.hot) {
 
 // Chunked polyfill for browsers without Intl support
 if (!window.Intl) {
-  (new Promise((resolve) => {
+  new Promise(resolve => {
     resolve(import('intl'));
-  }))
-    .then(() => Promise.all([
-      import('intl/locale-data/jsonp/en.js'),
-      import('intl/locale-data/jsonp/de.js'),
-    ]))
+  })
+    .then(() =>
+      Promise.all([
+        import('intl/locale-data/jsonp/en.js'),
+        import('intl/locale-data/jsonp/de.js'),
+      ]))
     .then(() => render(translationMessages))
-    .catch((err) => {
+    .catch(err => {
       throw err;
     });
 } else {
