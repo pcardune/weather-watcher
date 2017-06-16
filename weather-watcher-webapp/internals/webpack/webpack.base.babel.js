@@ -90,6 +90,9 @@ module.exports = options => ({
     modules: ['app', 'node_modules'],
     extensions: ['.js', '.jsx', '.react.js'],
     mainFields: ['browser', 'jsnext:main', 'main'],
+    alias: {
+      app: path.resolve(__dirname, '../../app'),
+    },
   },
   devtool: options.devtool,
   target: 'web', // Make web variables accessible to webpack, e.g. window
