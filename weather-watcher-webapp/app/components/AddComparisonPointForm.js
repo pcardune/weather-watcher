@@ -1,5 +1,8 @@
 import styled from 'styled-components';
 import React, {Component, PropTypes} from 'react';
+import Geosuggest from 'react-geosuggest';
+import 'react-geosuggest/module/geosuggest.css';
+
 import {Button, FormField, Input, Label} from './forms';
 
 const Form = styled.form`
@@ -32,9 +35,18 @@ export default class AddComparisonPointForm extends Component {
     });
   };
 
+  onSuggestSelect = suggestion => {
+    this.setState({
+      name: suggestion.gmaps.address_components[0].long_name,
+      longitude: suggestion.location.lng,
+      latitude: suggestion.location.lat,
+    });
+  };
+
   render() {
     return (
       <Form>
+        <Geosuggest country="us" onSuggestSelect={this.onSuggestSelect} />
         <FormField>
           <Label>Name:</Label>
           <Input
