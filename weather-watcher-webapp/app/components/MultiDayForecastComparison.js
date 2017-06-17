@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import moment from 'moment-mini';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import SingleDayForecastComparison from './SingleDayForecastComparison';
+import ComparisonGraph from './ComparisonGraph';
 
 export default class MultiDayForecastComparison extends Component {
   static propTypes = {
@@ -25,7 +26,7 @@ export default class MultiDayForecastComparison extends Component {
     }
     return (
       <div>
-        <h1>{comparison.name}</h1>
+        <ComparisonGraph comparison={comparison} />
         {tables}
       </div>
     );

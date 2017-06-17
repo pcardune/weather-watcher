@@ -39,7 +39,7 @@ export default function configureStore(initialState = {}, history) {
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 
-  setInterval(() => persistStore(store, {storage: localForage}), 1000);
+  persistStore(store, {storage: localForage});
 
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */
