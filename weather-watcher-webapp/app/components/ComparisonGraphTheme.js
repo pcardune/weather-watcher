@@ -31,9 +31,9 @@ const fontSize = 12;
 // Layout
 const padding = 8;
 const baseProps = {
-  width: 350,
-  height: 350,
-  padding: 50,
+  width: 650,
+  height: 200,
+  padding: 40,
 };
 
 // Labels
@@ -48,7 +48,7 @@ const baseLabelStyles = {
 const centeredLabelStyles = assign({textAnchor: 'middle'}, baseLabelStyles);
 
 // Strokes
-const strokeDasharray = '10, 5';
+const strokeDasharray = '1';
 const strokeLinecap = 'round';
 const strokeLinejoin = 'round';
 
@@ -79,7 +79,7 @@ export default {
         }),
         grid: {
           fill: 'transparent',
-          stroke: blueGrey50,
+          stroke: blueGrey300,
           strokeDasharray,
           strokeLinecap,
           strokeLinejoin,
