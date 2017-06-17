@@ -8,7 +8,7 @@ import {saveNOAAGridDataForecast} from './storage';
 async function run() {
   const comparison = Comparison.fromJSON({
     name: 'climbing',
-    pointsToCompare: [
+    comparisonPoints: [
       {
         name: 'Seattle',
         latitude: 47.6062,
@@ -76,8 +76,8 @@ async function run() {
     );
   }
   return Promise.all(
-    comparison.pointsToCompare.map(pointToCompare =>
-      saveNOAAGridDataForecast(pointToCompare.noaaPoint.gridDataForecast))
+    comparison.comparisonPoints.map(comparisonPoint =>
+      saveNOAAGridDataForecast(comparisonPoint.noaaPoint.gridDataForecast))
   );
 }
 

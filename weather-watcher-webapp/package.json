@@ -96,6 +96,9 @@
       "no-plusplus": 0,
       "object-curly-spacing": 0,
       "arrow-parens": 0,
+      "no-mixed-operators": 0,
+      "generator-star-spacing": 0,
+      "func-names": 0,
       "arrow-body-style": [
         2,
         "as-needed"
@@ -216,6 +219,7 @@
     "intl": "1.2.5",
     "invariant": "2.2.2",
     "ip": "1.1.4",
+    "localforage": "^1.5.0",
     "lodash": "4.17.2",
     "minimist": "1.2.0",
     "moment-mini": "^2.18.1",
@@ -229,10 +233,13 @@
     "react-router-scroll": "0.4.1",
     "redux": "3.6.0",
     "redux-immutable": "3.0.8",
+    "redux-persist": "^4.8.0",
+    "redux-persist-immutable": "^4.3.0",
     "redux-saga": "0.14.0",
     "reselect": "2.5.4",
     "sanitize.css": "4.1.0",
     "styled-components": "1.1.2",
+    "uuid": "^3.0.1",
     "warning": "3.0.0",
     "weather-watcher-core": "file:../weather-watcher-core",
     "whatwg-fetch": "2.0.1"

@@ -2,19 +2,20 @@
 // They are all wrapped in the App component, which should contain the navbar etc
 // See http://blog.mxstbr.com/2016/01/react-apps-with-pages for more information
 // about the code splitting business
-import { getAsyncInjectors } from './utils/asyncInjectors';
+import {getAsyncInjectors} from './utils/asyncInjectors';
 
-const errorLoading = (err) => {
+const errorLoading = err => {
   console.error('Dynamic page loading failed', err); // eslint-disable-line no-console
 };
 
-const loadModule = (cb) => (componentModule) => {
-  cb(null, componentModule.default);
-};
+const loadModule = cb =>
+  componentModule => {
+    cb(null, componentModule.default);
+  };
 
 export default function createRoutes(store) {
   // create reusable async injectors using getAsyncInjectors factory
-  const { injectReducer, injectSagas } = getAsyncInjectors(store);
+  const {injectReducer, injectSagas} = getAsyncInjectors(store);
 
   return [
     {
@@ -25,20 +26,32 @@ export default function createRoutes(store) {
           import('containers/HomePage/reducer'),
           import('containers/HomePage/sagas'),
           import('containers/HomePage'),
+          import('containers/Database/reducer'),
+          import('containers/Database/sagas'),
         ]);
 
         const renderRoute = loadModule(cb);
 
-        importModules.then(([reducer, sagas, component]) => {
+        importModules.then(([
+          reducer,
+          sagas,
+          component,
+          dbReducer,
+          dbSagas,
+        ]) => {
           injectReducer('home', reducer.default);
           injectSagas(sagas.default);
+
+          injectReducer('database', dbReducer.default);
+          injectSagas(dbSagas.default);
 
           renderRoute(component);
         });
 
         importModules.catch(errorLoading);
       },
-    }, {
+    },
+    {
       path: '*',
       name: 'notfound',
       getComponent(nextState, cb) {

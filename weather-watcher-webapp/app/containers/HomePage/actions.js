@@ -15,11 +15,23 @@
  *    }
  */
 
+import {updateComparison} from 'app/containers/Database/actions';
+
 import {
   REFRESH_COMPARISON,
   RECEIVE_COMPARISON,
-  ADD_POINT_TO_COMPARE,
+  ADD_COMPARISON_POINT,
+  RESET_COMPARISON,
+  SHOW_COMPARISON,
 } from './constants';
+
+export function resetComparison() {
+  return {type: RESET_COMPARISON};
+}
+
+export function showComparison(comparisonId) {
+  return {type: SHOW_COMPARISON, comparisonId};
+}
 
 export function refreshComparison() {
   return {type: REFRESH_COMPARISON};
@@ -29,6 +41,15 @@ export function receiveComparison(comparison) {
   return {type: RECEIVE_COMPARISON, comparison};
 }
 
-export function addPointToCompare(pointToCompare) {
-  return {type: ADD_POINT_TO_COMPARE, pointToCompare};
+export function addComparisonPoint(comparisonPoint) {
+  return {type: ADD_COMPARISON_POINT, comparisonPoint};
+}
+
+export function removeComparisonPoint(comparison, comparisonPointId) {
+  return updateComparison({
+    id: comparison.id,
+    comparisonPointIds: comparison.comparisonPointIds.filter(
+      id => id !== comparisonPointId
+    ),
+  });
 }

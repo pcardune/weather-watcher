@@ -1,0 +1,92 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/geojson/geojson-ld/master/contexts/geojson-base.jsonld",
+        {
+            "wx": "https://api.weather.gov/ontology#",
+            "s": "https://schema.org/",
+            "geo": "http://www.opengis.net/ont/geosparql#",
+            "unit": "http://codes.wmo.int/common/unit/",
+            "@vocab": "https://api.weather.gov/ontology#",
+            "geometry": {
+                "@id": "s:GeoCoordinates",
+                "@type": "geo:wktLiteral"
+            },
+            "city": "s:addressLocality",
+            "state": "s:addressRegion",
+            "distance": {
+                "@id": "s:Distance",
+                "@type": "s:QuantitativeValue"
+            },
+            "bearing": {
+                "@type": "s:QuantitativeValue"
+            },
+            "value": {
+                "@id": "s:value"
+            },
+            "unitCode": {
+                "@id": "s:unitCode",
+                "@type": "@id"
+            },
+            "forecastOffice": {
+                "@type": "@id"
+            },
+            "forecastGridData": {
+                "@type": "@id"
+            },
+            "publicZone": {
+                "@type": "@id"
+            },
+            "county": {
+                "@type": "@id"
+            }
+        }
+    ],
+    "id": "https://api.weather.gov/points/47.6062,-122.33",
+    "type": "Feature",
+    "geometry": {
+        "type": "Point",
+        "coordinates": [
+            -122.33,
+            47.6062
+        ]
+    },
+    "properties": {
+        "@id": "https://api.weather.gov/points/47.6062,-122.33",
+        "@type": "wx:Point",
+        "cwa": "SEW",
+        "forecastOffice": "https://api.weather.gov/offices/SEW",
+        "gridX": 124,
+        "gridY": 67,
+        "forecast": "https://api.weather.gov/points/47.6062,-122.33/forecast",
+        "forecastHourly": "https://api.weather.gov/points/47.6062,-122.33/forecast/hourly",
+        "forecastGridData": "https://api.weather.gov/gridpoints/SEW/124,67",
+        "relativeLocation": {
+            "type": "Feature",
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -122.350876,
+                    47.620499
+                ]
+            },
+            "properties": {
+                "city": "Seattle",
+                "state": "WA",
+                "distance": {
+                    "value": 2230.8815273953,
+                    "unitCode": "unit:m"
+                },
+                "bearing": {
+                    "value": 135,
+                    "unitCode": "unit:degrees_true"
+                }
+            }
+        },
+        "forecastZone": "https://api.weather.gov/zones/forecast/WAZ558",
+        "county": "https://api.weather.gov/zones/county/WAC033",
+        "fireWeatherZone": "https://api.weather.gov/zones/fire/WAZ654",
+        "timeZone": "America/Los_Angeles",
+        "radarStation": "KATX",
+        "observationStations": "https://api.weather.gov/points/47.6062,-122.33/stations"
+    }
+}

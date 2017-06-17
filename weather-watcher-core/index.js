@@ -166,7 +166,7 @@ class NOAAClient {
   }
 }
 
-class PointToCompare {
+class ComparisonPoint {
   constructor({name, latitude, longitude}) {
     this.name = name;
     this.latitude = latitude;
@@ -184,11 +184,11 @@ class PointToCompare {
   }
 
   static fromJSON(data) {
-    const pointToCompare = new PointToCompare(data);
-    pointToCompare.noaaPoint = data.noaaPoint
+    const comparisonPoint = new ComparisonPoint(data);
+    comparisonPoint.noaaPoint = data.noaaPoint
       ? NOAAPoint.fromJSON(data.noaaPoint)
       : null;
-    return pointToCompare;
+    return comparisonPoint;
   }
 
   async fetch() {
@@ -228,18 +228,18 @@ class PointToCompare {
 }
 
 export class Comparison {
-  constructor({name, pointsToCompare}) {
+  constructor({name, comparisonPoints}) {
     this.name = name;
-    this.pointsToCompare = pointsToCompare;
+    this.comparisonPoints = comparisonPoints;
   }
 
   async fetch() {
-    await Promise.all(this.pointsToCompare.map(p => p.fetch()));
+    await Promise.all(this.comparisonPoints.map(p => p.fetch()));
     return this;
   }
 
   getSortedPointsForDate(date) {
-    const sorted = [...this.pointsToCompare];
+    const sorted = [...this.comparisonPoints];
     sorted.sort(
       (p1, p2) =>
         p2.getScoreForDate(date).score - p1.getScoreForDate(date).score
@@ -250,15 +250,15 @@ export class Comparison {
   toJSON() {
     return {
       name: this.name,
-      pointsToCompare: this.pointsToCompare.map(p => p.toJSON()),
+      comparisonPoints: this.comparisonPoints.map(p => p.toJSON()),
     };
   }
 
   static fromJSON(data) {
     return new Comparison(
       Object.assign({}, data, {
-        pointsToCompare: data.pointsToCompare.map(p =>
-          PointToCompare.fromJSON(p)),
+        comparisonPoints: data.comparisonPoints.map(p =>
+          ComparisonPoint.fromJSON(p)),
       })
     );
   }

@@ -151,8 +151,7 @@ export class NOAAClient {
     return NOAAClient.fetch(url);
   }
 
-  static async fetchNOAAPoint({latitude, longitude}) {
-    const data = await NOAAClient.fetchPath(`points/${latitude},${longitude}`);
-    return new NOAAPoint({data});
+  static fetchNOAAPoint({latitude, longitude}) {
+    return NOAAClient.fetchPath(`points/${latitude},${longitude}`);
   }
 }

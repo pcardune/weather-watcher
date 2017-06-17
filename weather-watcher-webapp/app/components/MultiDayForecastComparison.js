@@ -1,22 +1,33 @@
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import moment from 'moment-mini';
-import Comparison from 'models/Comparison';
+import {AugmentedComparisonShape} from 'app/propTypes';
 import SingleDayForecastComparison from './SingleDayForecastComparison';
 
-export default function MultiDayForecastComparison({comparison}) {
-  const tables = [];
-  for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
-    const date = moment(new Date()).add(dayOffset, 'days').toDate();
-    tables.push(
-      <SingleDayForecastComparison
-        key={date.toString()}
-        {...{comparison, date}}
-      />
+export default class MultiDayForecastComparison extends Component {
+  static propTypes = {
+    comparison: AugmentedComparisonShape.isRequired,
+    onRemoveComparisonPoint: PropTypes.func.isRequired,
+  };
+
+  render() {
+    const {comparison} = this.props;
+    const tables = [];
+    for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
+      const date = moment(new Date()).add(dayOffset, 'days').toDate();
+      tables.push(
+        <SingleDayForecastComparison
+          key={date.toString()}
+          comparison={comparison}
+          date={date}
+          onRemoveComparisonPoint={this.props.onRemoveComparisonPoint}
+        />
+      );
+    }
+    return (
+      <div>
+        <h1>{comparison.name}</h1>
+        {tables}
+      </div>
     );
   }
-  return <div>{tables}</div>;
 }
-
-MultiDayForecastComparison.propTypes = {
-  comparison: React.PropTypes.instanceOf(Comparison).isRequired,
-};

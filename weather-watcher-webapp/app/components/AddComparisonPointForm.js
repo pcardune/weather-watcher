@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import React, {Component, PropTypes} from 'react';
-import PointToCompare from 'models/PointToCompare';
 import {Button, FormField, Input, Label} from './forms';
 
 const Form = styled.form`
@@ -8,14 +7,15 @@ const Form = styled.form`
   padding: 10px;
 `;
 
-export default class AddPointToCompareForm extends Component {
+export default class AddComparisonPointForm extends Component {
   static propTypes = {
     onAdd: PropTypes.func.isRequired,
   };
+
   state = {
-    name: '',
-    latitude: '',
-    longitude: '',
+    name: 'Index',
+    latitude: '47.8207',
+    longitude: '-121.5551',
   };
 
   onChange = event => {
@@ -25,13 +25,11 @@ export default class AddPointToCompareForm extends Component {
   };
 
   onClickAdd = () => {
-    this.props.onAdd(
-      new PointToCompare({
-        name: this.state.name,
-        longitude: parseFloat(this.state.longitude),
-        latitude: parseFloat(this.state.latitude),
-      })
-    );
+    this.props.onAdd({
+      name: this.state.name,
+      longitude: parseFloat(this.state.longitude),
+      latitude: parseFloat(this.state.latitude),
+    });
   };
 
   render() {

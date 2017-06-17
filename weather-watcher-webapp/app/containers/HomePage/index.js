@@ -9,29 +9,42 @@ import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 import {FormattedMessage} from 'react-intl';
 
-import Comparison from 'models/Comparison';
-import MultiDayForecastComparison from 'components/MultiDayForecastComparison';
-import AddPointToCompareForm from 'components/AddPointToCompareForm';
+import MultiDayForecastComparison
+  from 'app/components/MultiDayForecastComparison';
+import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
+import {AugmentedComparisonShape} from 'app/propTypes';
 
 import Section from './Section';
-import {refreshComparison, addPointToCompare} from './actions';
-import {selectComparison} from './selectors';
+import {
+  resetComparison,
+  addComparisonPoint,
+  removeComparisonPoint,
+} from './actions';
+import {selectAugmentedComparisonToShow} from './selectors';
 import messages from './messages';
 
 export class HomePage extends PureComponent {
   // eslint-disable-line react/prefer-stateless-function
   static propTypes = {
-    onRefreshComparison: PropTypes.func.isRequired,
-    comparison: PropTypes.instanceOf(Comparison).isRequired,
-    onAddPointToCompare: PropTypes.func.isRequired,
+    comparison: AugmentedComparisonShape,
+    onResetComparison: PropTypes.func.isRequired,
+    onAddComparisonPoint: PropTypes.func.isRequired,
+    onRemoveComparisonPoint: PropTypes.func.isRequired,
   };
 
   /**
    * when initial state username is not null, submit the form to load repos
    */
   componentDidMount() {
-    this.props.onRefreshComparison();
+    this.props.onResetComparison();
   }
+
+  onRemoveComparisonPoint = comparisonPointId => {
+    this.props.onRemoveComparisonPoint(
+      this.props.comparison,
+      comparisonPointId
+    );
+  };
 
   render() {
     return (
@@ -41,9 +54,12 @@ export class HomePage extends PureComponent {
             <div>
               <FormattedMessage {...messages.comparisonHeader} />
             </div>
-            <AddPointToCompareForm onAdd={this.props.onAddPointToCompare} />
+            <AddComparisonPointForm onAdd={this.props.onAddComparisonPoint} />
             {this.props.comparison &&
-              <MultiDayForecastComparison comparison={this.props.comparison} />}
+              <MultiDayForecastComparison
+                comparison={this.props.comparison}
+                onRemoveComparisonPoint={this.onRemoveComparisonPoint}
+              />}
           </Section>
         </div>
       </article>
@@ -52,12 +68,13 @@ export class HomePage extends PureComponent {
 }
 
 export const mapDispatchToProps = {
-  onRefreshComparison: refreshComparison,
-  onAddPointToCompare: addPointToCompare,
+  onAddComparisonPoint: addComparisonPoint,
+  onResetComparison: resetComparison,
+  onRemoveComparisonPoint: removeComparisonPoint,
 };
 
 const mapStateToProps = createStructuredSelector({
-  comparison: selectComparison,
+  comparison: selectAugmentedComparisonToShow(),
 });
 
 // Wrap the component to inject dispatch and state into it
