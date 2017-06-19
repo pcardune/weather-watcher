@@ -12,6 +12,7 @@ export const CardHeader = styled.div`
   h1 {
     font-size: 24px;
     font-weight: 100;
+    width: 100%;
   }
 `;
 

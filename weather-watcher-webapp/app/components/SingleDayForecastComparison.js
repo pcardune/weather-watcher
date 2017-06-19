@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import React, {Component, PropTypes} from 'react';
-import moment from 'moment-mini';
 import convert from 'convert-units';
 
 import {
@@ -9,25 +8,17 @@ import {
 } from 'app/containers/Database/selectors';
 import {AugmentedComparisonShape} from 'app/propTypes';
 
-const ComparisonTable = styled.table`
-  margin-bottom: 20px;
-  width: 100%;
-`;
-
-const DayHeader = styled.th`
-  font-weight: bold;
-  background-color: #eee;
-  text-align: left;
-  padding: 5px;
-`;
-
-const HeaderRow = styled.tr`
-  border-bottom: 1px solid #ccc;
-`;
-
 const ColumnHeader = styled.th`
   text-align: left;
   padding: 5px 5px 0;
+  font-size: 14px;
+  font-weight: 400;
+`;
+
+const HeaderRow = styled.tr`
+  ${ColumnHeader}:first-child {
+    padding-left: 35px;
+  }
 `;
 
 const UnitCell = styled.th`
@@ -40,10 +31,26 @@ const UnitCell = styled.th`
 
 const Cell = styled.td`
   padding: 5px;
+  font-weight: 300;
+  font-size: 18;
+  strong {
+    font-weight: 400;
+  }
 `;
 
 const Row = styled.tr`
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #eee;
+  ${Cell}:first-child {
+    padding-left: 35px;
+  }
+`;
+
+const ComparisonTable = styled.table`
+  margin-bottom: 20px;
+  width: 100%;
+  ${Row}:first-child {
+    border-top: 1px solid #eee;
+  }
 `;
 
 export default class SingleDayForecastComparison extends Component {
@@ -63,17 +70,24 @@ export default class SingleDayForecastComparison extends Component {
     return (
       <ComparisonTable>
         <thead>
-          <tr>
-            <ColumnHeader>Name</ColumnHeader>
+          <HeaderRow>
+            <ColumnHeader colSpan={5} />
+            <ColumnHeader colSpan={2} style={{paddingLeft: 30}}>
+              Precipitation
+            </ColumnHeader>
+            <ColumnHeader colSpan={2} />
+          </HeaderRow>
+          <HeaderRow>
             <ColumnHeader>Score</ColumnHeader>
+            <ColumnHeader>Name</ColumnHeader>
             <ColumnHeader>Low</ColumnHeader>
             <ColumnHeader>High</ColumnHeader>
             <ColumnHeader>Wind</ColumnHeader>
-            <ColumnHeader>PoP</ColumnHeader>
-            <ColumnHeader>Precip</ColumnHeader>
+            <ColumnHeader>Chance</ColumnHeader>
+            <ColumnHeader>Quantity</ColumnHeader>
             <ColumnHeader>Forecast</ColumnHeader>
             <ColumnHeader />
-          </tr>
+          </HeaderRow>
           <HeaderRow>
             <UnitCell />
             <UnitCell />
@@ -91,6 +105,7 @@ export default class SingleDayForecastComparison extends Component {
             if (!point.noaaGridForecast) {
               return (
                 <Row key={point.name + index}>
+                  <Cell />
                   <Cell>{point.name}</Cell>
                 </Row>
               );
@@ -98,8 +113,8 @@ export default class SingleDayForecastComparison extends Component {
             const score = getScoreForDate(point, date);
             return (
               <Row key={point.name + index}>
-                <Cell>{point.name}</Cell>
                 <Cell>{score.score}</Cell>
+                <Cell><strong>{point.name}</strong></Cell>
                 <Cell>
                   {score.dailyForecast && score.dailyForecast.night.temperature}
                 </Cell>

@@ -43,6 +43,15 @@ const DatePager = styled.div`
   justify-content: space-around;
 `;
 
+const Buttons = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  > * {
+    margin-left: 25px;
+  }
+`;
+
 export class HomePage extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape,
@@ -111,12 +120,14 @@ export class HomePage extends PureComponent {
             <h1>
               <FormattedMessage {...messages.comparisonHeader} />
             </h1>
-            <Button accent onClick={this.onClickAddLocation}>
-              Add Location
-            </Button>
-            <Button accent onClick={this.props.onRefreshComparison}>
-              Refresh
-            </Button>
+            <Buttons>
+              <Button accent onClick={this.onClickAddLocation}>
+                Add Location
+              </Button>
+              <Button accent onClick={this.props.onRefreshComparison}>
+                Refresh
+              </Button>
+            </Buttons>
           </CardHeader>
           <CardBody>
             {this.props.comparison &&
