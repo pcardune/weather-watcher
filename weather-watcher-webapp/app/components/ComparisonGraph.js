@@ -16,13 +16,12 @@ import {
 import ComparisonGraphTheme from './ComparisonGraphTheme';
 
 const ChartWrapper = styled.div`
-  background: #eee;
   margin: 5px 0;
 `;
 
 function DateLabel(props) {
   let style = props.style;
-  if (props.text === moment(new Date()).format('ddd')) {
+  if (props.text === moment(props.currentDate || new Date()).format('ddd')) {
     style = {...style, fill: 'red'};
   }
   return <VictoryLabel {...props} style={style} />;
@@ -31,6 +30,7 @@ function DateLabel(props) {
 export default class ComparisonGraph extends Component {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
+    date: PropTypes.instanceOf(Date),
   };
 
   render() {
@@ -69,7 +69,7 @@ export default class ComparisonGraph extends Component {
         >
           <VictoryAxis
             orientation="bottom"
-            tickLabelComponent={<DateLabel />}
+            tickLabelComponent={<DateLabel currentDate={this.props.date} />}
           />
           <VictoryAxis
             dependentAxis
@@ -94,8 +94,14 @@ export default class ComparisonGraph extends Component {
           ))}
           <VictoryLine
             data={[
-              {date: moment(new Date()).format('ddd'), score: domain.y[0]},
-              {date: moment(new Date()).format('ddd'), score: domain.y[1]},
+              {
+                date: moment(this.props.date || new Date()).format('ddd'),
+                score: domain.y[0],
+              },
+              {
+                date: moment(this.props.date || new Date()).format('ddd'),
+                score: domain.y[1],
+              },
             ]}
             y="score"
             x="date"

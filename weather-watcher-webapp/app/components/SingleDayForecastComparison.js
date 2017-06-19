@@ -64,11 +64,6 @@ export default class SingleDayForecastComparison extends Component {
       <ComparisonTable>
         <thead>
           <tr>
-            <DayHeader colSpan={10}>
-              {moment(date).format('dddd, MMMM Do')}
-            </DayHeader>
-          </tr>
-          <tr>
             <ColumnHeader>Rank</ColumnHeader>
             <ColumnHeader>Name</ColumnHeader>
             <ColumnHeader>Score</ColumnHeader>

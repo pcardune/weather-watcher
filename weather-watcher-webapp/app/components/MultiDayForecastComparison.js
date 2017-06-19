@@ -8,13 +8,16 @@ export default class MultiDayForecastComparison extends Component {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
+    date: PropTypes.instanceOf(Date),
   };
 
   render() {
     const {comparison} = this.props;
     const tables = [];
-    for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
-      const date = moment(new Date()).add(dayOffset, 'days').toDate();
+    for (let dayOffset = 0; dayOffset < 1; dayOffset++) {
+      const date = moment(this.props.date || new Date())
+        .add(dayOffset, 'days')
+        .toDate();
       tables.push(
         <SingleDayForecastComparison
           key={date.toString()}
@@ -26,7 +29,7 @@ export default class MultiDayForecastComparison extends Component {
     }
     return (
       <div>
-        <ComparisonGraph comparison={comparison} />
+        <ComparisonGraph comparison={comparison} date={this.props.date} />
         {tables}
       </div>
     );

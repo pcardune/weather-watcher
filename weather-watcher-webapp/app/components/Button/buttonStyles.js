@@ -1,21 +1,24 @@
-import { css } from 'styled-components';
+import {css} from 'styled-components';
 
 const buttonStyles = css`
   display: inline-block;
-  box-sizing: border-box;
-  padding: 0.25em 2em;
+  height: 36px;
+  min-width: 88px;
   text-decoration: none;
-  border-radius: 4px;
+  text-transform: uppercase;
+  text-align: center;
+  border-radius: 2px;
   -webkit-font-smoothing: antialiased;
   -webkit-touch-callout: none;
   user-select: none;
   cursor: pointer;
   outline: 0;
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-weight: bold;
-  font-size: 16px;
-  border: 2px solid #41addd;
-  color: #41addd;
+  font-size: 14px;
+  line-height: 36px;
+  background-color: ${props => props.theme.colors[props.accent ? 'accent' : 'primary']};
+  color: ${props => props.theme.colors[props.accent ? 'textOnAccent' : 'textOnPrimary']};
+  box-shadow: ${props => props.theme.shadows.level1};
+  padding: 0 15px;
 
   &:active {
     background: #41addd;

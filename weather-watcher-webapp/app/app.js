@@ -18,6 +18,7 @@ import FontFaceObserver from 'fontfaceobserver';
 import {useScroll} from 'react-router-scroll';
 import 'sanitize.css/sanitize.css';
 import firebase from 'firebase';
+import {ThemeProvider} from 'styled-components';
 
 // Import root app
 import App from 'containers/App';
@@ -42,13 +43,14 @@ import {translationMessages} from './i18n';
 
 // Import CSS reset and Global Styles
 import './global-styles';
+import Theme from './Theme';
 
 // Import routes
 import createRoutes from './routes';
 
 // Observe loading of Open Sans (to remove open sans, remove the <link> tag in
 // the index.html file and this observer)
-const openSansObserver = new FontFaceObserver('Open Sans', {});
+const openSansObserver = new FontFaceObserver('Roboto', {});
 
 // When Open Sans is loaded, add a font-family using Open Sans to the body
 openSansObserver.load().then(
@@ -94,13 +96,15 @@ const render = messages => {
   ReactDOM.render(
     <Provider store={store}>
       <LanguageProvider messages={messages}>
-        <Router
-          history={history}
-          routes={rootRoute}
-          render={// Scroll to top when going to a new page, imitating default browser
-          // behaviour
-          applyRouterMiddleware(useScroll())}
-        />
+        <ThemeProvider theme={Theme}>
+          <Router
+            history={history}
+            routes={rootRoute}
+            render={// Scroll to top when going to a new page, imitating default browser
+            // behaviour
+            applyRouterMiddleware(useScroll())}
+          />
+        </ThemeProvider>
       </LanguageProvider>
     </Provider>,
     document.getElementById('app')

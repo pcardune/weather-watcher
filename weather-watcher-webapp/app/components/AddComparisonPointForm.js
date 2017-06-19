@@ -3,11 +3,11 @@ import React, {Component, PropTypes} from 'react';
 import Geosuggest from 'react-geosuggest';
 import 'react-geosuggest/module/geosuggest.css';
 
-import {Button, FormField, Input, Label} from './forms';
+import Button from 'app/components/Button';
+import {FormField, Input, Label} from './forms';
 
 const Form = styled.form`
-  border: 1px solid #eee;
-  padding: 10px;
+  padding: 15px;
 `;
 
 export default class AddComparisonPointForm extends Component {

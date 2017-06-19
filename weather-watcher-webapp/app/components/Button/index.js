@@ -6,7 +6,7 @@
  * otherwise it'll render a link with an onclick
  */
 
-import React, { PropTypes, Children } from 'react';
+import React, {PropTypes, Children} from 'react';
 
 import A from './A';
 import StyledButton from './StyledButton';
@@ -15,7 +15,7 @@ import Wrapper from './Wrapper';
 function Button(props) {
   // Render an anchor tag
   let button = (
-    <A href={props.href} onClick={props.onClick}>
+    <A href={props.href} onClick={props.onClick} accent={props.accent}>
       {Children.toArray(props.children)}
     </A>
   );
@@ -23,7 +23,7 @@ function Button(props) {
   // If the Button has a handleRoute prop, we want to render a button
   if (props.handleRoute) {
     button = (
-      <StyledButton onClick={props.handleRoute}>
+      <StyledButton onClick={props.handleRoute} accent={props.accent}>
         {Children.toArray(props.children)}
       </StyledButton>
     );
@@ -41,6 +41,7 @@ Button.propTypes = {
   href: PropTypes.string,
   onClick: PropTypes.func,
   children: PropTypes.node.isRequired,
+  accent: PropTypes.boolean,
 };
 
 export default Button;

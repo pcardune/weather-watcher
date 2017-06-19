@@ -1,0 +1,42 @@
+{
+  "noaaPoints": {
+    "https://api.weather.gov/points/47.6062,-122.3321": {
+      ...
+    }
+  },
+  "noaaGridForecast": {
+    "https://api.weather.gov/gridpoints/SEW/124,67": {
+      "2017-06-16T15:28:27+00:00": {
+        ...
+      }
+    }
+  },
+  "noaaDailyForecast": {
+    "https://api.weather.gov/points/47.6062,-122.33/forecast": {
+      "2017-06-16T15:28:27+00:00": {
+        ...
+      }
+    }
+  },
+  "noaaHourlyForecast": {
+    "https://api.weather.gov/points/47.6062,-122.3321/forecast/hourly": {
+      "2017-06-16T15:28:27+00:00": {
+        ...
+      }
+    }
+  },
+  "pointsToCompare": {
+    "unique-id": {
+      "name": ...
+      "latitude": ...
+      "longitude": ...
+      "noaaPointId": ...
+    }
+  },
+  "comparisons": {
+    "unique-id": {
+      "name": ...
+      "pointsToCompare": ...
+    }
+  },
+}

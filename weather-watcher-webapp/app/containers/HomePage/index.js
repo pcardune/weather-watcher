@@ -8,13 +8,17 @@ import React, {PureComponent, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
 import {FormattedMessage} from 'react-intl';
+import styled from 'styled-components';
+import moment from 'moment-mini';
 
 import MultiDayForecastComparison
   from 'app/components/MultiDayForecastComparison';
-import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import {AugmentedComparisonShape} from 'app/propTypes';
+import Button from 'app/components/Button';
+import {Card, CardHeader, CardBody} from 'app/components/Card';
+import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
+import {Dialog} from 'app/components/Dialog';
 
-import Section from './Section';
 import {
   resetComparison,
   addComparisonPoint,
@@ -23,13 +27,32 @@ import {
 import {selectAugmentedComparisonToShow} from './selectors';
 import messages from './messages';
 
+const DateHeader = styled.h1`
+  font-size: 36px;
+  font-weight: 300;
+  width: 30%;
+  text-align: center;
+`;
+
+const DatePager = styled.div`
+  max-width: 670px;
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: space-around;
+`;
+
 export class HomePage extends PureComponent {
   // eslint-disable-line react/prefer-stateless-function
   static propTypes = {
     comparison: AugmentedComparisonShape,
     onResetComparison: PropTypes.func.isRequired,
-    onAddComparisonPoint: PropTypes.func.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
+  };
+
+  state = {
+    currentDate: moment(new Date()).startOf('date').toDate(),
+    showAddForm: false,
   };
 
   /**
@@ -39,6 +62,18 @@ export class HomePage extends PureComponent {
     this.props.onResetComparison();
   }
 
+  onClickPrevDate = () => {
+    this.setState({
+      currentDate: moment(this.state.currentDate).subtract(1, 'days').toDate(),
+    });
+  };
+
+  onClickNextDate = () => {
+    this.setState({
+      currentDate: moment(this.state.currentDate).add(1, 'days').toDate(),
+    });
+  };
+
   onRemoveComparisonPoint = comparisonPointId => {
     this.props.onRemoveComparisonPoint(
       this.props.comparison,
@@ -46,22 +81,52 @@ export class HomePage extends PureComponent {
     );
   };
 
+  onClickAddLocation = () => {
+    this.setState({showAddForm: !this.state.showAddForm});
+  };
+
+  onAddComparisonPoint = (...args) => {
+    this.props.onAddComparisonPoint(...args);
+    this.setState({showAddForm: false});
+  };
+
   render() {
     return (
       <article>
-        <div>
-          <Section>
-            <div>
+        <DatePager>
+          <Button onClick={this.onClickPrevDate}>
+            ◀ {moment(this.state.currentDate).subtract(1, 'days').format('ddd')}
+          </Button>
+          <DateHeader>
+            {moment(this.state.currentDate).format('dddd')}
+          </DateHeader>
+          <Button onClick={this.onClickNextDate}>
+            {moment(this.state.currentDate).add(1, 'days').format('ddd')} ▶
+          </Button>
+        </DatePager>
+        <Card>
+          <CardHeader>
+            <h1>
               <FormattedMessage {...messages.comparisonHeader} />
-            </div>
-            <AddComparisonPointForm onAdd={this.props.onAddComparisonPoint} />
+            </h1>
+            <Button accent onClick={this.onClickAddLocation}>
+              Add Location
+            </Button>
+          </CardHeader>
+          <CardBody>
             {this.props.comparison &&
               <MultiDayForecastComparison
+                date={this.state.currentDate}
                 comparison={this.props.comparison}
                 onRemoveComparisonPoint={this.onRemoveComparisonPoint}
               />}
-          </Section>
-        </div>
+          </CardBody>
+        </Card>
+        {this.state.showAddForm &&
+          <Dialog>
+            <h1>Add Location</h1>
+            <AddComparisonPointForm onAdd={this.onAddComparisonPoint} />
+          </Dialog>}
       </article>
     );
   }

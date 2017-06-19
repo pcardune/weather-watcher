@@ -14,11 +14,10 @@ import Header from 'components/Header';
 import withProgressBar from 'components/ProgressBar';
 
 const AppWrapper = styled.div`
-  max-width: calc(768px + 16px * 2);
-  margin: 0 auto;
+  margin: 0 0;
   display: flex;
   min-height: 100%;
-  padding: 0 16px;
+  padding: 0;
   flex-direction: column;
 `;
 
