@@ -23,6 +23,7 @@ import {
   resetComparison,
   addComparisonPoint,
   removeComparisonPoint,
+  refreshComparison,
 } from './actions';
 import {selectAugmentedComparisonToShow} from './selectors';
 import messages from './messages';
@@ -43,10 +44,10 @@ const DatePager = styled.div`
 `;
 
 export class HomePage extends PureComponent {
-  // eslint-disable-line react/prefer-stateless-function
   static propTypes = {
     comparison: AugmentedComparisonShape,
     onResetComparison: PropTypes.func.isRequired,
+    onRefreshComparison: PropTypes.func.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
   };
 
@@ -55,11 +56,12 @@ export class HomePage extends PureComponent {
     showAddForm: false,
   };
 
-  /**
-   * when initial state username is not null, submit the form to load repos
-   */
   componentDidMount() {
-    this.props.onResetComparison();
+    if (!this.props.comparison) {
+      this.props.onResetComparison();
+    } else {
+      this.props.onRefreshComparison();
+    }
   }
 
   onClickPrevDate = () => {
@@ -112,6 +114,9 @@ export class HomePage extends PureComponent {
             <Button accent onClick={this.onClickAddLocation}>
               Add Location
             </Button>
+            <Button accent onClick={this.props.onRefreshComparison}>
+              Refresh
+            </Button>
           </CardHeader>
           <CardBody>
             {this.props.comparison &&
@@ -136,6 +141,7 @@ export const mapDispatchToProps = {
   onAddComparisonPoint: addComparisonPoint,
   onResetComparison: resetComparison,
   onRemoveComparisonPoint: removeComparisonPoint,
+  onRefreshComparison: refreshComparison,
 };
 
 const mapStateToProps = createStructuredSelector({

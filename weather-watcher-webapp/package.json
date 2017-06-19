@@ -93,6 +93,7 @@
       }
     },
     "rules": {
+      "no-restricted-syntax": 0,
       "one-var-declaration-per-line": 0,
       "one-var": 0,
       "no-plusplus": 0,
