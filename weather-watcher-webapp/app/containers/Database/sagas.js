@@ -5,17 +5,14 @@ import {NOAAClient} from 'app/noaa';
 import {
   CREATE_COMPARISON_POINT,
   FETCH_NOAA_POINT,
-  FETCH_NOAA_GRID_FORECAST,
   FETCH_NOAA_FORECAST,
   RECEIVE_NOAA_POINT,
 } from './constants';
 import {
   receiveNOAAPoint,
-  receiveNOAAGridForecast,
   receiveNOAAForecast,
   fetchNOAAPoint,
   fetchNOAAForecast,
-  fetchNOAAGridForecast,
   updateComparisonPoint,
 } from './actions';
 
@@ -84,19 +81,9 @@ export function* watchFetchNOAAPoint() {
       longitude,
     });
     yield put(receiveNOAAPoint({noaaPoint}));
-    yield put(fetchNOAAGridForecast({noaaPoint}));
+    yield put(fetchNOAAForecast({noaaPoint, forecastType: 'grid'}));
     yield put(fetchNOAAForecast({noaaPoint, forecastType: 'daily'}));
     yield put(fetchNOAAForecast({noaaPoint, forecastType: 'hourly'}));
-  });
-}
-
-export function* watchFetchNOAAGridForecast() {
-  yield takeEvery(FETCH_NOAA_GRID_FORECAST, function*({noaaPoint}) {
-    const noaaGridForecast = yield call(
-      NOAAClient.fetch,
-      noaaPoint.properties.forecastGridData
-    );
-    yield put(receiveNOAAGridForecast({noaaGridForecast}));
   });
 }
 
@@ -128,7 +115,6 @@ export function* watchCreateComparisonPoint() {
 // All sagas to be loaded
 export default [
   watchFetchNOAAPoint,
-  watchFetchNOAAGridForecast,
   watchFetchNOAAForecast,
   watchCreateComparisonPoint,
 ];

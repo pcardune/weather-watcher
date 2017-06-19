@@ -30,15 +30,6 @@ function databaseReducer(state = initialState, action) {
   switch (action.type) {
     case RECEIVE_NOAA_POINT:
       return state.setIn(['noaaPoints', action.noaaPoint.id], action.noaaPoint);
-    case RECEIVE_NOAA_GRID_FORECAST:
-      return state.setIn(
-        [
-          'noaaGridForecasts',
-          action.noaaGridForecast.id,
-          action.noaaGridForecast.properties.updateTime,
-        ],
-        action.noaaGridForecast
-      );
     case RECEIVE_NOAA_FORECAST: {
       const key = {
         hourly: 'noaaHourlyForecasts',

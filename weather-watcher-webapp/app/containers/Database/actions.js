@@ -8,8 +8,6 @@ import uuid from 'uuid';
 import {
   FETCH_NOAA_POINT,
   RECEIVE_NOAA_POINT,
-  FETCH_NOAA_GRID_FORECAST,
-  RECEIVE_NOAA_GRID_FORECAST,
   FETCH_NOAA_FORECAST,
   RECEIVE_NOAA_FORECAST,
   CREATE_COMPARISON_POINT,
@@ -30,20 +28,6 @@ export function receiveNOAAPoint({noaaPoint}) {
   return {
     type: RECEIVE_NOAA_POINT,
     noaaPoint,
-  };
-}
-
-export function fetchNOAAGridForecast({noaaPoint}) {
-  return {
-    type: FETCH_NOAA_GRID_FORECAST,
-    noaaPoint,
-  };
-}
-
-export function receiveNOAAGridForecast({noaaGridForecast}) {
-  return {
-    type: RECEIVE_NOAA_GRID_FORECAST,
-    noaaGridForecast,
   };
 }
 
