@@ -62,6 +62,7 @@ export const makeSelectAugmentedComparison = () =>
     ],
     (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts) =>
       comparisonId => {
+        console.log('calculating augmented comparison');
         const comparison = comparisons.get(comparisonId);
         return comparison && {
           ...comparison,
@@ -89,6 +90,8 @@ export const makeSelectAugmentedComparison = () =>
               noaaGridForecast,
               noaaHourlyForecast,
               noaaDailyForecast,
+              interpolatedGrid: noaaGridForecast &&
+                new InterpolatedGridForecast(noaaGridForecast),
             };
           }),
         };
@@ -136,6 +139,105 @@ export function getSortedPointsForDate(augmentedComparison, date) {
       getScoreForDate(p2, date).score - getScoreForDate(p1, date).score
   );
   return sorted;
+}
+
+class InterpolatedGridForecast {
+  constructor(noaaGridForecast) {
+    this.noaaGridForecast = noaaGridForecast;
+    this.interpolators = {};
+  }
+
+  getValue(propName, time) {
+    const values = this.noaaGridForecast.properties[propName].values;
+    if (values.length === 0) {
+      return null;
+    }
+    let interpolator = this.interpolators[propName];
+    if (!interpolator) {
+      const filledValues = {};
+      for (let i = 0; i < values.length; i++) {
+        const {value, validTime} = values[i];
+        const [startTimeStr, durationStr] = validTime.split('/');
+        const currentTime = moment(new Date(startTimeStr)).startOf('hour');
+        const duration = moment.duration(durationStr);
+        for (let j = 0; j < duration.as('hours'); j++) {
+          filledValues[
+            moment(currentTime).add(j, 'hours').toISOString()
+          ] = value;
+        }
+      }
+
+      this.interpolators[propName] = {
+        values: filledValues,
+        start: new Date(values[0].validTime.split('/')[0]).getTime(),
+        end: new Date(
+          values[values.length - 1].validTime.split('/')[0]
+        ).getTime(),
+        inRange(aTime) {
+          return this.start <= aTime && this.end >= aTime;
+        },
+        getValue(aTime) {
+          if (this.inRange(aTime)) {
+            const key = moment(new Date(aTime)).startOf('hour').toISOString();
+            return this.values[key];
+          }
+          return null;
+        },
+      };
+      interpolator = this.interpolators[propName];
+    }
+    return interpolator.getValue(time);
+  }
+}
+
+export function getScoresForDate(
+  augmentedComparisonPoint,
+  date,
+  interval = 'PT1H'
+) {
+  const scores = [];
+  if (!augmentedComparisonPoint.noaaGridForecast) {
+    return scores;
+  }
+
+  const grid = augmentedComparisonPoint.interpolatedGrid;
+  const startTime = moment(date).startOf('date');
+  const endTime = moment(date).endOf('date');
+  const duration = moment.duration(interval);
+  for (
+    let t = startTime.valueOf();
+    t < endTime.valueOf();
+    t = moment(t).add(duration).valueOf()
+  ) {
+    const precip = grid.getValue('probabilityOfPrecipitation', t);
+    if (precip === undefined) {
+      debugger;
+      grid.getValue('probabilityOfPrecipitation', t);
+    }
+    const windSpeed = grid.getValue('windSpeed', t);
+    const precipQuantity = grid.getValue('quantitativePrecipitation', t);
+    const score = 100 +
+      Math.round(
+        WEIGHTS.PRECIPITATION_QUANTITY * precipQuantity +
+          WEIGHTS.PRECIPITATION_PERCENT * precip +
+          WEIGHTS.WIND_SPEED * windSpeed
+      );
+    //console.log({
+    //  score,
+    //  probabilityOfPrecipitation: precip,
+    //  quantitativePrecipitation: precipQuantity,
+    //  windSpeed,
+    //  time: t,
+    //});
+    scores.push({
+      score,
+      probabilityOfPrecipitation: precip,
+      quantitativePrecipitation: precipQuantity,
+      windSpeed,
+      time: t,
+    });
+  }
+  return scores;
 }
 
 export function getScoreForDate(augmentedComparisonPoint, date) {

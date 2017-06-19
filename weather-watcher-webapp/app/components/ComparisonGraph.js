@@ -1,17 +1,21 @@
 import React, {Component, PropTypes} from 'react';
 import styled from 'styled-components';
 import moment from 'moment-mini';
+import {createSelector, defaultMemoize} from 'reselect';
 import {
   VictoryLabel,
   VictoryTheme,
   VictoryAxis,
   VictoryLine,
   VictoryChart,
+  VictoryTooltip,
+  VictoryVoronoiContainer,
 } from 'victory';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import {
   getSortedPointsForDate,
   getScoreForDate,
+  getScoresForDate,
 } from 'app/containers/Database/selectors';
 import ComparisonGraphTheme from './ComparisonGraphTheme';
 
@@ -27,39 +31,67 @@ function DateLabel(props) {
   return <VictoryLabel {...props} style={style} />;
 }
 
+const calculateChartData = comparison => {
+  console.log('calculating chart data');
+  let minScore = Infinity;
+  let maxScore = -Infinity;
+  let minTime = Infinity;
+  let maxTime = -Infinity;
+  let hasData = false;
+
+  const dates = [];
+  for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+    dates.push(
+      moment(new Date()).startOf('date').add(dayOffset, 'days').toDate()
+    );
+  }
+  const data = comparison.comparisonPoints.map(point => {
+    const lineData = [];
+    dates.forEach(date => {
+      getScoresForDate(point, date).forEach(score => {
+        if (score.score) {
+          minScore = Math.min(score.score, minScore);
+          maxScore = Math.max(score.score, maxScore);
+          minTime = Math.min(score.time, minTime);
+          maxTime = Math.max(score.time, maxTime);
+          lineData.push({
+            y: score.score,
+            x: score.time,
+            label: point.name,
+          });
+        }
+      });
+    });
+    hasData = hasData || lineData.length > 0;
+    return lineData;
+  });
+  const domain = {
+    y: [minScore - 2, maxScore + 2],
+    x: [minTime, maxTime],
+  };
+  return {
+    hasData,
+    data,
+    domain,
+    dates,
+  };
+};
+
 export default class ComparisonGraph extends Component {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
     date: PropTypes.instanceOf(Date),
   };
 
+  getChartData = defaultMemoize(calculateChartData);
+
   render() {
-    const {comparison} = this.props;
-    const allScores = [];
-    let hasData = false;
-    const data = comparison.comparisonPoints.map(point => {
-      const lineData = [];
-      for (let dayOffset = 0; dayOffset < 6; dayOffset++) {
-        const date = moment(new Date()).add(dayOffset, 'days').toDate();
-        const score = getScoreForDate(point, date);
-        if (score.score) {
-          lineData.push({
-            score: score.score,
-            dayOffset,
-            date: moment(date).format('ddd'),
-          });
-          allScores.push(score.score);
-        }
-      }
-      hasData = hasData || lineData.length > 0;
-      return lineData;
-    });
+    const {hasData, data, domain, dates} = this.getChartData(
+      this.props.comparison
+    );
     if (!hasData) {
       return null;
     }
-    const domain = {
-      y: [Math.min(...allScores) - 2, Math.max(...allScores) + 2],
-    };
     return (
       <ChartWrapper>
         <VictoryChart
@@ -70,6 +102,8 @@ export default class ComparisonGraph extends Component {
           <VictoryAxis
             orientation="bottom"
             tickLabelComponent={<DateLabel currentDate={this.props.date} />}
+            tickValues={dates.map(date => date.getTime())}
+            tickFormat={time => moment(new Date(time)).format('ddd')}
           />
           <VictoryAxis
             dependentAxis
@@ -80,8 +114,9 @@ export default class ComparisonGraph extends Component {
             <VictoryLine
               key={i}
               data={lineData}
-              y="score"
-              x="date"
+              labels={d => d.label}
+              labelComponent={<VictoryTooltip />}
+              interpolation="basis"
               style={{
                 data: {
                   stroke: ComparisonGraphTheme.stack.colorScale[
@@ -95,16 +130,14 @@ export default class ComparisonGraph extends Component {
           <VictoryLine
             data={[
               {
-                date: moment(this.props.date || new Date()).format('ddd'),
-                score: domain.y[0],
+                x: (this.props.date || new Date()).getTime(),
+                y: domain.y[0],
               },
               {
-                date: moment(this.props.date || new Date()).format('ddd'),
-                score: domain.y[1],
+                x: (this.props.date || new Date()).getTime(),
+                y: domain.y[1],
               },
             ]}
-            y="score"
-            x="date"
             style={{data: {stroke: 'red', strokeWidth: 2}}}
           />
         </VictoryChart>
