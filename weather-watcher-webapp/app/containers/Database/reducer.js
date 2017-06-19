@@ -10,6 +10,7 @@ import {
   RECEIVE_NOAA_POINT,
   FETCH_NOAA_GRID_FORECAST,
   RECEIVE_NOAA_GRID_FORECAST,
+  RECEIVE_NOAA_FORECAST,
   CREATE_COMPARISON_POINT,
   UPDATE_COMPARISON_POINT,
   CREATE_COMPARISON,
@@ -19,6 +20,8 @@ import {
 export const initialState = fromJS({
   noaaPoints: OrderedMap(),
   noaaGridForecasts: OrderedMap(),
+  noaaDailyForecasts: OrderedMap(),
+  noaaHourlyForecasts: OrderedMap(),
   comparisonPoints: OrderedMap(),
   comparisons: OrderedMap(),
 });
@@ -36,6 +39,22 @@ function databaseReducer(state = initialState, action) {
         ],
         action.noaaGridForecast
       );
+    case RECEIVE_NOAA_FORECAST: {
+      const key = {
+        hourly: 'noaaHourlyForecasts',
+        daily: 'noaaDailyForecasts',
+        grid: 'noaaGridForecasts',
+      }[action.forecastType];
+      return state.setIn(
+        [
+          key,
+          action.forecastId,
+          action.forecast.properties.updateTime ||
+            action.forecast.properties.updated,
+        ],
+        action.forecast
+      );
+    }
     case UPDATE_COMPARISON_POINT:
       return state.updateIn(
         ['comparisonPoints', action.comparisonPoint.id],

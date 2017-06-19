@@ -10,6 +10,8 @@ import {
   RECEIVE_NOAA_POINT,
   FETCH_NOAA_GRID_FORECAST,
   RECEIVE_NOAA_GRID_FORECAST,
+  FETCH_NOAA_FORECAST,
+  RECEIVE_NOAA_FORECAST,
   CREATE_COMPARISON_POINT,
   UPDATE_COMPARISON_POINT,
   CREATE_COMPARISON,
@@ -42,6 +44,31 @@ export function receiveNOAAGridForecast({noaaGridForecast}) {
   return {
     type: RECEIVE_NOAA_GRID_FORECAST,
     noaaGridForecast,
+  };
+}
+
+export function fetchNOAAForecast({forecastId, forecastType, noaaPoint}) {
+  if (!forecastId) {
+    const key = {
+      daily: 'forecast',
+      hourly: 'forecastHourly',
+      grid: 'forecastGridData',
+    }[forecastType];
+    forecastId = noaaPoint.properties[key];
+  }
+  return {
+    type: FETCH_NOAA_FORECAST,
+    forecastId,
+    forecastType,
+  };
+}
+
+export function receiveNOAAForecast({forecastId, forecastType, forecast}) {
+  return {
+    type: RECEIVE_NOAA_FORECAST,
+    forecastType,
+    forecast,
+    forecastId,
   };
 }
 

@@ -64,7 +64,6 @@ export default class SingleDayForecastComparison extends Component {
       <ComparisonTable>
         <thead>
           <tr>
-            <ColumnHeader>Rank</ColumnHeader>
             <ColumnHeader>Name</ColumnHeader>
             <ColumnHeader>Score</ColumnHeader>
             <ColumnHeader>Low</ColumnHeader>
@@ -78,7 +77,6 @@ export default class SingleDayForecastComparison extends Component {
           <HeaderRow>
             <UnitCell />
             <UnitCell />
-            <UnitCell />
             <UnitCell>ºF</UnitCell>
             <UnitCell>ºF</UnitCell>
             <UnitCell>mph</UnitCell>
@@ -90,14 +88,24 @@ export default class SingleDayForecastComparison extends Component {
         </thead>
         <tbody>
           {sorted.map((point, index) => {
+            if (!point.noaaGridForecast) {
+              return (
+                <Row key={point.name + index}>
+                  <Cell>{point.name}</Cell>
+                </Row>
+              );
+            }
             const score = getScoreForDate(point, date);
             return (
               <Row key={point.name + index}>
-                <Cell>{index + 1}</Cell>
                 <Cell>{point.name}</Cell>
                 <Cell>{score.score}</Cell>
-                <Cell>(low)</Cell>
-                <Cell>(high)</Cell>
+                <Cell>
+                  {score.dailyForecast && score.dailyForecast.night.temperature}
+                </Cell>
+                <Cell>
+                  {score.dailyForecast && score.dailyForecast.day.temperature}
+                </Cell>
                 <Cell>
                   {Math.round(convert(score.windSpeed).from('knot').to('m/h'))}
                 </Cell>
@@ -115,7 +123,9 @@ export default class SingleDayForecastComparison extends Component {
                           .to('in') * 100
                       ) / 100}
                 </Cell>
-                <Cell>(short forecast)</Cell>
+                <Cell>
+                  {score.dailyForecast && score.dailyForecast.day.shortForecast}
+                </Cell>
                 <Cell>
                   <button
                     type="button"

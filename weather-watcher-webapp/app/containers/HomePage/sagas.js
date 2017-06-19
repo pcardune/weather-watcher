@@ -10,19 +10,14 @@ import {
   select,
   takeEvery,
 } from 'redux-saga/effects';
-import moment from 'moment-mini';
 
 import {
   createComparison,
   createComparisonPoint,
   updateComparison,
-  fetchNOAAGridForecast,
 } from 'app/containers/Database/actions';
-import {
-  selectComparisonIds,
-  selectComparisonPoints,
-  selectNOAAGridForecasts,
-} from 'app/containers/Database/selectors';
+import {selectComparisonIds} from 'app/containers/Database/selectors';
+import {refreshComparisonPoint} from 'app/containers/Database/sagas';
 
 import {selectComparisonToShow} from './selectors';
 
@@ -57,34 +52,6 @@ export function* createAndShowComparisonPoint({comparisonPoint}) {
 
 export function* watchAddComparisonPoint() {
   yield takeEvery(ADD_COMPARISON_POINT, createAndShowComparisonPoint);
-}
-
-export function* refreshComparisonPoint(comparisonPointId) {
-  const allPoints = yield select(selectComparisonPoints());
-  const comparisonPoint = allPoints.get(comparisonPointId);
-  if (!comparisonPoint) {
-    return;
-  }
-  if (comparisonPoint.noaaGridForecastId) {
-    const allGridForecasts = yield select(selectNOAAGridForecasts());
-    const gridForecast = allGridForecasts.get(
-      comparisonPoint.noaaGridForecastId
-    );
-    const lastGridForecastUpdate = new Date(gridForecast.keySeq().get(-1));
-    if (
-      moment(lastGridForecastUpdate).isBefore(
-        moment(new Date()).subtract(12, 'hours')
-      )
-    ) {
-      yield put(
-        fetchNOAAGridForecast({
-          noaaPoint: {
-            properties: {forecastGridData: comparisonPoint.noaaGridForecastId},
-          },
-        })
-      );
-    }
-  }
 }
 
 export function* watchRefreshComparison() {

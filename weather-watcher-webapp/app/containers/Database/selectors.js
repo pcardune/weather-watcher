@@ -26,6 +26,14 @@ export const selectNOAAGridForecasts = () =>
   createSelector(selectDatabaseDomain(), database =>
     database.get('noaaGridForecasts'));
 
+export const selectNOAADailyForecasts = () =>
+  createSelector(selectDatabaseDomain(), database =>
+    database.get('noaaDailyForecasts'));
+
+export const selectNOAAHourlyForecasts = () =>
+  createSelector(selectDatabaseDomain(), database =>
+    database.get('noaaHourlyForecasts'));
+
 export const selectNOAAGridForecast = id =>
   createSelector(selectNOAAGridForecasts, forecasts =>
     forecasts.get(id).valueSeq().get(-1));
@@ -49,21 +57,38 @@ export const makeSelectAugmentedComparison = () =>
       selectComparisonPoints(),
       selectNOAAPoints(),
       selectNOAAGridForecasts(),
+      selectNOAADailyForecasts(),
+      selectNOAAHourlyForecasts(),
     ],
-    (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts) =>
+    (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts) =>
       comparisonId => {
         const comparison = comparisons.get(comparisonId);
         return comparison && {
           ...comparison,
           comparisonPoints: comparison.comparisonPointIds.map(pointId => {
             const point = comparisonPoints.get(pointId);
+            const noaaPoint = noaaPoints.get(point.noaaPointId);
+            const noaaGridForecast = noaaPoint &&
+              noaaGridForecasts
+                .get(noaaPoint.properties.forecastGridData, OrderedMap())
+                .valueSeq()
+                .get(-1);
+            const noaaHourlyForecast = noaaPoint &&
+              noaaHourlyForecasts
+                .get(noaaPoint.properties.forecastHourly, OrderedMap())
+                .valueSeq()
+                .get(-1);
+            const noaaDailyForecast = noaaPoint &&
+              noaaDailyForecasts
+                .get(noaaPoint.properties.forecast, OrderedMap())
+                .valueSeq()
+                .get(-1);
             return {
               ...point,
-              noaaPoint: noaaPoints.get(point.noaaPointId),
-              noaaGridForecast: noaaGridForecasts
-                .get(point.noaaGridForecastId, OrderedMap())
-                .valueSeq()
-                .get(-1),
+              noaaPoint,
+              noaaGridForecast,
+              noaaHourlyForecast,
+              noaaDailyForecast,
             };
           }),
         };
@@ -86,10 +111,17 @@ function filterNOAAValuesByDate(values, date) {
 
 function average(nums) {
   let s = 0;
+  let count = 0;
   nums.forEach(n => {
-    s += n;
+    if (!isNaN(s)) {
+      s += n;
+      count++;
+    }
   });
-  return s / nums.length;
+  if (count === 0) {
+    return 0;
+  }
+  return s / count;
 }
 
 function getAverageNOAAValueForDate(property, date) {
@@ -108,7 +140,9 @@ export function getSortedPointsForDate(augmentedComparison, date) {
 
 export function getScoreForDate(augmentedComparisonPoint, date) {
   if (!augmentedComparisonPoint.noaaGridForecast) {
-    return {score: 0};
+    return {
+      score: 0,
+    };
   }
   const props = augmentedComparisonPoint.noaaGridForecast.properties;
   const precipAvg = getAverageNOAAValueForDate(
@@ -121,6 +155,24 @@ export function getScoreForDate(augmentedComparisonPoint, date) {
     date
   );
 
+  const dailyForecast = {
+    day: null,
+    night: null,
+  };
+  if (augmentedComparisonPoint.noaaDailyForecast) {
+    augmentedComparisonPoint.noaaDailyForecast.properties.periods.forEach(
+      period => {
+        if (moment(new Date(period.startTime)).isSame(date, 'day')) {
+          if (period.isDaytime) {
+            dailyForecast.day = period;
+          } else {
+            dailyForecast.night = period;
+          }
+        }
+      }
+    );
+  }
+
   const score = (isNaN(precipQuantityAvg)
     ? 0
     : WEIGHTS.PRECIPITATION_QUANTITY * precipQuantityAvg) +
@@ -131,5 +183,6 @@ export function getScoreForDate(augmentedComparisonPoint, date) {
     probabilityOfPrecipitation: precipAvg,
     windSpeed: windSpeedAvg,
     quantitativePrecipitation: precipQuantityAvg,
+    dailyForecast,
   };
 }
