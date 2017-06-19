@@ -146,7 +146,6 @@ class NOAAPoint {
 
 class NOAAClient {
   static async fetch(url) {
-    console.log('fetching url', url);
     const response = await fetch(url);
     if (response.status < 400) {
       const data = await response.json();

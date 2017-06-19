@@ -1,38 +1,46 @@
 import React, {Component, PropTypes} from 'react';
 import styled from 'styled-components';
 import moment from 'moment-mini';
-import {createSelector, defaultMemoize} from 'reselect';
+import {defaultMemoize} from 'reselect';
 import {
   VictoryLabel,
-  VictoryTheme,
   VictoryAxis,
   VictoryLine,
   VictoryChart,
   VictoryTooltip,
-  VictoryVoronoiContainer,
 } from 'victory';
 import {AugmentedComparisonShape} from 'app/propTypes';
-import {
-  getSortedPointsForDate,
-  getScoreForDate,
-  getScoresForDate,
-} from 'app/containers/Database/selectors';
+import {getScoresForDate} from 'app/containers/Database/selectors';
 import ComparisonGraphTheme from './ComparisonGraphTheme';
+import Theme from 'app/Theme';
 
 const ChartWrapper = styled.div`
-  margin: 5px 0;
+  margin: 0px 0;
+  overflow: hidden;
+  > * {
+    margin-top: -50px;
+  }
 `;
 
 function DateLabel(props) {
   let style = props.style;
   if (props.text === moment(props.currentDate || new Date()).format('ddd')) {
-    style = {...style, fill: 'red'};
+    style = {...style, fill: Theme.colors.primary};
   }
-  return <VictoryLabel {...props} style={style} />;
+  return (
+    <VictoryLabel
+      {...props}
+      style={{...props.style, ...style, cursor: 'pointer'}}
+      events={{onClick: () => props.onClick(new Date(props.datum))}}
+    />
+  );
+}
+
+function EmptyTick() {
+  return null;
 }
 
 const calculateChartData = comparison => {
-  console.log('calculating chart data');
   let minScore = Infinity;
   let maxScore = -Infinity;
   let minTime = Infinity;
@@ -47,7 +55,7 @@ const calculateChartData = comparison => {
   }
   const data = comparison.comparisonPoints.map(point => {
     const lineData = [];
-    dates.forEach(date => {
+    dates.slice(0, 6).forEach(date => {
       getScoresForDate(point, date).forEach(score => {
         if (score.score) {
           minScore = Math.min(score.score, minScore);
@@ -81,6 +89,7 @@ export default class ComparisonGraph extends Component {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
     date: PropTypes.instanceOf(Date),
+    onClickDate: PropTypes.func.isRequired,
   };
 
   getChartData = defaultMemoize(calculateChartData);
@@ -97,18 +106,20 @@ export default class ComparisonGraph extends Component {
         <VictoryChart
           theme={ComparisonGraphTheme}
           domain={domain}
-          domainPadding={{x: [20, 20], y: [10, 10]}}
+          domainPadding={{x: [20, 20], y: [0, 0]}}
         >
           <VictoryAxis
             orientation="bottom"
-            tickLabelComponent={<DateLabel currentDate={this.props.date} />}
+            tickLabelComponent={
+              <DateLabel
+                currentDate={this.props.date}
+                onClick={this.props.onClickDate}
+              />
+            }
             tickValues={dates.map(date => date.getTime())}
             tickFormat={time => moment(new Date(time)).format('ddd')}
-          />
-          <VictoryAxis
-            dependentAxis
-            tickCount={3}
-            style={{grid: {strokeWidth: 0}}}
+            tickComponent={<EmptyTick />}
+            axisComponent={<EmptyTick />}
           />
           {data.map((lineData, i) => (
             <VictoryLine
@@ -138,7 +149,7 @@ export default class ComparisonGraph extends Component {
                 y: domain.y[1],
               },
             ]}
-            style={{data: {stroke: 'red', strokeWidth: 2}}}
+            style={{data: {stroke: Theme.colors.primary, strokeWidth: 2}}}
           />
         </VictoryChart>
       </ChartWrapper>

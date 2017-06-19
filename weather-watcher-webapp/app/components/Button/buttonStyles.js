@@ -1,9 +1,25 @@
 import {css} from 'styled-components';
 
+const backgroundColor = ({accent, flat, theme}) => {
+  if (flat) {
+    return 'transparent';
+  }
+  return theme.colors[accent ? 'accent' : 'primary'];
+};
+
+const textColor = ({accent, flat, theme}) => {
+  if (flat) {
+    return theme.colors.primaryText;
+  }
+  return theme.colors[accent ? 'textOnAccent' : 'textOnPrimary'];
+};
+
+const boxShadow = ({theme, flat}) => !flat && theme.shadows.level1;
+
 const buttonStyles = css`
   display: inline-block;
   height: 36px;
-  min-width: 88px;
+  min-width: ${props => !props.flat && '88px'};
   text-decoration: none;
   text-transform: uppercase;
   text-align: center;
@@ -15,9 +31,9 @@ const buttonStyles = css`
   outline: 0;
   font-size: 14px;
   line-height: 36px;
-  background-color: ${props => props.theme.colors[props.accent ? 'accent' : 'primary']};
-  color: ${props => props.theme.colors[props.accent ? 'textOnAccent' : 'textOnPrimary']};
-  box-shadow: ${props => props.theme.shadows.level1};
+  background-color: ${backgroundColor};
+  color: ${textColor};
+  box-shadow: ${boxShadow};
   padding: 0 15px;
 
   &:active {

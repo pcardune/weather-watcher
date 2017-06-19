@@ -1,7 +1,5 @@
-/*
-   "material" theme (VictoryTheme.material)
-   Try changing the theme. You could start with `colors` or `fontSize`.
- */
+import Theme from 'app/Theme';
+
 const assign = Object.assign;
 
 // Colors
@@ -42,7 +40,7 @@ const baseLabelStyles = {
   fontSize,
   letterSpacing,
   padding,
-  fill: blueGrey700,
+  fill: Theme.colors.secondaryText,
 };
 
 const centeredLabelStyles = assign({textAnchor: 'middle'}, baseLabelStyles);
@@ -79,7 +77,7 @@ export default {
         }),
         grid: {
           fill: 'transparent',
-          stroke: blueGrey300,
+          stroke: Theme.colors.divider,
           strokeDasharray,
           strokeLinecap,
           strokeLinejoin,
@@ -93,7 +91,7 @@ export default {
           strokeLinejoin,
         },
         tickLabels: assign({}, baseLabelStyles, {
-          fill: blueGrey700,
+          fill: Theme.colors.secondaryText,
           stroke: 'transparent',
         }),
       },

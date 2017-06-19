@@ -62,7 +62,6 @@ export const makeSelectAugmentedComparison = () =>
     ],
     (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts) =>
       comparisonId => {
-        console.log('calculating augmented comparison');
         const comparison = comparisons.get(comparisonId);
         return comparison && {
           ...comparison,
@@ -160,7 +159,7 @@ class InterpolatedGridForecast {
         const [startTimeStr, durationStr] = validTime.split('/');
         const currentTime = moment(new Date(startTimeStr)).startOf('hour');
         const duration = moment.duration(durationStr);
-        for (let j = 0; j < duration.as('hours'); j++) {
+        for (let j = 0; j < duration.as('hours'); j += 1) {
           filledValues[
             moment(currentTime).add(j, 'hours').toISOString()
           ] = value;
@@ -211,7 +210,6 @@ export function getScoresForDate(
   ) {
     const precip = grid.getValue('probabilityOfPrecipitation', t);
     if (precip === undefined) {
-      debugger;
       grid.getValue('probabilityOfPrecipitation', t);
     }
     const windSpeed = grid.getValue('windSpeed', t);
@@ -222,13 +220,6 @@ export function getScoresForDate(
           WEIGHTS.PRECIPITATION_PERCENT * precip +
           WEIGHTS.WIND_SPEED * windSpeed
       );
-    //console.log({
-    //  score,
-    //  probabilityOfPrecipitation: precip,
-    //  quantitativePrecipitation: precipQuantity,
-    //  windSpeed,
-    //  time: t,
-    //});
     scores.push({
       score,
       probabilityOfPrecipitation: precip,
@@ -258,8 +249,8 @@ export function getScoreForDate(augmentedComparisonPoint, date) {
   );
 
   const dailyForecast = {
-    day: null,
-    night: null,
+    day: {},
+    night: {},
   };
   if (augmentedComparisonPoint.noaaDailyForecast) {
     augmentedComparisonPoint.noaaDailyForecast.properties.periods.forEach(

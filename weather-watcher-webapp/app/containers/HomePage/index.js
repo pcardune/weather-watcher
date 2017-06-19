@@ -28,6 +28,13 @@ import {
 import {selectAugmentedComparisonToShow} from './selectors';
 import messages from './messages';
 
+const HelpText = styled.p`
+  text-align: center;
+  color: ${props => props.theme.colors.secondaryText};
+  font-weight: 300;
+  padding: 50px;
+`;
+
 const DateHeader = styled.h1`
   font-size: 36px;
   font-weight: 300;
@@ -73,6 +80,10 @@ export class HomePage extends PureComponent {
     }
   }
 
+  onClickDate = currentDate => {
+    this.setState({currentDate});
+  };
+
   onClickPrevDate = () => {
     this.setState({
       currentDate: moment(this.state.currentDate).subtract(1, 'days').toDate(),
@@ -102,6 +113,8 @@ export class HomePage extends PureComponent {
   };
 
   render() {
+    const hasPoints = this.props.comparison &&
+      this.props.comparison.comparisonPoints.length > 0;
     return (
       <article>
         <DatePager>
@@ -124,18 +137,23 @@ export class HomePage extends PureComponent {
               <Button accent onClick={this.onClickAddLocation}>
                 Add Location
               </Button>
-              <Button accent onClick={this.props.onRefreshComparison}>
-                Refresh
-              </Button>
+              {hasPoints &&
+                <Button accent onClick={this.props.onRefreshComparison}>
+                  Refresh
+                </Button>}
             </Buttons>
           </CardHeader>
           <CardBody>
-            {this.props.comparison &&
-              <MultiDayForecastComparison
-                date={this.state.currentDate}
-                comparison={this.props.comparison}
-                onRemoveComparisonPoint={this.onRemoveComparisonPoint}
-              />}
+            {hasPoints
+              ? <MultiDayForecastComparison
+                  date={this.state.currentDate}
+                  comparison={this.props.comparison}
+                  onRemoveComparisonPoint={this.onRemoveComparisonPoint}
+                  onClickDate={this.onClickDate}
+                />
+              : <HelpText>
+                  Add a location to start comparing forecasts.
+                </HelpText>}
           </CardBody>
         </Card>
         {this.state.showAddForm &&

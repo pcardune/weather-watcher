@@ -6,6 +6,7 @@ import {
   getSortedPointsForDate,
   getScoreForDate,
 } from 'app/containers/Database/selectors';
+import Button from 'app/components/Button';
 import {AugmentedComparisonShape} from 'app/propTypes';
 
 const ColumnHeader = styled.th`
@@ -32,10 +33,23 @@ const UnitCell = styled.th`
 const Cell = styled.td`
   padding: 5px;
   font-weight: 300;
-  font-size: 18;
+  font-size: 18px;
   strong {
     font-weight: 400;
   }
+`;
+
+const PointLink = styled.a`
+  color: ${props => props.theme.colors.primaryText};
+  text-decoration: none;
+  font-weight: 500;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const ShortForecastCell = Cell.extend`
+  font-size: 14px;
 `;
 
 const Row = styled.tr`
@@ -46,7 +60,6 @@ const Row = styled.tr`
 `;
 
 const ComparisonTable = styled.table`
-  margin-bottom: 20px;
   width: 100%;
   ${Row}:first-child {
     border-top: 1px solid #eee;
@@ -58,10 +71,6 @@ export default class SingleDayForecastComparison extends Component {
     comparison: AugmentedComparisonShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
-  };
-
-  onRemoveComparisonPoint = event => {
-    this.props.onRemoveComparisonPoint(event.target.value);
   };
 
   render() {
@@ -78,14 +87,14 @@ export default class SingleDayForecastComparison extends Component {
             <ColumnHeader colSpan={2} />
           </HeaderRow>
           <HeaderRow>
-            <ColumnHeader>Score</ColumnHeader>
-            <ColumnHeader>Name</ColumnHeader>
-            <ColumnHeader>Low</ColumnHeader>
-            <ColumnHeader>High</ColumnHeader>
-            <ColumnHeader>Wind</ColumnHeader>
-            <ColumnHeader>Chance</ColumnHeader>
-            <ColumnHeader>Quantity</ColumnHeader>
-            <ColumnHeader>Forecast</ColumnHeader>
+            <ColumnHeader style={{width: 50}}>Score</ColumnHeader>
+            <ColumnHeader style={{minWidth: 200}}>Name</ColumnHeader>
+            <ColumnHeader style={{width: 50}}>Low</ColumnHeader>
+            <ColumnHeader style={{width: 50}}>High</ColumnHeader>
+            <ColumnHeader style={{width: 50}}>Wind</ColumnHeader>
+            <ColumnHeader style={{width: 50}}>Chance</ColumnHeader>
+            <ColumnHeader style={{width: 50}}>Quantity</ColumnHeader>
+            <ColumnHeader style={{width: 50}}>Forecast</ColumnHeader>
             <ColumnHeader />
           </HeaderRow>
           <HeaderRow>
@@ -102,7 +111,11 @@ export default class SingleDayForecastComparison extends Component {
         </thead>
         <tbody>
           {sorted.map((point, index) => {
-            if (!point.noaaGridForecast) {
+            if (
+              !point.noaaGridForecast ||
+              !point.noaaPoint ||
+              !point.noaaDailyForecast
+            ) {
               return (
                 <Row key={point.name + index}>
                   <Cell />
@@ -114,12 +127,21 @@ export default class SingleDayForecastComparison extends Component {
             return (
               <Row key={point.name + index}>
                 <Cell>{score.score}</Cell>
-                <Cell><strong>{point.name}</strong></Cell>
                 <Cell>
-                  {score.dailyForecast && score.dailyForecast.night.temperature}
+                  <PointLink
+                    target="_blank"
+                    href={
+                      `http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`
+                    }
+                  >
+                    {point.name}
+                  </PointLink>
                 </Cell>
                 <Cell>
-                  {score.dailyForecast && score.dailyForecast.day.temperature}
+                  {score.dailyForecast.night.temperature || '-'}
+                </Cell>
+                <Cell>
+                  {score.dailyForecast.day.temperature || '-'}
                 </Cell>
                 <Cell>
                   {Math.round(convert(score.windSpeed).from('knot').to('m/h'))}
@@ -138,17 +160,19 @@ export default class SingleDayForecastComparison extends Component {
                           .to('in') * 100
                       ) / 100}
                 </Cell>
-                <Cell>
+                <ShortForecastCell style={{whiteSpace: 'nowrap'}}>
                   {score.dailyForecast && score.dailyForecast.day.shortForecast}
-                </Cell>
+                </ShortForecastCell>
                 <Cell>
-                  <button
+                  <Button
                     type="button"
                     value={point.id}
-                    onClick={this.onRemoveComparisonPoint}
+                    flat
+                    style={{fontWeight: '500'}}
+                    onClick={() => this.props.onRemoveComparisonPoint(point.id)}
                   >
                     X
-                  </button>
+                  </Button>
                 </Cell>
               </Row>
             );
