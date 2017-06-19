@@ -41,7 +41,7 @@ Button.propTypes = {
   href: PropTypes.string,
   onClick: PropTypes.func,
   children: PropTypes.node.isRequired,
-  accent: PropTypes.boolean,
+  accent: PropTypes.bool,
 };
 
 export default Button;
