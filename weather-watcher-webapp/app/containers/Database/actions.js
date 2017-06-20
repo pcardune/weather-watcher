@@ -12,6 +12,7 @@ import {
   RECEIVE_NOAA_FORECAST,
   CREATE_COMPARISON_POINT,
   UPDATE_COMPARISON_POINT,
+  REFRESH_COMPARISON_POINT,
   CREATE_COMPARISON,
   UPDATE_COMPARISON,
 } from './constants';
@@ -29,6 +30,10 @@ export function receiveNOAAPoint({noaaPoint}) {
     type: RECEIVE_NOAA_POINT,
     noaaPoint,
   };
+}
+
+export function refreshComparisonPoint(comparisonPointId) {
+  return {type: REFRESH_COMPARISON_POINT, comparisonPointId};
 }
 
 export function fetchNOAAForecast({forecastId, forecastType, noaaPoint}) {

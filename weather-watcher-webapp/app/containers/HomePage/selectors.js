@@ -22,7 +22,6 @@ export const selectComparisonToShow = () =>
 export const selectAugmentedComparisonToShow = () =>
   createSelector(
     [selectComparisonId(), makeSelectAugmentedComparison()],
-    (comparisonId, selectAugmentedComparison) => {
-      return selectAugmentedComparison(comparisonId);
-    }
+    (comparisonId, selectAugmentedComparison) =>
+      selectAugmentedComparison(comparisonId)
   );

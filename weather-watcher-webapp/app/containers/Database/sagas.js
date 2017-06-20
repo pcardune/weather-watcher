@@ -1,4 +1,4 @@
-import {take, takeEvery, call, put, select, fork} from 'redux-saga/effects';
+import {take, takeEvery, call, put, select, all} from 'redux-saga/effects';
 import moment from 'moment-mini';
 
 import {NOAAClient} from 'app/noaa';
@@ -7,12 +7,12 @@ import {
   FETCH_NOAA_POINT,
   FETCH_NOAA_FORECAST,
   RECEIVE_NOAA_POINT,
+  REFRESH_COMPARISON_POINT,
 } from './constants';
 import {
   receiveNOAAPoint,
   receiveNOAAForecast,
   fetchNOAAPoint,
-  fetchNOAAForecast,
   updateComparisonPoint,
 } from './actions';
 
@@ -39,18 +39,19 @@ export function* refreshForecast({forecastType, forecastId}) {
       moment(new Date()).subtract(12, 'hours')
     )
   ) {
-    yield put(fetchNOAAForecast({forecastId, forecastType}));
+    yield call(fetchNOAAForecast, {forecastId, forecastType});
   }
 }
 
-export function* refreshComparisonPoint(comparisonPointId) {
+export function* refreshComparisonPoint({comparisonPointId}) {
   let allPoints = yield select(selectComparisonPoints());
   let comparisonPoint = allPoints.get(comparisonPointId);
-  if (!comparisonPoint) {
+  if (!comparisonPoint || comparisonPoint.isRefreshing) {
     return;
   }
+  yield put(updateComparisonPoint({...comparisonPoint, isRefreshing: true}));
   if (!comparisonPoint.noaaPointId) {
-    yield fork(createComparisonPoint, {comparisonPoint});
+    yield call(createComparisonPoint, {comparisonPoint});
     allPoints = yield select(selectComparisonPoints());
     comparisonPoint = allPoints.get(comparisonPointId);
   }
@@ -58,18 +59,23 @@ export function* refreshComparisonPoint(comparisonPointId) {
     const allNOAAPoints = yield select(selectNOAAPoints());
     const noaaPoint = allNOAAPoints.get(comparisonPoint.noaaPointId);
     if (noaaPoint) {
-      yield fork(refreshForecast, {
-        forecastType: 'grid',
-        forecastId: noaaPoint.properties.forecastGridData,
-      });
-      yield fork(refreshForecast, {
-        forecastType: 'hourly',
-        forecastId: noaaPoint.properties.forecastHourly,
-      });
-      yield fork(refreshForecast, {
-        forecastType: 'daily',
-        forecastId: noaaPoint.properties.forecast,
-      });
+      yield all([
+        call(refreshForecast, {
+          forecastType: 'grid',
+          forecastId: noaaPoint.properties.forecastGridData,
+        }),
+        call(refreshForecast, {
+          forecastType: 'hourly',
+          forecastId: noaaPoint.properties.forecastHourly,
+        }),
+        call(refreshForecast, {
+          forecastType: 'daily',
+          forecastId: noaaPoint.properties.forecast,
+        }),
+      ]);
+      yield put(
+        updateComparisonPoint({...comparisonPoint, isRefreshing: false})
+      );
     }
   }
 }
@@ -81,17 +87,30 @@ export function* watchFetchNOAAPoint() {
       longitude,
     });
     yield put(receiveNOAAPoint({noaaPoint}));
-    yield put(fetchNOAAForecast({noaaPoint, forecastType: 'grid'}));
-    yield put(fetchNOAAForecast({noaaPoint, forecastType: 'daily'}));
-    yield put(fetchNOAAForecast({noaaPoint, forecastType: 'hourly'}));
+    yield all([
+      call(refreshForecast, {
+        forecastType: 'grid',
+        forecastId: noaaPoint.properties.forecastGridData,
+      }),
+      call(refreshForecast, {
+        forecastType: 'hourly',
+        forecastId: noaaPoint.properties.forecastHourly,
+      }),
+      call(refreshForecast, {
+        forecastType: 'daily',
+        forecastId: noaaPoint.properties.forecast,
+      }),
+    ]);
   });
 }
 
+export function* fetchNOAAForecast({forecastType, forecastId}) {
+  const forecast = yield call(NOAAClient.fetch, forecastId);
+  yield put(receiveNOAAForecast({forecastId, forecast, forecastType}));
+}
+
 export function* watchFetchNOAAForecast() {
-  yield takeEvery(FETCH_NOAA_FORECAST, function*({forecastType, forecastId}) {
-    const forecast = yield call(NOAAClient.fetch, forecastId);
-    yield put(receiveNOAAForecast({forecastId, forecast, forecastType}));
-  });
+  yield takeEvery(FETCH_NOAA_FORECAST, fetchNOAAForecast);
 }
 
 export function* createComparisonPoint({comparisonPoint}) {
@@ -112,9 +131,14 @@ export function* watchCreateComparisonPoint() {
   yield takeEvery(CREATE_COMPARISON_POINT, createComparisonPoint);
 }
 
+export function* watchRefreshComparisonPoint() {
+  yield takeEvery(REFRESH_COMPARISON_POINT, refreshComparisonPoint);
+}
+
 // All sagas to be loaded
 export default [
   watchFetchNOAAPoint,
   watchFetchNOAAForecast,
   watchCreateComparisonPoint,
+  watchRefreshComparisonPoint,
 ];

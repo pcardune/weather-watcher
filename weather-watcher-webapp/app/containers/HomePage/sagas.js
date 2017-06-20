@@ -15,9 +15,9 @@ import {
   createComparison,
   createComparisonPoint,
   updateComparison,
+  refreshComparisonPoint,
 } from 'app/containers/Database/actions';
 import {selectComparisonIds} from 'app/containers/Database/selectors';
-import {refreshComparisonPoint} from 'app/containers/Database/sagas';
 
 import {selectComparisonToShow} from './selectors';
 
@@ -35,30 +35,30 @@ export function* watchResetComparison() {
   yield put(showComparison(ids.get(-1)));
 }
 
-export function* createAndShowComparisonPoint({comparisonPoint}) {
-  const createAction = createComparisonPoint(comparisonPoint);
-  yield put(createAction);
-  const comparison = yield select(selectComparisonToShow());
-  yield put(
-    updateComparison({
-      ...comparison,
-      comparisonPointIds: [
-        ...comparison.comparisonPointIds,
-        createAction.comparisonPoint.id,
-      ],
-    })
-  );
-}
-
 export function* watchAddComparisonPoint() {
-  yield takeEvery(ADD_COMPARISON_POINT, createAndShowComparisonPoint);
+  yield takeEvery(ADD_COMPARISON_POINT, function* createAndShowComparisonPoint({
+    comparisonPoint,
+  }) {
+    const createAction = createComparisonPoint(comparisonPoint);
+    yield put(createAction);
+    const comparison = yield select(selectComparisonToShow());
+    yield put(
+      updateComparison({
+        ...comparison,
+        comparisonPointIds: [
+          ...comparison.comparisonPointIds,
+          createAction.comparisonPoint.id,
+        ],
+      })
+    );
+  });
 }
 
 export function* watchRefreshComparison() {
   yield takeLatest(REFRESH_COMPARISON, function*() {
     const comparison = yield select(selectComparisonToShow());
     for (const comparisonPointId of comparison.comparisonPointIds) {
-      yield fork(refreshComparisonPoint, comparisonPointId);
+      yield put(refreshComparisonPoint(comparisonPointId));
     }
   });
 }

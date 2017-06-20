@@ -10,12 +10,22 @@ const lightGreen500 = '#8BC34A';
 const teal700 = '#00796B';
 const cyan900 = '#006064';
 const colors = [
-  deepOrange600,
-  yellow200,
-  lime300,
-  lightGreen500,
-  teal700,
-  cyan900,
+  '#F44336',
+  '#E91E63',
+  '#9C27B0',
+  '#673AB7',
+  '#3F51B5',
+  '#2196F3',
+  '#03A9F4',
+  '#00BCD4',
+  '#009688',
+  '#4CAF50',
+  '#8BC34A',
+  '#CDDC39',
+  '#FFEB3B',
+  '#FFC107',
+  '#FF9800',
+  '#FF5722',
 ];
 const blueGrey50 = '#ECEFF1';
 const blueGrey300 = '#90A4AE';

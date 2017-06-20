@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import React, {Component, PropTypes} from 'react';
 import convert from 'convert-units';
-
+import Spinner from 'react-spinkit';
+import Theme from 'app/Theme';
 import {
   getSortedPointsForDate,
   getScoreForDate,
@@ -118,15 +119,25 @@ export default class SingleDayForecastComparison extends Component {
             ) {
               return (
                 <Row key={point.name + index}>
-                  <Cell />
-                  <Cell>{point.name}</Cell>
+                  <Cell>
+                    <Spinner name="circle" color={Theme.colors.accent} />
+                  </Cell>
+                  <Cell colSpan={8}>{point.name}</Cell>
                 </Row>
               );
             }
             const score = getScoreForDate(point, date);
             return (
               <Row key={point.name + index}>
-                <Cell>{score.score}</Cell>
+                <Cell style={{position: 'relative'}}>
+                  {point.isRefreshing &&
+                    <Spinner
+                      name="circle"
+                      color={Theme.colors.accent}
+                      style={{position: 'absolute', left: 8}}
+                    />}
+                  {score.score}
+                </Cell>
                 <Cell>
                   <PointLink
                     target="_blank"
