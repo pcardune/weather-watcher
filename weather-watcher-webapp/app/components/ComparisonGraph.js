@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PureComponent, PropTypes} from 'react';
 import styled from 'styled-components';
 import moment from 'moment-mini';
 import {defaultMemoize} from 'reselect';
@@ -85,7 +85,7 @@ const calculateChartData = comparison => {
   };
 };
 
-export default class ComparisonGraph extends Component {
+export default class ComparisonGraph extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
     date: PropTypes.instanceOf(Date),

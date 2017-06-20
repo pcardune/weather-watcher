@@ -156,11 +156,13 @@ export class HomePage extends PureComponent {
                 </HelpText>}
           </CardBody>
         </Card>
-        {this.state.showAddForm &&
-          <Dialog>
-            <h1>Add Location</h1>
-            <AddComparisonPointForm onAdd={this.onAddComparisonPoint} />
-          </Dialog>}
+        <Dialog
+          isOpen={this.state.showAddForm}
+          onClose={this.onClickAddLocation}
+        >
+          <h1>Add Location</h1>
+          <AddComparisonPointForm onAdd={this.onAddComparisonPoint} />
+        </Dialog>
       </article>
     );
   }

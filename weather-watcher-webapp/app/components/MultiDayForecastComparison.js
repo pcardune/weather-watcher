@@ -1,9 +1,9 @@
-import React, {Component, PropTypes} from 'react';
+import React, {PureComponent, PropTypes} from 'react';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import SingleDayForecastComparison from './SingleDayForecastComparison';
 import ComparisonGraph from './ComparisonGraph';
 
-export default class MultiDayForecastComparison extends Component {
+export default class MultiDayForecastComparison extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,

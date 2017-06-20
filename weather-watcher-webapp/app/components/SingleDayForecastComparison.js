@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, {Component, PropTypes} from 'react';
+import React, {PureComponent, PropTypes} from 'react';
 import convert from 'convert-units';
 import Spinner from 'react-spinkit';
 import Theme from 'app/Theme';
@@ -67,7 +67,7 @@ const ComparisonTable = styled.table`
   }
 `;
 
-export default class SingleDayForecastComparison extends Component {
+export default class SingleDayForecastComparison extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
