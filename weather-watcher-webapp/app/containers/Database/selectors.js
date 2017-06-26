@@ -1,6 +1,9 @@
 import {OrderedMap} from 'immutable';
 import {createSelector} from 'reselect';
 import moment from 'moment-mini';
+import {safeAverage} from 'app/utils/math';
+
+import {InterpolatedGridForecast} from './scoring';
 
 /**
  * Direct selector to the database state domain
@@ -111,23 +114,8 @@ function filterNOAAValuesByDate(values, date) {
   return filtered;
 }
 
-function average(nums) {
-  let s = 0;
-  let count = 0;
-  nums.forEach(n => {
-    if (!isNaN(s)) {
-      s += n;
-      count++;
-    }
-  });
-  if (count === 0) {
-    return 0;
-  }
-  return s / count;
-}
-
 function getAverageNOAAValueForDate(property, date) {
-  const avg = average(filterNOAAValuesByDate(property.values, date));
+  const avg = safeAverage(filterNOAAValuesByDate(property.values, date));
   return avg;
 }
 
@@ -138,55 +126,6 @@ export function getSortedPointsForDate(augmentedComparison, date) {
       getScoreForDate(p2, date).score - getScoreForDate(p1, date).score
   );
   return sorted;
-}
-
-class InterpolatedGridForecast {
-  constructor(noaaGridForecast) {
-    this.noaaGridForecast = noaaGridForecast;
-    this.interpolators = {};
-  }
-
-  getValue(propName, time) {
-    const values = this.noaaGridForecast.properties[propName].values;
-    if (values.length === 0) {
-      return null;
-    }
-    let interpolator = this.interpolators[propName];
-    if (!interpolator) {
-      const filledValues = {};
-      for (let i = 0; i < values.length; i++) {
-        const {value, validTime} = values[i];
-        const [startTimeStr, durationStr] = validTime.split('/');
-        const currentTime = moment(new Date(startTimeStr)).startOf('hour');
-        const duration = moment.duration(durationStr);
-        for (let j = 0; j < duration.as('hours'); j += 1) {
-          filledValues[
-            moment(currentTime).add(j, 'hours').toISOString()
-          ] = value;
-        }
-      }
-
-      this.interpolators[propName] = {
-        values: filledValues,
-        start: new Date(values[0].validTime.split('/')[0]).getTime(),
-        end: new Date(
-          values[values.length - 1].validTime.split('/')[0]
-        ).getTime(),
-        inRange(aTime) {
-          return this.start <= aTime && this.end >= aTime;
-        },
-        getValue(aTime) {
-          if (this.inRange(aTime)) {
-            const key = moment(new Date(aTime)).startOf('hour').toISOString();
-            return this.values[key];
-          }
-          return null;
-        },
-      };
-      interpolator = this.interpolators[propName];
-    }
-    return interpolator.getValue(time);
-  }
 }
 
 export function getScoresForDate(

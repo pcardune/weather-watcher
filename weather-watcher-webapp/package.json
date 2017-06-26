@@ -96,6 +96,8 @@
       }
     },
     "rules": {
+      "no-bitwise": 0,
+      "no-tested-ternary": 0,
       "no-param-reassign": 0,
       "no-restricted-syntax": 0,
       "one-var-declaration-per-line": 0,
@@ -265,6 +267,7 @@
     "babel-eslint": "7.1.1",
     "babel-jest": "^20.0.3",
     "babel-loader": "6.2.10",
+    "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-dynamic-import-node": "1.0.0",
     "babel-plugin-react-intl": "2.2.0",
     "babel-plugin-react-transform": "2.0.2",
@@ -274,6 +277,7 @@
     "babel-plugin-transform-react-inline-elements": "6.8.0",
     "babel-plugin-transform-react-remove-prop-types": "0.2.11",
     "babel-preset-env": "^1.5.2",
+    "babel-preset-es2015-loose": "^8.0.0",
     "babel-preset-latest": "6.16.0",
     "babel-preset-react": "6.16.0",
     "babel-preset-react-hmre": "1.1.1",

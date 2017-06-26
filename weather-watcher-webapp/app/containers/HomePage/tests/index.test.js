@@ -9,7 +9,7 @@ import {IntlProvider} from 'react-intl';
 import {HomePage, mapDispatchToProps} from '../index';
 import {refreshComparison} from '../actions';
 
-describe('<HomePage />', () => {
+xdescribe('<HomePage />', () => {
   it('should refresh the comparison on mount', () => {
     const onRefreshComparison = jest.fn();
     mount(

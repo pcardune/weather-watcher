@@ -107,9 +107,13 @@ export class HomePage extends PureComponent {
     this.setState({showAddForm: !this.state.showAddForm});
   };
 
+  hideAddForm = () => {
+    this.setState({showAddForm: false});
+  };
+
   onAddComparisonPoint = (...args) => {
     this.props.onAddComparisonPoint(...args);
-    this.setState({showAddForm: false});
+    this.hideAddForm();
   };
 
   render() {
@@ -156,10 +160,7 @@ export class HomePage extends PureComponent {
                 </HelpText>}
           </CardBody>
         </Card>
-        <Dialog
-          isOpen={this.state.showAddForm}
-          onClose={this.onClickAddLocation}
-        >
+        <Dialog isOpen={this.state.showAddForm} onClose={this.hideAddForm}>
           <h1>Add Location</h1>
           <AddComparisonPointForm onAdd={this.onAddComparisonPoint} />
         </Dialog>
