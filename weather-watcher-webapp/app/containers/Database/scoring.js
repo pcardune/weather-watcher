@@ -1,47 +1,28 @@
-import {getTimeSeriesValue} from 'app/utils/math';
+import {InterpolatedSequence} from 'app/utils/math';
 
 export class InterpolatedGridForecast {
   constructor(noaaGridForecast) {
     this.timeSeries = {};
-    for (const prop in noaaGridForecast.properties) {
-      if (noaaGridForecast.properties[prop].values) {
-        this.timeSeries[prop] = noaaGridForecast.properties[prop].values.map(({
-          validTime,
-          value,
-        }) => {
-          const [timestamp, durationStr] = validTime.split('/');
-          return {
-            value,
-            time: new Date(timestamp).getTime(),
-            duration: durationStr,
-          };
-        });
-      }
-    }
-    this.interpolators = {};
-  }
-
-  getInterpolator(propName) {
-    if (!this.timeSeries[propName] || this.timeSeries[propName].length === 0) {
-      return null;
-    }
-    let interpolator = this.interpolators[propName];
-    if (!interpolator) {
-      this.interpolators[propName] = aTime =>
-        getTimeSeriesValue(
-          this.timeSeries[propName],
-          new Date(aTime).getTime()
+    Object.keys(noaaGridForecast.properties).forEach(prop => {
+      const values = noaaGridForecast.properties[prop].values;
+      if (values) {
+        this.timeSeries[prop] = new InterpolatedSequence(
+          values.map(props => {
+            const {validTime, value} = props;
+            return {
+              value,
+              time: new Date(validTime.split('/')[0]).getTime(),
+            };
+          })
         );
-      interpolator = this.interpolators[propName];
-    }
-    return interpolator;
+      }
+    });
   }
 
   getValue(propName, time) {
-    const interpolate = this.getInterpolator(propName);
-    if (!interpolate) {
+    if (!this.timeSeries[propName]) {
       return null;
     }
-    return interpolate(time);
+    return this.timeSeries[propName].interpolate(time);
   }
 }

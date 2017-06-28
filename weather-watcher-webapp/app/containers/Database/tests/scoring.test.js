@@ -34,13 +34,15 @@ describe('InterpolatedGridForecast', () => {
 
   it('extracts out a set of timeSeries data for each property', () => {
     expect(Object.keys(grid.timeSeries)).toEqual(['temperature']);
-    expect(grid.timeSeries['temperature']).toEqual([
-      {duration: 'PT2H', time: 1497603600000, value: 12},
-      {duration: 'PT3H', time: 1497610800000, value: 13},
-      {duration: 'PT1H', time: 1497621600000, value: 13},
-      {duration: 'PT1H', time: 1497625200000, value: 14},
-      {duration: 'PT1H', time: 1497628800000, value: 15},
-    ]);
+    expect(grid.timeSeries['temperature']).toEqual({
+      timeSeries: [
+        {time: 1497603600000, value: 12},
+        {time: 1497610800000, value: 13},
+        {time: 1497621600000, value: 13},
+        {time: 1497625200000, value: 14},
+        {time: 1497628800000, value: 15},
+      ],
+    });
   });
 
   describe('getValue', () => {

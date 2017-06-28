@@ -47,7 +47,7 @@ export function safeAverage(nums) {
  * exists at that exact time, one will be interpolated between the two nearest values.
  *
  * @param {Array<{time: number, value: number}>} timeSeries - the timeSeries to search. Must be pre-sorted.
- * @param {number} timestampe - the timestamp to return a value for
+ * @param {number} timestamp - the timestamp to return a value for
  * @return ?number - the value at the given time, or null if the time is out of range.
  */
 export function getTimeSeriesValue(timeSeries, timestamp) {
@@ -98,6 +98,6 @@ export class InterpolatedSequence {
   }
 
   interpolate(time) {
-    getTimeSeriesValue(this.timeSeries, new Date(time).getTime());
+    return getTimeSeriesValue(this.timeSeries, new Date(time).getTime());
   }
 }
