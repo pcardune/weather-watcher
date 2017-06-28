@@ -22,7 +22,7 @@ export const DialogBox = styled.div`
   }
 `;
 
-export class Dialog extends PureComponent {
+export default class Dialog extends PureComponent {
   static propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func,

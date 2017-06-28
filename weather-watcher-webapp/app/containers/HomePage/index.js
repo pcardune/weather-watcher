@@ -17,7 +17,7 @@ import {AugmentedComparisonShape} from 'app/propTypes';
 import Button from 'app/components/Button';
 import {Card, CardHeader, CardBody} from 'app/components/Card';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
-import {Dialog} from 'app/components/Dialog';
+import Dialog from 'app/components/Dialog';
 
 import {
   resetComparison,
@@ -160,10 +160,11 @@ export class HomePage extends PureComponent {
                 </HelpText>}
           </CardBody>
         </Card>
-        <Dialog isOpen={this.state.showAddForm} onClose={this.hideAddForm}>
-          <h1>Add Location</h1>
-          <AddComparisonPointForm onAdd={this.onAddComparisonPoint} />
-        </Dialog>
+        <AddComparisonPointForm
+          isOpen={this.state.showAddForm}
+          onClose={this.hideAddForm}
+          onAdd={this.onAddComparisonPoint}
+        />
       </article>
     );
   }

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const Input = styled.input`
   border: 1px solid #eee;
+  padding: 5px;
 `;
 
 export const Label = styled.label`

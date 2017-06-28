@@ -3,15 +3,26 @@ import React, {Component, PropTypes} from 'react';
 import Geosuggest from 'react-geosuggest';
 import 'react-geosuggest/module/geosuggest.css';
 
-import Button from 'app/components/Button';
+import Button from './Button';
+import Dialog from './Dialog';
 import {FormField, Input, Label} from './forms';
 
 const Form = styled.form`
   padding: 15px;
 `;
 
+const Buttons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+
+  > * {
+    margin-left: 10px;
+  }
+`;
+
 export default class AddComparisonPointForm extends Component {
   static propTypes = {
+    ...Dialog.propTypes,
     onAdd: PropTypes.func.isRequired,
   };
 
@@ -44,38 +55,47 @@ export default class AddComparisonPointForm extends Component {
   };
 
   render() {
+    const {onAdd, ...rest} = this.props;
     return (
-      <Form>
-        <Geosuggest country="us" onSuggestSelect={this.onSuggestSelect} />
-        <FormField>
-          <Label>Name:</Label>
-          <Input
-            type="text"
-            name="name"
-            value={this.state.name}
-            onChange={this.onChange}
-          />
-        </FormField>
-        <FormField>
-          <Label>Latitude:</Label>
-          <Input
-            type="text"
-            name="latitude"
-            value={this.state.latitude}
-            onChange={this.onChange}
-          />
-        </FormField>
-        <FormField>
-          <Label>Longitude:</Label>
-          <Input
-            type="text"
-            name="longitude"
-            value={this.state.longitude}
-            onChange={this.onChange}
-          />
-        </FormField>
-        <Button type="button" onClick={this.onClickAdd}>Add</Button>
-      </Form>
+      <Dialog {...rest}>
+        <h1>Add Location</h1>
+        <Form>
+          <Geosuggest country="us" onSuggestSelect={this.onSuggestSelect} />
+          <FormField>
+            <Label>Name:</Label>
+            <Input
+              type="text"
+              name="name"
+              value={this.state.name}
+              onChange={this.onChange}
+            />
+          </FormField>
+          <FormField>
+            <Label>Latitude:</Label>
+            <Input
+              type="text"
+              name="latitude"
+              value={this.state.latitude}
+              onChange={this.onChange}
+            />
+          </FormField>
+          <FormField>
+            <Label>Longitude:</Label>
+            <Input
+              type="text"
+              name="longitude"
+              value={this.state.longitude}
+              onChange={this.onChange}
+            />
+          </FormField>
+          <Buttons>
+            <Button flat type="button" onClick={this.props.onClose}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={this.onClickAdd}>Add</Button>
+          </Buttons>
+        </Form>
+      </Dialog>
     );
   }
 }
