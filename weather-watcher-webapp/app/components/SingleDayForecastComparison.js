@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
 import convert from 'convert-units';
-import Spinner from 'react-spinkit';
-import Theme from 'app/Theme';
+import LoadingIndicator from 'app/components/LoadingIndicator';
 import {
   getSortedPointsForDate,
   getScoreForDate,
@@ -120,7 +119,7 @@ export default class SingleDayForecastComparison extends PureComponent {
               return (
                 <Row key={point.name + index}>
                   <Cell>
-                    <Spinner name="circle" color={Theme.colors.accent} />
+                    <LoadingIndicator />
                   </Cell>
                   <Cell colSpan={8}>{point.name}</Cell>
                 </Row>
@@ -130,12 +129,7 @@ export default class SingleDayForecastComparison extends PureComponent {
             return (
               <Row key={point.name + index}>
                 <Cell style={{position: 'relative'}}>
-                  {point.isRefreshing &&
-                    <Spinner
-                      name="circle"
-                      color={Theme.colors.accent}
-                      style={{position: 'absolute', left: 8}}
-                    />}
+                  {point.isRefreshing && <LoadingIndicator />}
                   {score.score}
                 </Cell>
                 <Cell>
