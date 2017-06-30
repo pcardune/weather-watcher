@@ -41,8 +41,13 @@ export function receiveComparison(comparison) {
   return {type: RECEIVE_COMPARISON, comparison};
 }
 
-export function addComparisonPoint(comparisonPoint) {
-  return {type: ADD_COMPARISON_POINT, comparisonPoint};
+export function addComparisonPoint({name, position: {lat, lng}}) {
+  return {
+    type: ADD_COMPARISON_POINT,
+    name,
+    latitude: lat,
+    longitude: lng,
+  };
 }
 
 export function removeComparisonPoint(comparison, comparisonPointId) {

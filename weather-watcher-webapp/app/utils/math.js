@@ -101,3 +101,8 @@ export class InterpolatedSequence {
     return getTimeSeriesValue(this.timeSeries, new Date(time).getTime());
   }
 }
+
+export function round(num, numDigits) {
+  const factor = Math.pow(10, numDigits);
+  return Math.round(num * factor) / factor;
+}

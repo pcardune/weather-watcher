@@ -1,8 +1,14 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
+
+export const inputStyle = css`
+  border: 1px solid ${props => props.theme.colors.divider};
+  padding: 5px;
+  outline: none;
+  box-shadow: none;
+`;
 
 export const Input = styled.input`
-  border: 1px solid #eee;
-  padding: 5px;
+  ${inputStyle}
 `;
 
 export const Label = styled.label`
@@ -12,4 +18,9 @@ export const Label = styled.label`
 
 export const FormField = styled.div`
   margin-bottom: 10px;
+`;
+
+export const HelpText = styled.div`
+  color: ${props => props.theme.colors.secondaryText};
+  font-size: small;
 `;

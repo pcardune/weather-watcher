@@ -12,5 +12,9 @@ export default {
   },
   shadows: {
     level1: '0 0 2px 0 rgba(0,0,0,.3), 0 2px 2px 0 rgba(0,0,0,.4)',
+    level4: '0 0 24px 0 rgba(0,0,0,.3), 0 24px 24px 0 rgba(0,0,0,.4)',
+  },
+  padding: {
+    standard: '25px',
   },
 };
