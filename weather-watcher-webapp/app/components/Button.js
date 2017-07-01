@@ -9,16 +9,22 @@
 import React, {PropTypes, Children} from 'react';
 import styled, {css} from 'styled-components';
 
-const backgroundColor = ({accent, flat, theme}) => {
+const backgroundColor = ({disabled, accent, flat, theme}) => {
   if (flat) {
     return 'transparent';
+  }
+  if (disabled) {
+    return theme.colors.divider;
   }
   return theme.colors[accent ? 'accent' : 'primary'];
 };
 
-const textColor = ({accent, flat, theme}) => {
+const textColor = ({disabled, accent, flat, theme}) => {
   if (flat) {
     return theme.colors.primaryText;
+  }
+  if (disabled) {
+    return theme.colors.secondaryText;
   }
   return theme.colors[accent ? 'textOnAccent' : 'textOnPrimary'];
 };
@@ -63,6 +69,7 @@ function Button(props) {
       accent={props.accent}
       flat={props.flat}
       style={props.style}
+      disabled={props.disabled}
     >
       {Children.toArray(props.children)}
     </A>
@@ -76,6 +83,7 @@ function Button(props) {
         accent={props.accent}
         flat={props.flat}
         style={props.style}
+        disabled={props.disabled}
       >
         {Children.toArray(props.children)}
       </StyledButton>
@@ -97,6 +105,7 @@ Button.propTypes = {
   accent: PropTypes.bool,
   flat: PropTypes.bool,
   style: PropTypes.object,
+  disabled: PropTypes.bool,
 };
 
 export default Button;

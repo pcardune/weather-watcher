@@ -11,14 +11,17 @@ export default class MultiDayForecastComparison extends PureComponent {
     onClickDate: PropTypes.func.isRequired,
   };
 
+  static defaultProps = {
+    date: new Date(),
+  };
+
   render() {
-    const date = this.props.date || new Date();
     return (
       <div>
         <SingleDayForecastComparison
-          key={date.toString()}
+          key={this.props.date.toString()}
           comparison={this.props.comparison}
-          date={date}
+          date={this.props.date}
           onRemoveComparisonPoint={this.props.onRemoveComparisonPoint}
         />
         <ComparisonGraph

@@ -18,6 +18,7 @@ import Button from 'app/components/Button';
 import {Card, CardHeader, CardBody} from 'app/components/Card';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import Dialog from 'app/components/Dialog';
+import DatePager from 'app/components/DatePager';
 
 import {
   resetComparison,
@@ -33,21 +34,6 @@ const HelpText = styled.p`
   color: ${props => props.theme.colors.secondaryText};
   font-weight: 300;
   padding: 50px;
-`;
-
-const DateHeader = styled.h1`
-  font-size: 36px;
-  font-weight: 300;
-  width: 30%;
-  text-align: center;
-`;
-
-const DatePager = styled.div`
-  max-width: 670px;
-  display: flex;
-  margin: auto;
-  align-items: center;
-  justify-content: space-around;
 `;
 
 const Buttons = styled.div`
@@ -80,20 +66,8 @@ export class HomePage extends PureComponent {
     }
   }
 
-  onClickDate = currentDate => {
+  onChangeDate = currentDate => {
     this.setState({currentDate});
-  };
-
-  onClickPrevDate = () => {
-    this.setState({
-      currentDate: moment(this.state.currentDate).subtract(1, 'days').toDate(),
-    });
-  };
-
-  onClickNextDate = () => {
-    this.setState({
-      currentDate: moment(this.state.currentDate).add(1, 'days').toDate(),
-    });
   };
 
   onRemoveComparisonPoint = comparisonPointId => {
@@ -121,17 +95,10 @@ export class HomePage extends PureComponent {
       this.props.comparison.comparisonPoints.length > 0;
     return (
       <article>
-        <DatePager>
-          <Button onClick={this.onClickPrevDate}>
-            ◀ {moment(this.state.currentDate).subtract(1, 'days').format('ddd')}
-          </Button>
-          <DateHeader>
-            {moment(this.state.currentDate).format('dddd')}
-          </DateHeader>
-          <Button onClick={this.onClickNextDate}>
-            {moment(this.state.currentDate).add(1, 'days').format('ddd')} ▶
-          </Button>
-        </DatePager>
+        <DatePager
+          onChange={this.onChangeDate}
+          currentDate={this.state.currentDate}
+        />
         <Card>
           <CardHeader>
             <h1>
@@ -153,7 +120,7 @@ export class HomePage extends PureComponent {
                   date={this.state.currentDate}
                   comparison={this.props.comparison}
                   onRemoveComparisonPoint={this.onRemoveComparisonPoint}
-                  onClickDate={this.onClickDate}
+                  onClickDate={this.onChangeDate}
                 />
               : <HelpText>
                   Add a location to start comparing forecasts.
