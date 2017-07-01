@@ -165,7 +165,7 @@ export default class SingleDayForecastComparison extends PureComponent {
                           .to('in') * 100
                       ) / 100}
                 </Cell>
-                <ShortForecastCell style={{whiteSpace: 'nowrap'}}>
+                <ShortForecastCell>
                   {score.dailyForecast && score.dailyForecast.day.shortForecast}
                 </ShortForecastCell>
                 <Cell>
