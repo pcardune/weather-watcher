@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 
 const HeaderLogo = styled(Link)`
   font-size: 64px;

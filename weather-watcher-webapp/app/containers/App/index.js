@@ -9,9 +9,12 @@
 import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components';
+import {Route, Switch} from 'react-router-dom';
 
-import Header from 'components/Header';
-import withProgressBar from 'components/ProgressBar';
+import Header from 'app/components/Header';
+import withProgressBar from 'app/components/ProgressBar';
+import Bundle from 'app/components/Bundle';
+import loadHomePage from 'bundle-loader?lazy!app/containers/HomePage/load';
 
 const AppWrapper = styled.div`
   margin: 0 0;
@@ -21,7 +24,17 @@ const AppWrapper = styled.div`
   flex-direction: column;
 `;
 
-export function App(props) {
+function NotFound() {
+  return <div>Not found</div>;
+}
+
+export function App({store}) {
+  const HomePage = () => (
+    <Bundle load={loadHomePage} store={store}>
+      {HP => HP && <HP />}
+    </Bundle>
+  );
+
   return (
     <AppWrapper>
       <Helmet
@@ -30,13 +43,12 @@ export function App(props) {
         meta={[{name: 'description', content: 'Watch the weather'}]}
       />
       <Header />
-      {React.Children.toArray(props.children)}
+      <Switch>
+        <Route exact path="/" component={HomePage} />
+        <Route component={NotFound} />
+      </Switch>
     </AppWrapper>
   );
 }
-
-App.propTypes = {
-  children: React.PropTypes.node,
-};
 
 export default withProgressBar(App);
