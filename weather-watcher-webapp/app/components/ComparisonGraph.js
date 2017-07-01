@@ -1,4 +1,4 @@
-import React, {PureComponent, PropTypes} from 'react';
+import React, {Component, PureComponent, PropTypes} from 'react';
 import styled from 'styled-components';
 import moment from 'moment-mini';
 import {defaultMemoize} from 'reselect';
@@ -85,6 +85,17 @@ const calculateChartData = comparison => {
   };
 };
 
+class FastLine extends Component {
+  static propTypes = VictoryLine.propTypes;
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.data !== nextProps.data;
+  }
+  render() {
+    return <VictoryLine {...this.props} />;
+  }
+}
+
 export default class ComparisonGraph extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
@@ -93,6 +104,9 @@ export default class ComparisonGraph extends PureComponent {
   };
 
   getChartData = defaultMemoize(calculateChartData);
+
+  labelComponent = <VictoryTooltip />;
+  getLabel = d => d.label;
 
   render() {
     const {hasData, data, domain, dates} = this.getChartData(
@@ -122,11 +136,11 @@ export default class ComparisonGraph extends PureComponent {
             axisComponent={<EmptyTick />}
           />
           {data.map((lineData, i) => (
-            <VictoryLine
+            <FastLine
               key={i}
               data={lineData}
-              labels={d => d.label}
-              labelComponent={<VictoryTooltip />}
+              labels={this.getLabel}
+              labelComponent={this.labelComponent}
               interpolation="basis"
               style={{
                 data: {
