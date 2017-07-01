@@ -9,8 +9,8 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const LoadingIndicator = () => (
-  <Wrapper>
+const LoadingIndicator = props => (
+  <Wrapper {...props}>
     <Circle />
     <Circle rotate={30} delay={-1.1} />
     <Circle rotate={60} delay={-1} />

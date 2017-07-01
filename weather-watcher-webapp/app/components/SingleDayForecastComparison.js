@@ -110,14 +110,14 @@ export default class SingleDayForecastComparison extends PureComponent {
           </HeaderRow>
         </thead>
         <tbody>
-          {sorted.map((point, index) => {
+          {sorted.map(point => {
             if (
               !point.noaaGridForecast ||
               !point.noaaPoint ||
               !point.noaaDailyForecast
             ) {
               return (
-                <Row key={point.name + index}>
+                <Row key={point.id}>
                   <Cell>
                     <LoadingIndicator />
                   </Cell>
@@ -127,10 +127,9 @@ export default class SingleDayForecastComparison extends PureComponent {
             }
             const score = getScoreForDate(point, date);
             return (
-              <Row key={point.name + index}>
+              <Row key={point.id}>
                 <Cell style={{position: 'relative'}}>
-                  {point.isRefreshing && <LoadingIndicator />}
-                  {score.score}
+                  {point.isRefreshing ? <LoadingIndicator /> : score.score}
                 </Cell>
                 <Cell>
                   <PointLink

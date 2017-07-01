@@ -10,6 +10,7 @@ import {
   select,
   takeEvery,
 } from 'redux-saga/effects';
+import {REHYDRATE} from 'redux-persist/constants';
 
 import {
   createComparison,
@@ -18,7 +19,6 @@ import {
   refreshComparisonPoint,
 } from 'app/containers/Database/actions';
 import {selectComparisonIds} from 'app/containers/Database/selectors';
-
 import {selectComparisonToShow} from './selectors';
 
 import {
@@ -26,7 +26,7 @@ import {
   RESET_COMPARISON,
   REFRESH_COMPARISON,
 } from './constants';
-import {showComparison} from './actions';
+import {showComparison, refreshComparison} from './actions';
 
 export function* watchResetComparison() {
   yield take(RESET_COMPARISON);
@@ -37,9 +37,11 @@ export function* watchResetComparison() {
 
 export function* watchAddComparisonPoint() {
   yield takeEvery(ADD_COMPARISON_POINT, function* createAndShowComparisonPoint({
-    comparisonPoint,
+    name,
+    latitude,
+    longitude,
   }) {
-    const createAction = createComparisonPoint(comparisonPoint);
+    const createAction = createComparisonPoint({name, latitude, longitude});
     yield put(createAction);
     const comparison = yield select(selectComparisonToShow());
     yield put(
@@ -63,8 +65,15 @@ export function* watchRefreshComparison() {
   });
 }
 
+export function* watchRehydrate() {
+  yield takeLatest(REHYDRATE, function*() {
+    yield put(refreshComparison());
+  });
+}
+
 export default [
   watchResetComparison,
   watchRefreshComparison,
   watchAddComparisonPoint,
+  watchRehydrate,
 ];

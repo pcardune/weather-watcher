@@ -53,6 +53,9 @@ export const selectComparisons = () =>
 export const selectComparisonIds = () =>
   createSelector(selectComparisons(), comparisons => comparisons.keySeq());
 
+export const selectFetches = () =>
+  createSelector(selectDatabaseDomain(), db => db.get('fetches'));
+
 export const makeSelectAugmentedComparison = () =>
   createSelector(
     [
@@ -62,8 +65,9 @@ export const makeSelectAugmentedComparison = () =>
       selectNOAAGridForecasts(),
       selectNOAADailyForecasts(),
       selectNOAAHourlyForecasts(),
+      selectFetches(),
     ],
-    (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts) =>
+    (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts, fetches) =>
       comparisonId => {
         const comparison = comparisons.get(comparisonId);
         return comparison && {
@@ -86,8 +90,14 @@ export const makeSelectAugmentedComparison = () =>
                 .get(noaaPoint.properties.forecast, OrderedMap())
                 .valueSeq()
                 .get(-1);
+            const isRefreshing = (noaaGridForecast &&
+              fetches.get(noaaGridForecast.id)) ||
+              (noaaHourlyForecast && fetches.get(noaaHourlyForecast.id)) ||
+              (noaaDailyForecast && fetches.get(noaaDailyForecast.id)) ||
+              (noaaPoint && fetches.get(noaaPoint.id));
             return {
               ...point,
+              isRefreshing,
               noaaPoint,
               noaaGridForecast,
               noaaHourlyForecast,

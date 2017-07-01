@@ -1,3 +1,4 @@
+import {delay} from 'redux-saga';
 import {take, takeEvery, call, put, select, all} from 'redux-saga/effects';
 import moment from 'moment-mini';
 
@@ -14,6 +15,7 @@ import {
   receiveNOAAForecast,
   fetchNOAAPoint,
   updateComparisonPoint,
+  fetchNOAAForecast,
 } from './actions';
 
 import {
@@ -39,17 +41,16 @@ export function* refreshForecast({forecastType, forecastId}) {
       moment(new Date()).subtract(12, 'hours')
     )
   ) {
-    yield call(fetchNOAAForecast, {forecastId, forecastType});
+    yield put(fetchNOAAForecast({forecastId, forecastType}));
   }
 }
 
 export function* refreshComparisonPoint({comparisonPointId}) {
   let allPoints = yield select(selectComparisonPoints());
   let comparisonPoint = allPoints.get(comparisonPointId);
-  if (!comparisonPoint || comparisonPoint.isRefreshing) {
+  if (!comparisonPoint) {
     return;
   }
-  yield put(updateComparisonPoint({...comparisonPoint, isRefreshing: true}));
   if (!comparisonPoint.noaaPointId) {
     yield call(createComparisonPoint, {comparisonPoint});
     allPoints = yield select(selectComparisonPoints());
@@ -73,9 +74,6 @@ export function* refreshComparisonPoint({comparisonPointId}) {
           forecastId: noaaPoint.properties.forecast,
         }),
       ]);
-      yield put(
-        updateComparisonPoint({...comparisonPoint, isRefreshing: false})
-      );
     }
   }
 }
@@ -86,7 +84,7 @@ export function* watchFetchNOAAPoint() {
       latitude,
       longitude,
     });
-    yield put(receiveNOAAPoint({noaaPoint}));
+    yield put(receiveNOAAPoint({noaaPoint, latitude, longitude}));
     yield all([
       call(refreshForecast, {
         forecastType: 'grid',
@@ -104,13 +102,14 @@ export function* watchFetchNOAAPoint() {
   });
 }
 
-export function* fetchNOAAForecast({forecastType, forecastId}) {
-  const forecast = yield call(NOAAClient.fetch, forecastId);
-  yield put(receiveNOAAForecast({forecastId, forecast, forecastType}));
-}
-
 export function* watchFetchNOAAForecast() {
-  yield takeEvery(FETCH_NOAA_FORECAST, fetchNOAAForecast);
+  yield takeEvery(FETCH_NOAA_FORECAST, function*({
+    forecastType,
+    forecastId,
+  }) {
+    const forecast = yield call(NOAAClient.fetch, forecastId);
+    yield put(receiveNOAAForecast({forecastId, forecast, forecastType}));
+  });
 }
 
 export function* createComparisonPoint({comparisonPoint}) {
