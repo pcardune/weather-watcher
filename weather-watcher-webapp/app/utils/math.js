@@ -19,6 +19,10 @@ export function interpolateTimestampedValues(
     (timestamp - lowTime) / (highTime - lowTime) * (highValue - lowValue);
 }
 
+function isNumber(n) {
+  return !isNaN(n) && n !== null;
+}
+
 /**
  * Safely generate an average of a sequence of (maybe) numbers.
  * ignores values in the sequence that are not numbers, and returns 0 if
@@ -31,7 +35,7 @@ export function safeAverage(nums) {
   let s = 0;
   let count = 0;
   nums.forEach(n => {
-    if (!isNaN(n) && n !== null) {
+    if (isNumber(n)) {
       s += n;
       count++;
     }
@@ -40,6 +44,42 @@ export function safeAverage(nums) {
     return 0;
   }
   return s / count;
+}
+
+/**
+ * Safely compute the minimum of a sequence of (maybe) numbers.
+ * ignores values in the sequence that are not numbers, and returns null if
+ * there are no numbers in the sequence.
+ *
+ * @param {Array<number>} nums - the numbers to get the min of
+ * @returns the minimum of the given numbers
+ */
+export function safeMin(nums) {
+  let min = null;
+  nums.forEach(n => {
+    if (isNumber(n) && (n < min || min === null)) {
+      min = n;
+    }
+  });
+  return min;
+}
+
+/**
+ * Safely compute the maximum of a sequence of (maybe) numbers.
+ * ignores values in the sequence that are not numbers, and returns null if
+ * there are no numbers in the sequence.
+ *
+ * @param {Array<number>} nums - the numbers to get the max of
+ * @returns the maximum of the given numbers
+ */
+export function safeMax(nums) {
+  let max = null;
+  nums.forEach(n => {
+    if (isNumber(n) && (n > max || max === null)) {
+      max = n;
+    }
+  });
+  return max;
 }
 
 /**
@@ -102,7 +142,7 @@ export class InterpolatedSequence {
   }
 }
 
-export function round(num, numDigits) {
+export function round(num, numDigits = 0) {
   const factor = Math.pow(10, numDigits);
   return Math.round(num * factor) / factor;
 }

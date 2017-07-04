@@ -8,6 +8,7 @@ import {
 } from 'app/containers/Database/selectors';
 import Button from 'app/components/Button';
 import {AugmentedComparisonShape} from 'app/propTypes';
+import {round} from 'app/utils/math';
 
 const ColumnHeader = styled.th`
   text-align: left;
@@ -129,7 +130,9 @@ export default class SingleDayForecastComparison extends PureComponent {
             return (
               <Row key={point.id}>
                 <Cell style={{position: 'relative'}}>
-                  {point.isRefreshing ? <LoadingIndicator /> : score.score}
+                  {point.isRefreshing
+                    ? <LoadingIndicator />
+                    : round(score.score, 1)}
                 </Cell>
                 <Cell>
                   <PointLink
@@ -142,27 +145,29 @@ export default class SingleDayForecastComparison extends PureComponent {
                   </PointLink>
                 </Cell>
                 <Cell>
-                  {score.dailyForecast.night.temperature || '-'}
+                  {round(convert(score.minTemp).from('C').to('F'))}
                 </Cell>
                 <Cell>
-                  {score.dailyForecast.day.temperature || '-'}
+                  {round(convert(score.maxTemp).from('C').to('F'))}
                 </Cell>
                 <Cell>
-                  {Math.round(convert(score.windSpeed).from('knot').to('m/h'))}
+                  {round(convert(score.windSpeed).from('knot').to('m/h'))}
                 </Cell>
                 <Cell>
                   {isNaN(score.probabilityOfPrecipitation)
                     ? '-'
-                    : Math.round(score.probabilityOfPrecipitation)}
+                    : round(score.probabilityOfPrecipitation)}
                 </Cell>
                 <Cell>
-                  {isNaN(score.quantitativePrecipitation)
-                    ? '-'
-                    : Math.round(
-                        convert(score.quantitativePrecipitation)
-                          .from('mm')
-                          .to('in') * 100
-                      ) / 100}
+                  {
+                    (isNaN(score.quantitativePrecipitation)
+                      ? '-'
+                      : round(
+                          convert(score.quantitativePrecipitation)
+                            .from('mm')
+                            .to('in')
+                        ), 2)
+                  }
                 </Cell>
                 <ShortForecastCell>
                   {score.dailyForecast && score.dailyForecast.day.shortForecast}

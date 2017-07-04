@@ -1,7 +1,8 @@
 import {OrderedMap} from 'immutable';
 import {createSelector} from 'reselect';
 import moment from 'moment-mini';
-import {safeAverage} from 'app/utils/math';
+import {safeAverage, safeMin, safeMax} from 'app/utils/math';
+import convert from 'convert-units';
 
 import {InterpolatedGridForecast} from './scoring';
 
@@ -101,6 +102,7 @@ const WEIGHTS = {
   WIND_SPEED: -1,
   PRECIPITATION_PERCENT: -0.5,
   PRECIPITATION_QUANTITY: -1,
+  TEMP: -1,
 };
 
 function filterNOAAValuesByDate(values, date) {
@@ -145,22 +147,22 @@ export function getScoresForDate(
     t = moment(t).add(duration).valueOf()
   ) {
     const precip = grid.getValue('probabilityOfPrecipitation', t);
-    if (precip === undefined) {
-      grid.getValue('probabilityOfPrecipitation', t);
-    }
     const windSpeed = grid.getValue('windSpeed', t);
     const precipQuantity = grid.getValue('quantitativePrecipitation', t);
+    const temp = grid.getValue('temperature', t);
     const score = 100 +
       Math.round(
         WEIGHTS.PRECIPITATION_QUANTITY * precipQuantity +
           WEIGHTS.PRECIPITATION_PERCENT * precip +
-          WEIGHTS.WIND_SPEED * windSpeed
+          WEIGHTS.WIND_SPEED * windSpeed +
+          WEIGHTS.TEMP * Math.abs(temp - 18.3)
       );
     scores.push({
       score,
       probabilityOfPrecipitation: precip,
       quantitativePrecipitation: precipQuantity,
       windSpeed,
+      temperature: temp,
       time: t,
     });
   }
@@ -168,21 +170,13 @@ export function getScoresForDate(
 }
 
 export function getScoreForDate(augmentedComparisonPoint, date) {
-  if (!augmentedComparisonPoint.noaaGridForecast) {
+  const scores = getScoresForDate(augmentedComparisonPoint, date);
+
+  if (!scores.length) {
     return {
       score: 0,
     };
   }
-  const props = augmentedComparisonPoint.noaaGridForecast.properties;
-  const precipAvg = getAverageNOAAValueForDate(
-    props.probabilityOfPrecipitation,
-    date
-  );
-  const windSpeedAvg = getAverageNOAAValueForDate(props.windSpeed, date);
-  const precipQuantityAvg = getAverageNOAAValueForDate(
-    props.quantitativePrecipitation,
-    date
-  );
 
   const dailyForecast = {
     day: {},
@@ -202,16 +196,17 @@ export function getScoreForDate(augmentedComparisonPoint, date) {
     );
   }
 
-  const score = (isNaN(precipQuantityAvg)
-    ? 0
-    : WEIGHTS.PRECIPITATION_QUANTITY * precipQuantityAvg) +
-    WEIGHTS.PRECIPITATION_PERCENT * precipAvg +
-    WEIGHTS.WIND_SPEED * windSpeedAvg;
   return {
-    score: 100 + Math.round(score),
-    probabilityOfPrecipitation: precipAvg,
-    windSpeed: windSpeedAvg,
-    quantitativePrecipitation: precipQuantityAvg,
+    score: safeAverage(scores.map(s => s.score)),
+    probabilityOfPrecipitation: safeAverage(
+      scores.map(s => s.probabilityOfPrecipitation)
+    ),
+    quantitativePrecipitation: safeAverage(
+      scores.map(s => s.quantitativePrecipitation)
+    ),
+    windSpeed: safeAverage(scores.map(s => s.windSpeed)),
+    maxTemp: safeMax(scores.map(s => s.temperature)),
+    minTemp: safeMin(scores.map(s => s.temperature)),
     dailyForecast,
   };
 }
