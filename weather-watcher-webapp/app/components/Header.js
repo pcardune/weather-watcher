@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {Component} from 'react';
 import styled from 'styled-components';
-import {Link} from 'react-router-dom';
+import {Link, NavLink} from 'react-router-dom';
 
 const HeaderLogo = styled(Link)`
   font-size: 64px;
@@ -10,11 +10,26 @@ const HeaderLogo = styled(Link)`
   text-decoration: none;
 `;
 
+const QuickLinks = styled.div`
+  background: ${props => props.theme.colors.primaryDark};
+  text-align: center;
+`;
+
+const QuickLink = styled(NavLink)`
+  display: inline-block;
+  padding: 10px;
+  color: ${props => props.theme.colors.textOnPrimary};
+  text-decoration: none;
+
+  &.selected {
+    text-decoration: underline;
+  }
+`;
+
 const NavBar = styled.div`
   background-color: ${props => props.theme.colors.primary};
   height: 130px;
   text-align: center;
-  border-bottom: 10px solid ${props => props.theme.colors.primaryDark};
   position: relative;
   ${HeaderLogo} {
     color: ${props => props.theme.colors.textOnPrimary};
@@ -26,13 +41,28 @@ const NavBar = styled.div`
   }
 `;
 
-class Header extends React.Component {
-  // eslint-disable-line react/prefer-stateless-function
+class Header extends Component {
   render() {
     return (
-      <NavBar>
-        <HeaderLogo to="/">Weather Watcher</HeaderLogo>
-      </NavBar>
+      <div>
+        <NavBar>
+          <HeaderLogo to="/">Rad Weather</HeaderLogo>
+        </NavBar>
+        <QuickLinks>
+          <QuickLink
+            activeClassName="selected"
+            to="/compare/wa-climb-mountains"
+          >
+            Mountains
+          </QuickLink>
+          <QuickLink activeClassName="selected" to="/compare/wa-climb-crags">
+            Crags
+          </QuickLink>
+          <QuickLink activeClassName="selected" to="/compare/wa-climb-passes">
+            Passes
+          </QuickLink>
+        </QuickLinks>
+      </div>
     );
   }
 }

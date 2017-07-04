@@ -10,7 +10,9 @@ import {createStructuredSelector} from 'reselect';
 import {FormattedMessage} from 'react-intl';
 import styled from 'styled-components';
 import moment from 'moment-mini';
+import {withRouter} from 'react-router';
 
+import {makeSelectAugmentedComparison} from 'app/containers/Database/selectors';
 import MultiDayForecastComparison
   from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
@@ -51,6 +53,11 @@ export class HomePage extends PureComponent {
     onResetComparison: PropTypes.func.isRequired,
     onRefreshComparison: PropTypes.func.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
+    match: PropTypes.shape({
+      params: PropTypes.shape({
+        comparisonId: PropTypes.string,
+      }),
+    }),
   };
 
   state = {
@@ -62,7 +69,13 @@ export class HomePage extends PureComponent {
     if (!this.props.comparison) {
       this.props.onResetComparison();
     } else {
-      this.props.onRefreshComparison();
+      this.props.onRefreshComparison(this.props.comparison);
+    }
+  }
+
+  componentDidUpdate(oldProps) {
+    if (oldProps.comparison.id !== this.props.comparison.id) {
+      this.props.onRefreshComparison(this.props.comparison);
     }
   }
 
@@ -144,9 +157,11 @@ export const mapDispatchToProps = {
   onRefreshComparison: refreshComparison,
 };
 
-const mapStateToProps = createStructuredSelector({
-  comparison: selectAugmentedComparisonToShow(),
-});
+const mapStateToProps = (state, {comparisonId}) => {
+  return createStructuredSelector({
+    comparison: selectAugmentedComparisonToShow(comparisonId),
+  });
+};
 
 // Wrap the component to inject dispatch and state into it
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);

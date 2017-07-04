@@ -17,18 +17,20 @@ import {
   UPDATE_COMPARISON,
 } from './constants';
 
-export function fetchNOAAPoint({latitude, longitude}) {
+export function fetchNOAAPoint({latitude, longitude, comparisonPointId}) {
   return {
     type: FETCH_NOAA_POINT,
     latitude,
     longitude,
+    comparisonPointId,
   };
 }
 
-export function receiveNOAAPoint({noaaPoint}) {
+export function receiveNOAAPoint({noaaPoint, comparisonPointId}) {
   return {
     type: RECEIVE_NOAA_POINT,
     noaaPoint,
+    comparisonPointId,
   };
 }
 

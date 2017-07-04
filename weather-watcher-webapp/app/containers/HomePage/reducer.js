@@ -11,16 +11,10 @@
  */
 import {fromJS} from 'immutable';
 
-import {SHOW_COMPARISON} from './constants';
-
-const initialState = fromJS({
-  comparisonId: null,
-});
+const initialState = fromJS({});
 
 function homeReducer(state = initialState, action) {
   switch (action.type) {
-    case SHOW_COMPARISON:
-      return state.set('comparisonId', action.comparisonId);
     default:
       return state;
   }

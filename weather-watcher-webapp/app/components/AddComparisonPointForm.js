@@ -70,7 +70,6 @@ export default class AddComparisonPointForm extends Component {
               <FormField>
                 <Label>Name:</Label>
                 <Input
-                  disabled
                   type="text"
                   name="name"
                   value={this.state.name}

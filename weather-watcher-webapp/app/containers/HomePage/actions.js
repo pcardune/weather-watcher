@@ -33,20 +33,21 @@ export function showComparison(comparisonId) {
   return {type: SHOW_COMPARISON, comparisonId};
 }
 
-export function refreshComparison() {
-  return {type: REFRESH_COMPARISON};
+export function refreshComparison(comparison) {
+  return {type: REFRESH_COMPARISON, comparison};
 }
 
 export function receiveComparison(comparison) {
   return {type: RECEIVE_COMPARISON, comparison};
 }
 
-export function addComparisonPoint({name, position: {lat, lng}}) {
+export function addComparisonPoint({name, position: {lat, lng}, comparisonId}) {
   return {
     type: ADD_COMPARISON_POINT,
     name,
     latitude: lat,
     longitude: lng,
+    comparisonId,
   };
 }
 

@@ -79,12 +79,27 @@ export function* refreshComparisonPoint({comparisonPointId}) {
 }
 
 export function* watchFetchNOAAPoint() {
-  yield takeEvery(FETCH_NOAA_POINT, function*({latitude, longitude}) {
+  yield takeEvery(FETCH_NOAA_POINT, function*({
+    latitude,
+    longitude,
+    comparisonPointId,
+  }) {
     const noaaPoint = yield call(NOAAClient.fetchNOAAPoint, {
       latitude,
       longitude,
     });
     yield put(receiveNOAAPoint({noaaPoint, latitude, longitude}));
+    if (comparisonPointId) {
+      yield put(
+        updateComparisonPoint({
+          id: comparisonPointId,
+          noaaPointId: noaaPoint.id,
+          noaaGridForecastId: noaaPoint.properties.forecastGridData,
+          noaaDailyForecastId: noaaPoint.properties.forecast,
+          noaaHourlyForecastId: noaaPoint.properties.forecastHourly,
+        })
+      );
+    }
     yield all([
       call(refreshForecast, {
         forecastType: 'grid',
@@ -113,15 +128,11 @@ export function* watchFetchNOAAForecast() {
 }
 
 export function* createComparisonPoint({comparisonPoint}) {
-  yield put(fetchNOAAPoint(comparisonPoint));
-  const receiveAction = yield take(RECEIVE_NOAA_POINT);
   yield put(
-    updateComparisonPoint({
-      id: comparisonPoint.id,
-      noaaPointId: receiveAction.noaaPoint.id,
-      noaaGridForecastId: receiveAction.noaaPoint.properties.forecastGridData,
-      noaaDailyForecastId: receiveAction.noaaPoint.properties.forecast,
-      noaaHourlyForecastId: receiveAction.noaaPoint.properties.forecastHourly,
+    fetchNOAAPoint({
+      latitude: comparisonPoint.latitude,
+      longitude: comparisonPoint.longitude,
+      comparisonPointId: comparisonPoint.id,
     })
   );
 }

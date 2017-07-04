@@ -29,9 +29,13 @@ function NotFound() {
 }
 
 export function App({store}) {
-  const HomePage = () => (
+  const HomePageBundle = props => (
     <Bundle load={loadHomePage} store={store}>
-      {HP => HP && <HP />}
+      {HomePage =>
+        HomePage &&
+        <HomePage
+          comparisonId={props.match.params.comparisonId || 'wa-climb-crags'}
+        />}
     </Bundle>
   );
 
@@ -44,11 +48,13 @@ export function App({store}) {
       />
       <Header />
       <Switch>
-        <Route exact path="/" component={HomePage} />
+        <Route exact path="/" component={HomePageBundle} />
+        <Route path="/compare/:comparisonId" component={HomePageBundle} />
         <Route component={NotFound} />
       </Switch>
     </AppWrapper>
   );
 }
 
-export default withProgressBar(App);
+//export default withProgressBar(App);
+export default App;
