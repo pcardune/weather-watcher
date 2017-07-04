@@ -22,9 +22,6 @@ export const selectNOAAPoints = () =>
   createSelector(selectDatabaseDomain(), database =>
     database.get('noaaPoints'));
 
-export const selectNOAAPoint = id =>
-  createSelector(selectNOAAPoints(), points => points.get(id));
-
 export const selectNOAAGridForecasts = () =>
   createSelector(selectDatabaseDomain(), database =>
     database.get('noaaGridForecasts'));
@@ -37,78 +34,68 @@ export const selectNOAAHourlyForecasts = () =>
   createSelector(selectDatabaseDomain(), database =>
     database.get('noaaHourlyForecasts'));
 
-export const selectNOAAGridForecast = id =>
-  createSelector(selectNOAAGridForecasts, forecasts =>
-    forecasts.get(id).valueSeq().get(-1));
-
 export const selectComparisonPoints = () =>
   createSelector(selectDatabaseDomain(), database =>
     database.get('comparisonPoints'));
 
-export const selectComparisonPoint = id =>
-  createSelector(selectComparisonPoints(), points => points.get(id));
-
 export const selectComparisons = () =>
   createSelector(selectDatabaseDomain(), db => db.get('comparisons'));
-export const selectComparisonIds = () =>
-  createSelector(selectComparisons(), comparisons => comparisons.keySeq());
 
 export const selectFetches = () =>
   createSelector(selectDatabaseDomain(), db => db.get('fetches'));
 
-export const makeSelectAugmentedComparison = () =>
-  createSelector(
-    [
-      selectComparisons(),
-      selectComparisonPoints(),
-      selectNOAAPoints(),
-      selectNOAAGridForecasts(),
-      selectNOAADailyForecasts(),
-      selectNOAAHourlyForecasts(),
-      selectFetches(),
-    ],
-    (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts, fetches) =>
-      comparisonId => {
-        const comparison = comparisons.get(comparisonId);
-        return comparison && {
-          ...comparison,
-          comparisonPoints: comparison.comparisonPointIds.map(pointId => {
-            const point = comparisonPoints.get(pointId);
-            const noaaPoint = noaaPoints.get(point.noaaPointId);
-            const noaaGridForecast = noaaPoint &&
-              noaaGridForecasts
-                .get(noaaPoint.properties.forecastGridData, OrderedMap())
-                .valueSeq()
-                .get(-1);
-            const noaaHourlyForecast = noaaPoint &&
-              noaaHourlyForecasts
-                .get(noaaPoint.properties.forecastHourly, OrderedMap())
-                .valueSeq()
-                .get(-1);
-            const noaaDailyForecast = noaaPoint &&
-              noaaDailyForecasts
-                .get(noaaPoint.properties.forecast, OrderedMap())
-                .valueSeq()
-                .get(-1);
-            const isRefreshing = (noaaGridForecast &&
-              fetches.get(noaaGridForecast.id)) ||
-              (noaaHourlyForecast && fetches.get(noaaHourlyForecast.id)) ||
-              (noaaDailyForecast && fetches.get(noaaDailyForecast.id)) ||
-              (noaaPoint && fetches.get(noaaPoint.id));
-            return {
-              ...point,
-              isRefreshing,
-              noaaPoint,
-              noaaGridForecast,
-              noaaHourlyForecast,
-              noaaDailyForecast,
-              interpolatedGrid: noaaGridForecast &&
-                new InterpolatedGridForecast(noaaGridForecast),
-            };
-          }),
-        };
-      }
-  );
+export const makeSelectAugmentedComparison = createSelector(
+  [
+    selectComparisons(),
+    selectComparisonPoints(),
+    selectNOAAPoints(),
+    selectNOAAGridForecasts(),
+    selectNOAADailyForecasts(),
+    selectNOAAHourlyForecasts(),
+    selectFetches(),
+  ],
+  (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts, fetches) =>
+    comparisonId => {
+      const comparison = comparisons.get(comparisonId);
+      return comparison && {
+        ...comparison,
+        comparisonPoints: comparison.comparisonPointIds.map(pointId => {
+          const point = comparisonPoints.get(pointId);
+          const noaaPoint = noaaPoints.get(point.noaaPointId);
+          const noaaGridForecast = noaaPoint &&
+            noaaGridForecasts
+              .get(noaaPoint.properties.forecastGridData, OrderedMap())
+              .valueSeq()
+              .get(-1);
+          const noaaHourlyForecast = noaaPoint &&
+            noaaHourlyForecasts
+              .get(noaaPoint.properties.forecastHourly, OrderedMap())
+              .valueSeq()
+              .get(-1);
+          const noaaDailyForecast = noaaPoint &&
+            noaaDailyForecasts
+              .get(noaaPoint.properties.forecast, OrderedMap())
+              .valueSeq()
+              .get(-1);
+          const isRefreshing = (noaaGridForecast &&
+            fetches.get(noaaGridForecast.id)) ||
+            (noaaHourlyForecast && fetches.get(noaaHourlyForecast.id)) ||
+            (noaaDailyForecast && fetches.get(noaaDailyForecast.id)) ||
+            (noaaPoint && fetches.get(noaaPoint.id));
+          return {
+            ...point,
+            isRefreshing,
+            noaaPoint,
+            noaaGridForecast,
+            noaaHourlyForecast,
+            noaaDailyForecast,
+            interpolatedGrid: noaaGridForecast &&
+              new InterpolatedGridForecast(noaaGridForecast),
+          };
+        }),
+      };
+    }
+);
 
 const WEIGHTS = {
   WIND_SPEED: -1,

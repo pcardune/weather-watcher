@@ -1,5 +1,7 @@
+import uuid from 'uuid';
 import React, {Component} from 'react';
-import styled from 'styled-components';
+import PropTypes from 'prop-types';
+import styled, {css} from 'styled-components';
 import {Link, NavLink} from 'react-router-dom';
 
 const HeaderLogo = styled(Link)`
@@ -15,12 +17,20 @@ const QuickLinks = styled.div`
   text-align: center;
 `;
 
-const QuickLink = styled(NavLink)`
+const QuickLinkCSS = css`
   display: inline-block;
   padding: 10px;
   color: ${props => props.theme.colors.textOnPrimary};
   text-decoration: none;
+  cursor: pointer;
+`;
 
+const QuickButton = styled.a`
+  ${QuickLinkCSS}
+`;
+
+const QuickLink = styled(NavLink)`
+  ${QuickLinkCSS}
   &.selected {
     text-decoration: underline;
   }
@@ -42,6 +52,11 @@ const NavBar = styled.div`
 `;
 
 class Header extends Component {
+  static propTypes = {
+    onNewComparison: PropTypes.func.isRequired,
+    comparisons: PropTypes.object.isRequired,
+  };
+
   render() {
     return (
       <div>
@@ -49,18 +64,18 @@ class Header extends Component {
           <HeaderLogo to="/">Rad Weather</HeaderLogo>
         </NavBar>
         <QuickLinks>
-          <QuickLink
-            activeClassName="selected"
-            to="/compare/wa-climb-mountains"
-          >
-            Mountains
-          </QuickLink>
-          <QuickLink activeClassName="selected" to="/compare/wa-climb-crags">
-            Crags
-          </QuickLink>
-          <QuickLink activeClassName="selected" to="/compare/wa-climb-passes">
-            Passes
-          </QuickLink>
+          {this.props.comparisons.valueSeq().map(comparison => (
+            <QuickLink
+              key={comparison.id}
+              activeClassName="selected"
+              to={`/compare/${comparison.id}`}
+            >
+              {comparison.name}
+            </QuickLink>
+          ))}
+          <QuickButton onClick={this.props.onNewComparison}>
+            + New Comparison
+          </QuickButton>
         </QuickLinks>
       </div>
     );

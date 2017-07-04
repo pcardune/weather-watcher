@@ -90,9 +90,12 @@ export function* watchFetchNOAAPoint() {
     });
     yield put(receiveNOAAPoint({noaaPoint, latitude, longitude}));
     if (comparisonPointId) {
+      const [lng, lat] = noaaPoint.geometry.coordinates;
       yield put(
         updateComparisonPoint({
           id: comparisonPointId,
+          latitude: lat,
+          longitude: lng,
           noaaPointId: noaaPoint.id,
           noaaGridForecastId: noaaPoint.properties.forecastGridData,
           noaaDailyForecastId: noaaPoint.properties.forecast,

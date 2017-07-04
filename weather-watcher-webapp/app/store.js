@@ -11,7 +11,7 @@ import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
 
-export default function configureStore(initialState = {}) {
+export default function configureStore(initialState = {}, callback) {
   // Create the store with two middlewares
   // 1. sagaMiddleware: Makes redux-sagas work
   // 2. routerMiddleware: Syncs the location/URL path to the state
@@ -38,7 +38,7 @@ export default function configureStore(initialState = {}) {
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 
-  persistStore(store, {storage: localForage});
+  persistStore(store, {storage: localForage}, () => callback(store));
 
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */
@@ -52,6 +52,4 @@ export default function configureStore(initialState = {}) {
       });
     });
   }
-
-  return store;
 }

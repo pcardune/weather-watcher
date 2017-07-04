@@ -21,13 +21,8 @@ import {
   REFRESH_COMPARISON,
   RECEIVE_COMPARISON,
   ADD_COMPARISON_POINT,
-  RESET_COMPARISON,
   SHOW_COMPARISON,
 } from './constants';
-
-export function resetComparison() {
-  return {type: RESET_COMPARISON};
-}
 
 export function showComparison(comparisonId) {
   return {type: SHOW_COMPARISON, comparisonId};

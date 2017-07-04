@@ -4,32 +4,27 @@
  * This is the first thing users see of our App, at the '/' route
  */
 
-import React, {PureComponent, PropTypes} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import {createStructuredSelector} from 'reselect';
-import {FormattedMessage} from 'react-intl';
 import styled from 'styled-components';
 import moment from 'moment-mini';
-import {withRouter} from 'react-router';
 
-import {makeSelectAugmentedComparison} from 'app/containers/Database/selectors';
 import MultiDayForecastComparison
   from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import Button from 'app/components/Button';
 import {Card, CardHeader, CardBody} from 'app/components/Card';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
-import Dialog from 'app/components/Dialog';
 import DatePager from 'app/components/DatePager';
+import InlineInput from 'app/components/InlineInput';
+import {updateComparison} from 'app/containers/Database/actions';
+import {makeSelectAugmentedComparison} from 'app/containers/Database/selectors';
 
 import {
-  resetComparison,
   addComparisonPoint,
   removeComparisonPoint,
   refreshComparison,
 } from './actions';
-import {selectAugmentedComparisonToShow} from './selectors';
-import messages from './messages';
 
 const HelpText = styled.p`
   text-align: center;
@@ -47,17 +42,13 @@ const Buttons = styled.div`
   }
 `;
 
-export class HomePage extends PureComponent {
+export class HomePage extends Component {
   static propTypes = {
-    comparison: AugmentedComparisonShape,
-    onResetComparison: PropTypes.func.isRequired,
+    comparison: AugmentedComparisonShape.isRequired,
     onRefreshComparison: PropTypes.func.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
-    match: PropTypes.shape({
-      params: PropTypes.shape({
-        comparisonId: PropTypes.string,
-      }),
-    }),
+    onAddComparisonPoint: PropTypes.func.isRequired,
+    onUpdateComparsion: PropTypes.func.isRequired,
   };
 
   state = {
@@ -66,18 +57,18 @@ export class HomePage extends PureComponent {
   };
 
   componentDidMount() {
-    if (!this.props.comparison) {
-      this.props.onResetComparison();
-    } else {
-      this.props.onRefreshComparison(this.props.comparison);
-    }
+    this.onRefreshComparison();
   }
 
   componentDidUpdate(oldProps) {
     if (oldProps.comparison.id !== this.props.comparison.id) {
-      this.props.onRefreshComparison(this.props.comparison);
+      this.onRefreshComparison();
     }
   }
+
+  onRefreshComparison = () => {
+    this.props.onRefreshComparison(this.props.comparison);
+  };
 
   onChangeDate = currentDate => {
     this.setState({currentDate});
@@ -103,9 +94,12 @@ export class HomePage extends PureComponent {
     this.hideAddForm();
   };
 
+  onChangeComparisonName = name => {
+    this.props.onUpdateComparsion({...this.props.comparison, name});
+  };
+
   render() {
-    const hasPoints = this.props.comparison &&
-      this.props.comparison.comparisonPoints.length > 0;
+    const hasPoints = this.props.comparison.comparisonPoints.length > 0;
     return (
       <article>
         <DatePager
@@ -115,14 +109,17 @@ export class HomePage extends PureComponent {
         <Card>
           <CardHeader>
             <h1>
-              <FormattedMessage {...messages.comparisonHeader} />
+              <InlineInput
+                value={this.props.comparison.name}
+                onChange={this.onChangeComparisonName}
+              />
             </h1>
             <Buttons>
               <Button accent onClick={this.onClickAddLocation}>
                 Add Location
               </Button>
               {hasPoints &&
-                <Button accent onClick={this.props.onRefreshComparison}>
+                <Button accent onClick={this.onRefreshComparison}>
                   Refresh
                 </Button>}
             </Buttons>
@@ -152,16 +149,14 @@ export class HomePage extends PureComponent {
 
 export const mapDispatchToProps = {
   onAddComparisonPoint: addComparisonPoint,
-  onResetComparison: resetComparison,
   onRemoveComparisonPoint: removeComparisonPoint,
   onRefreshComparison: refreshComparison,
+  onUpdateComparsion: updateComparison,
 };
 
-const mapStateToProps = (state, {comparisonId}) => {
-  return createStructuredSelector({
-    comparison: selectAugmentedComparisonToShow(comparisonId),
-  });
-};
+const mapStateToProps = (state, {comparisonId}) => ({
+  comparison: makeSelectAugmentedComparison(state)(comparisonId),
+});
 
 // Wrap the component to inject dispatch and state into it
 export default connect(mapStateToProps, mapDispatchToProps)(HomePage);
