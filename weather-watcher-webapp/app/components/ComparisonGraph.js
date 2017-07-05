@@ -1,9 +1,12 @@
-import React, {Component, PureComponent, PropTypes} from 'react';
+import React, {Component, PureComponent} from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import moment from 'moment-mini';
 import {defaultMemoize} from 'reselect';
 import {
+  Line,
   VictoryLabel,
+  VictoryArea,
   VictoryAxis,
   VictoryLine,
   VictoryChart,
@@ -22,18 +25,64 @@ const ChartWrapper = styled.div`
   }
 `;
 
-function DateLabel(props) {
-  let style = props.style;
-  if (props.text === moment(props.currentDate || new Date()).format('ddd')) {
-    style = {...style, fill: Theme.colors.primary};
+class DateGridLine extends Component {
+  static propTypes = {
+    currentDate: PropTypes.instanceOf(Date),
+    datum: PropTypes.number.isRequired,
+  };
+
+  render() {
+    if (moment(this.props.datum).hour() !== 0) {
+      // only show labels at midnight
+      return null;
+    }
+    return <Line type="grid" {...this.props} />;
   }
-  return (
-    <VictoryLabel
-      {...props}
-      style={{...props.style, ...style, cursor: 'pointer'}}
-      events={{onClick: () => props.onClick(new Date(props.datum))}}
-    />
-  );
+}
+
+class DateLabel extends Component {
+  static propTypes = {
+    style: PropTypes.object,
+    currentDate: PropTypes.instanceOf(Date),
+    onClick: PropTypes.func.isRequired,
+    tickValues: PropTypes.arrayOf(PropTypes.number),
+    index: PropTypes.number,
+  };
+
+  static defaultProps = {
+    style: {},
+    currentDate: new Date(),
+    tickValues: [],
+    index: 0,
+  };
+
+  static FORMAT = 'ddd';
+
+  render() {
+    let style = this.props.style;
+    const datum = this.props.tickValues[this.props.index];
+    if (
+      moment(this.props.currentDate)
+        .startOf('day')
+        .isSame(moment(datum).startOf('day'))
+    ) {
+      style = {...style, fill: Theme.colors.primary};
+    }
+    if (moment(datum).hour() !== 12) {
+      // only show labels at noon
+      return null;
+    }
+    return (
+      <VictoryLabel
+        {...this.props}
+        style={{...this.props.style, ...style, cursor: 'pointer'}}
+        events={{
+          onClick: () =>
+            this.props.onClick(moment(datum).startOf('day').toDate()),
+        }}
+      />
+    );
+  }
 }
 
 function EmptyTick() {
@@ -115,6 +164,12 @@ export default class ComparisonGraph extends PureComponent {
     if (!hasData) {
       return null;
     }
+    const tickValues = [];
+    dates.forEach(date => {
+      tickValues.push(date.getTime());
+      tickValues.push(date.getTime() + 1000 * 60 * 60 * 12);
+    });
+
     return (
       <ChartWrapper>
         <VictoryChart
@@ -128,12 +183,27 @@ export default class ComparisonGraph extends PureComponent {
               <DateLabel
                 currentDate={this.props.date}
                 onClick={this.props.onClickDate}
+                tickValues={tickValues}
               />
             }
-            tickValues={dates.map(date => date.getTime())}
-            tickFormat={time => moment(new Date(time)).format('ddd')}
+            tickValues={tickValues}
+            gridComponent={<DateGridLine currentDate={this.props.date} />}
+            tickFormat={time => moment(new Date(time)).format(DateLabel.FORMAT)}
             tickComponent={<EmptyTick />}
             axisComponent={<EmptyTick />}
+          />
+          <VictoryArea
+            data={[
+              {
+                x: this.props.date.getTime(),
+                y: domain.y[1],
+              },
+              {
+                x: this.props.date.getTime() + 1000 * 60 * 60 * 24,
+                y: domain.y[1],
+              },
+            ]}
+            style={{data: {fill: Theme.colors.primaryLight}}}
           />
           {data.map((lineData, i) => (
             <FastLine
@@ -152,19 +222,6 @@ export default class ComparisonGraph extends PureComponent {
               theme={ComparisonGraphTheme}
             />
           ))}
-          <VictoryLine
-            data={[
-              {
-                x: (this.props.date || new Date()).getTime(),
-                y: domain.y[0],
-              },
-              {
-                x: (this.props.date || new Date()).getTime(),
-                y: domain.y[1],
-              },
-            ]}
-            style={{data: {stroke: Theme.colors.primary, strokeWidth: 2}}}
-          />
         </VictoryChart>
       </ChartWrapper>
     );
