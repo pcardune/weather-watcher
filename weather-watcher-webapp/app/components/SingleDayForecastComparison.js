@@ -2,11 +2,9 @@ import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
 import convert from 'convert-units';
 import LoadingIndicator from 'app/components/LoadingIndicator';
-import {
-  getSortedPointsForDate,
-  getScoreForDate,
-} from 'app/containers/Database/selectors';
+import {getAverageScoreForDate} from 'app/containers/Database/selectors';
 import Button from 'app/components/Button';
+import Number from 'app/components/Number';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import {round} from 'app/utils/math';
 
@@ -67,6 +65,12 @@ const ComparisonTable = styled.table`
   }
 `;
 
+function makeSortFunc(date) {
+  return (p1, p2) =>
+    p2.interpolatedScore.getAverageScoreForDate(date) -
+    p1.interpolatedScore.getAverageScoreForDate(date);
+}
+
 export default class SingleDayForecastComparison extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
@@ -76,7 +80,8 @@ export default class SingleDayForecastComparison extends PureComponent {
 
   render() {
     const {comparison, date} = this.props;
-    const sorted = getSortedPointsForDate(comparison, date);
+    const sorted = [...comparison.comparisonPoints];
+    sorted.sort(makeSortFunc(date));
     return (
       <ComparisonTable>
         <thead>
@@ -126,13 +131,13 @@ export default class SingleDayForecastComparison extends PureComponent {
                 </Row>
               );
             }
-            const score = getScoreForDate(point, date);
+            const score = getAverageScoreForDate(point, date);
             return (
               <Row key={point.id}>
                 <Cell style={{position: 'relative'}}>
                   {point.isRefreshing
                     ? <LoadingIndicator />
-                    : round(score.score, 1)}
+                    : round(score.score)}
                 </Cell>
                 <Cell>
                   <PointLink
@@ -145,29 +150,24 @@ export default class SingleDayForecastComparison extends PureComponent {
                   </PointLink>
                 </Cell>
                 <Cell>
-                  {round(convert(score.minTemp).from('C').to('F'))}
+                  <Number value={score.minTemp} from="C" to="F" />
                 </Cell>
                 <Cell>
-                  {round(convert(score.maxTemp).from('C').to('F'))}
+                  <Number value={score.maxTemp} from="C" to="F" />
                 </Cell>
                 <Cell>
-                  {round(convert(score.windSpeed).from('knot').to('m/h'))}
+                  <Number value={score.windSpeed} from="knot" to="m/h" />
                 </Cell>
                 <Cell>
-                  {isNaN(score.probabilityOfPrecipitation)
-                    ? '-'
-                    : round(score.probabilityOfPrecipitation)}
+                  <Number value={score.probabilityOfPrecipitation} />
                 </Cell>
                 <Cell>
-                  {
-                    (isNaN(score.quantitativePrecipitation)
-                      ? '-'
-                      : round(
-                          convert(score.quantitativePrecipitation)
-                            .from('mm')
-                            .to('in')
-                        ), 2)
-                  }
+                  <Number
+                    value={score.quantitativePrecipitation}
+                    from="mm"
+                    to="in"
+                    roundTo={2}
+                  />
                 </Cell>
                 <ShortForecastCell>
                   {score.dailyForecast && score.dailyForecast.day.shortForecast}

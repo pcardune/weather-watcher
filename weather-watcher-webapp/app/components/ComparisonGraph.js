@@ -13,9 +13,8 @@ import {
   VictoryTooltip,
 } from 'victory';
 import {AugmentedComparisonShape} from 'app/propTypes';
-import {getScoresForDate} from 'app/containers/Database/selectors';
-import ComparisonGraphTheme from './ComparisonGraphTheme';
 import Theme from 'app/Theme';
+import ComparisonGraphTheme from './ComparisonGraphTheme';
 
 const ChartWrapper = styled.div`
   margin: 0px 0;
@@ -27,8 +26,11 @@ const ChartWrapper = styled.div`
 
 class DateGridLine extends Component {
   static propTypes = {
-    currentDate: PropTypes.instanceOf(Date),
     datum: PropTypes.number.isRequired,
+  };
+
+  static defaultProps = {
+    datum: 0,
   };
 
   render() {
@@ -105,7 +107,10 @@ const calculateChartData = comparison => {
   const data = comparison.comparisonPoints.map(point => {
     const lineData = [];
     dates.slice(0, 6).forEach(date => {
-      getScoresForDate(point, date).forEach(score => {
+      if (!point.interpolatedScore) {
+        return;
+      }
+      point.interpolatedScore.getScoresForDate(date).forEach(score => {
         if (score.score) {
           minScore = Math.min(score.score, minScore);
           maxScore = Math.max(score.score, maxScore);
@@ -187,7 +192,7 @@ export default class ComparisonGraph extends PureComponent {
               />
             }
             tickValues={tickValues}
-            gridComponent={<DateGridLine currentDate={this.props.date} />}
+            gridComponent={<DateGridLine />}
             tickFormat={time => moment(new Date(time)).format(DateLabel.FORMAT)}
             tickComponent={<EmptyTick />}
             axisComponent={<EmptyTick />}

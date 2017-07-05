@@ -2,9 +2,8 @@ import {OrderedMap} from 'immutable';
 import {createSelector} from 'reselect';
 import moment from 'moment-mini';
 import {safeAverage, safeMin, safeMax} from 'app/utils/math';
-import convert from 'convert-units';
 
-import {InterpolatedGridForecast} from './scoring';
+import {InterpolatedGridForecast, InterpolatedScoreFunction} from './scoring';
 
 /**
  * Direct selector to the database state domain
@@ -90,74 +89,21 @@ export const makeSelectAugmentedComparison = createSelector(
             noaaGridForecast,
             noaaHourlyForecast,
             noaaDailyForecast,
-            interpolatedGrid: noaaGridForecast &&
-              new InterpolatedGridForecast(noaaGridForecast),
+            interpolatedScore: new InterpolatedScoreFunction({
+              interpolatedGridForecast: new InterpolatedGridForecast(
+                noaaGridForecast
+              ),
+            }),
           };
         }),
       };
     }
 );
 
-const WEIGHTS = {
-  WIND_SPEED: -1,
-  PRECIPITATION_PERCENT: -0.5,
-  PRECIPITATION_QUANTITY: -1,
-  TEMP: -2,
-};
-
-export function getSortedPointsForDate(augmentedComparison, date) {
-  const sorted = [...augmentedComparison.comparisonPoints];
-  sorted.sort(
-    (p1, p2) =>
-      getScoreForDate(p2, date).score - getScoreForDate(p1, date).score
+export function getAverageScoreForDate(augmentedComparisonPoint, date) {
+  const scores = augmentedComparisonPoint.interpolatedScore.getScoresForDate(
+    date
   );
-  return sorted;
-}
-
-export function getScoresForDate(
-  augmentedComparisonPoint,
-  date,
-  interval = 'PT1H'
-) {
-  const scores = [];
-  if (!augmentedComparisonPoint.noaaGridForecast) {
-    return scores;
-  }
-
-  const grid = augmentedComparisonPoint.interpolatedGrid;
-  const startTime = moment(date).startOf('date');
-  const endTime = moment(date).endOf('date');
-  const duration = moment.duration(interval);
-  for (
-    let t = startTime.valueOf();
-    t < endTime.valueOf();
-    t = moment(t).add(duration).valueOf()
-  ) {
-    const precip = grid.getValue('probabilityOfPrecipitation', t);
-    const windSpeed = grid.getValue('windSpeed', t);
-    const precipQuantity = grid.getValue('quantitativePrecipitation', t);
-    const temp = grid.getValue('temperature', t);
-    const score = 100 +
-      Math.round(
-        WEIGHTS.PRECIPITATION_QUANTITY * precipQuantity +
-          WEIGHTS.PRECIPITATION_PERCENT * precip +
-          WEIGHTS.WIND_SPEED * windSpeed +
-          WEIGHTS.TEMP * Math.abs(temp - 18.3)
-      );
-    scores.push({
-      score,
-      probabilityOfPrecipitation: precip,
-      quantitativePrecipitation: precipQuantity,
-      windSpeed,
-      temperature: temp,
-      time: t,
-    });
-  }
-  return scores;
-}
-
-export function getScoreForDate(augmentedComparisonPoint, date) {
-  const scores = getScoresForDate(augmentedComparisonPoint, date);
 
   if (!scores.length) {
     return {
