@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
-import convert from 'convert-units';
 import LoadingIndicator from 'app/components/LoadingIndicator';
-import {getAverageScoreForDate} from 'app/containers/Database/selectors';
 import Button from 'app/components/Button';
-import Number from 'app/components/Number';
-import {AugmentedComparisonShape} from 'app/propTypes';
-import {round} from 'app/utils/math';
+import RollupNumber from 'app/components/RollupNumber';
+import moment from 'moment-mini';
+import {
+  AugmentedComparisonShape,
+  AugmentedComparisonPointShape,
+} from 'app/propTypes';
 
 const ColumnHeader = styled.th`
   text-align: left;
@@ -71,6 +72,33 @@ function makeSortFunc(date) {
     p1.interpolatedScore.getAverageScoreForDate(date);
 }
 
+class PointForecastRollup extends PureComponent {
+  static propTypes = {
+    ...RollupNumber.propTypes,
+    point: AugmentedComparisonPointShape.isRequired,
+    date: PropTypes.instanceOf(Date).isRequired,
+    property: PropTypes.string.isRequired,
+  };
+
+  static defaults = {
+    temperature: {from: 'C', to: 'F'},
+    windSpeed: {from: 'knot', to: 'm/h'},
+    quantitativePrecipitation: {from: 'mm', to: 'in', roundTo: 2},
+  };
+
+  render() {
+    const {point, property, date, ...rest} = this.props;
+    const defaultRest = PointForecastRollup.defaults[property] || {};
+    return (
+      <RollupNumber
+        values={point.interpolatedScore.grid.getValuesForDate(property, date)}
+        {...defaultRest}
+        {...rest}
+      />
+    );
+  }
+}
+
 export default class SingleDayForecastComparison extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
@@ -131,13 +159,31 @@ export default class SingleDayForecastComparison extends PureComponent {
                 </Row>
               );
             }
-            const score = getAverageScoreForDate(point, date);
+            const dailyForecast = {
+              day: {},
+              night: {},
+            };
+            if (point.noaaDailyForecast) {
+              point.noaaDailyForecast.properties.periods.forEach(period => {
+                if (moment(new Date(period.startTime)).isSame(date, 'day')) {
+                  if (period.isDaytime) {
+                    dailyForecast.day = period;
+                  } else {
+                    dailyForecast.night = period;
+                  }
+                }
+              });
+            }
             return (
               <Row key={point.id}>
                 <Cell style={{position: 'relative'}}>
                   {point.isRefreshing
                     ? <LoadingIndicator />
-                    : round(score.score)}
+                    : <RollupNumber
+                        values={point.interpolatedScore
+                          .getScoresForDate(date)
+                          .map(s => s.score)}
+                      />}
                 </Cell>
                 <Cell>
                   <PointLink
@@ -150,27 +196,44 @@ export default class SingleDayForecastComparison extends PureComponent {
                   </PointLink>
                 </Cell>
                 <Cell>
-                  <Number value={score.minTemp} from="C" to="F" />
+                  <PointForecastRollup
+                    date={date}
+                    property="temperature"
+                    point={point}
+                    type="min"
+                  />
                 </Cell>
                 <Cell>
-                  <Number value={score.maxTemp} from="C" to="F" />
+                  <PointForecastRollup
+                    date={date}
+                    property="temperature"
+                    point={point}
+                    type="max"
+                  />
                 </Cell>
                 <Cell>
-                  <Number value={score.windSpeed} from="knot" to="m/h" />
+                  <PointForecastRollup
+                    date={date}
+                    property="windSpeed"
+                    point={point}
+                  />
                 </Cell>
                 <Cell>
-                  <Number value={score.probabilityOfPrecipitation} />
+                  <PointForecastRollup
+                    date={date}
+                    property="probabilityOfPrecipitation"
+                    point={point}
+                  />
                 </Cell>
                 <Cell>
-                  <Number
-                    value={score.quantitativePrecipitation}
-                    from="mm"
-                    to="in"
-                    roundTo={2}
+                  <PointForecastRollup
+                    date={date}
+                    property="quantitativePrecipitation"
+                    point={point}
                   />
                 </Cell>
                 <ShortForecastCell>
-                  {score.dailyForecast && score.dailyForecast.day.shortForecast}
+                  {dailyForecast.day.shortForecast}
                 </ShortForecastCell>
                 <Cell>
                   <Button

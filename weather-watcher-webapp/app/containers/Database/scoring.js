@@ -26,6 +26,29 @@ export class InterpolatedGridForecast {
     }
     return this.timeSeries[propName].interpolate(time);
   }
+
+  getValuesForDate(propName, date, interval = 'PT1H') {
+    return this.getValuesForInterval(
+      propName,
+      moment(date).startOf('date').valueOf(),
+      moment(date).endOf('date').valueOf(),
+      interval
+    );
+  }
+
+  getValuesForInterval(propName, startTime, endTime, interval = 'PT1H') {
+    const values = [];
+
+    const duration = moment.duration(interval);
+    for (
+      let t = startTime;
+      t < endTime;
+      t = moment(t).add(duration).valueOf()
+    ) {
+      values.push(this.getValue(propName, t));
+    }
+    return values;
+  }
 }
 
 const WEIGHTS = {
@@ -47,14 +70,7 @@ function getScoreForTime(grid, time) {
         WEIGHTS.WIND_SPEED * windSpeed +
         WEIGHTS.TEMP * Math.abs(temp - 18.3)
     );
-  return {
-    score,
-    probabilityOfPrecipitation: precip,
-    quantitativePrecipitation: precipQuantity,
-    windSpeed,
-    temperature: temp,
-    time,
-  };
+  return {score, time};
 }
 
 export class InterpolatedScoreFunction {

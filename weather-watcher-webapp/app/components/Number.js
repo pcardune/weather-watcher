@@ -4,6 +4,14 @@ import PropTypes from 'prop-types';
 
 import {round} from 'app/utils/math';
 
+function formatNumber({value, from, to, roundTo, nanText}) {
+  if (from && to) {
+    value = convert(value).from(from).to(to);
+  }
+  return isNaN(value) ? nanText : round(value, roundTo);
+}
+
+/* eslint-disable react/no-unused-prop-types */
 export default class Number extends PureComponent {
   static propTypes = {
     value: PropTypes.number,
@@ -22,11 +30,6 @@ export default class Number extends PureComponent {
   };
 
   render() {
-    let {value} = this.props;
-    const {from, to, roundTo, nanText} = this.props;
-    if (from && to) {
-      value = convert(value).from(from).to(to);
-    }
-    return <span>{isNaN(value) ? nanText : round(value, roundTo)}</span>;
+    return <span>{formatNumber(this.props)}</span>;
   }
 }
