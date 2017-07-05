@@ -57,6 +57,8 @@ const Row = styled.tr`
   ${Cell}:first-child {
     padding-left: 35px;
   }
+  background: ${props => props.selected ? props.theme.colors.primaryLight : 'transparent'};
+  cursor: pointer;
 `;
 
 const ComparisonTable = styled.table`
@@ -104,6 +106,16 @@ export default class SingleDayForecastComparison extends PureComponent {
     comparison: AugmentedComparisonShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
+    onSelectComparisonPoint: PropTypes.func.isRequired,
+    selectedComparisonPointId: PropTypes.string,
+  };
+
+  static defaultProps = {
+    selectedComparisonPointId: null,
+  };
+
+  onClickRow = point => {
+    this.props.onSelectComparisonPoint(point.id);
   };
 
   render() {
@@ -175,7 +187,11 @@ export default class SingleDayForecastComparison extends PureComponent {
               });
             }
             return (
-              <Row key={point.id}>
+              <Row
+                key={point.id}
+                onClick={() => this.onClickRow(point)}
+                selected={this.props.selectedComparisonPointId === point.id}
+              >
                 <Cell style={{position: 'relative'}}>
                   {point.isRefreshing
                     ? <LoadingIndicator />

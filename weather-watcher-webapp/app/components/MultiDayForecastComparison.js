@@ -15,6 +15,18 @@ export default class MultiDayForecastComparison extends PureComponent {
     date: new Date(),
   };
 
+  state = {
+    selectedPointId: null,
+  };
+
+  onSelectComparisonPoint = pointId => {
+    if (this.state.selectedPointId === pointId) {
+      this.setState({selectedPointId: null});
+    } else {
+      this.setState({selectedPointId: pointId});
+    }
+  };
+
   render() {
     return (
       <div>
@@ -23,11 +35,14 @@ export default class MultiDayForecastComparison extends PureComponent {
           comparison={this.props.comparison}
           date={this.props.date}
           onRemoveComparisonPoint={this.props.onRemoveComparisonPoint}
+          onSelectComparisonPoint={this.onSelectComparisonPoint}
+          selectedComparisonPointId={this.state.selectedPointId}
         />
         <ComparisonGraph
           comparison={this.props.comparison}
           date={this.props.date}
           onClickDate={this.props.onClickDate}
+          highlightPointId={this.state.selectedPointId}
         />
       </div>
     );

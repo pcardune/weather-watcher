@@ -1,3 +1,4 @@
+import Color from 'color';
 import React, {Component, PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
@@ -125,7 +126,7 @@ const calculateChartData = comparison => {
       });
     });
     hasData = hasData || lineData.length > 0;
-    return lineData;
+    return {point, lineData};
   });
   const domain = {
     y: [minScore - 2, maxScore + 2],
@@ -140,13 +141,27 @@ const calculateChartData = comparison => {
 };
 
 class FastLine extends Component {
-  static propTypes = VictoryLine.propTypes;
+  static propTypes = {
+    ...VictoryLine.propTypes,
+    color: PropTypes.string.isRequired,
+  };
 
   shouldComponentUpdate(nextProps) {
-    return this.props.data !== nextProps.data;
+    return this.props.data !== nextProps.data ||
+      this.props.color !== nextProps.color;
   }
+
   render() {
-    return <VictoryLine {...this.props} />;
+    return (
+      <VictoryLine
+        {...this.props}
+        style={{
+          data: {
+            stroke: this.props.color,
+          },
+        }}
+      />
+    );
   }
 }
 
@@ -155,6 +170,12 @@ export default class ComparisonGraph extends PureComponent {
     comparison: AugmentedComparisonShape.isRequired,
     date: PropTypes.instanceOf(Date),
     onClickDate: PropTypes.func.isRequired,
+    highlightPointId: PropTypes.string,
+  };
+
+  static defaultProps = {
+    highlightPointId: null,
+    date: new Date(),
   };
 
   getChartData = defaultMemoize(calculateChartData);
@@ -166,6 +187,14 @@ export default class ComparisonGraph extends PureComponent {
     const {hasData, data, domain, dates} = this.getChartData(
       this.props.comparison
     );
+    data.sort((d1, d2) => {
+      if (d1.point.id === this.props.highlightPointId) {
+        return 1;
+      } else if (d2.point.id === this.props.highlightPointId) {
+        return -1;
+      }
+      return 0;
+    });
     if (!hasData) {
       return null;
     }
@@ -210,23 +239,30 @@ export default class ComparisonGraph extends PureComponent {
             ]}
             style={{data: {fill: Theme.colors.primaryLight}}}
           />
-          {data.map((lineData, i) => (
-            <FastLine
-              key={i}
-              data={lineData}
-              labels={this.getLabel}
-              labelComponent={this.labelComponent}
-              interpolation="basis"
-              style={{
-                data: {
-                  stroke: ComparisonGraphTheme.stack.colorScale[
-                    i % ComparisonGraphTheme.stack.colorScale.length
-                  ],
-                },
-              }}
-              theme={ComparisonGraphTheme}
-            />
-          ))}
+          {data.map(({lineData, point}) => {
+            const i = this.props.comparison.comparisonPoints.indexOf(point);
+            let color = ComparisonGraphTheme.stack.colorScale[
+              i % ComparisonGraphTheme.stack.colorScale.length
+            ];
+            if (this.props.highlightPointId) {
+              if (this.props.highlightPointId !== point.id) {
+                color = Color(color).lighten(0.5).string();
+              } else {
+                color = 'black';
+              }
+            }
+            return (
+              <FastLine
+                key={i}
+                data={lineData}
+                labels={this.getLabel}
+                labelComponent={this.labelComponent}
+                interpolation="basis"
+                color={Color(color).string()}
+                theme={ComparisonGraphTheme}
+              />
+            );
+          })}
         </VictoryChart>
       </ChartWrapper>
     );
