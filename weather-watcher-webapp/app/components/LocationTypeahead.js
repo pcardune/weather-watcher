@@ -13,6 +13,7 @@ const StyledGeosuggest = styled(Geosuggest)`
 
   .geosuggest__input {
     ${inputStyle}
+    border: 1px solid ${props => props.theme.colors.divider} !important;
   }
   .geosuggest__suggests {
     border: 1px solid ${props => props.theme.colors.divider};
@@ -23,29 +24,23 @@ const StyledGeosuggest = styled(Geosuggest)`
   }
 `;
 
-export default withTheme(
-  class LocationTypeahead extends PureComponent {
-    static propTypes = {
-      onChange: PropTypes.func.isRequired,
-    };
+export default class LocationTypeahead extends PureComponent {
+  static propTypes = {
+    onChange: PropTypes.func.isRequired,
+  };
 
-    render() {
-      return (
-        <StyledGeosuggest
-          country="us"
-          onSuggestSelect={this.props.onChange}
-          placeholder="Search for a location..."
-          style={{
-            input: {
-              borderWidth: 1,
-              borderColor: this.props.theme.colors.divider,
-              borderStyle: 'solid',
-              boxShadow: 'none',
-              outline: 'none',
-            },
-          }}
-        />
-      );
-    }
+  focus = () => {
+    this.geosuggest.focus();
+  };
+
+  render() {
+    return (
+      <StyledGeosuggest
+        country="us"
+        onSuggestSelect={this.props.onChange}
+        placeholder="Search for a location..."
+        innerRef={el => this.geosuggest = el}
+      />
+    );
   }
-);
+}

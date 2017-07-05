@@ -31,6 +31,12 @@ export default class AddComparisonPointForm extends Component {
     },
   };
 
+  componentDidUpdate(oldProps) {
+    if (!oldProps.isOpen && this.props.isOpen) {
+      this.locationInput.focus();
+    }
+  }
+
   onChange = event => {
     this.setState({
       [event.target.name]: event.target.value,
@@ -89,7 +95,10 @@ export default class AddComparisonPointForm extends Component {
             </div>
             <div>
               <FormField>
-                <LocationTypeahead onChange={this.onChangeLocation} />
+                <LocationTypeahead
+                  ref={el => this.locationInput = el}
+                  onChange={this.onChangeLocation}
+                />
               </FormField>
               <Map
                 center={this.state.position}

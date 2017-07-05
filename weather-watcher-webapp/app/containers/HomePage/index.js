@@ -89,8 +89,11 @@ export class HomePage extends Component {
     this.setState({showAddForm: false});
   };
 
-  onAddComparisonPoint = (...args) => {
-    this.props.onAddComparisonPoint(...args);
+  onAddComparisonPoint = args => {
+    this.props.onAddComparisonPoint({
+      ...args,
+      comparisonId: this.props.comparison.id,
+    });
     this.hideAddForm();
   };
 

@@ -102,21 +102,8 @@ const WEIGHTS = {
   WIND_SPEED: -1,
   PRECIPITATION_PERCENT: -0.5,
   PRECIPITATION_QUANTITY: -1,
-  TEMP: -1,
+  TEMP: -2,
 };
-
-function filterNOAAValuesByDate(values, date) {
-  const filtered = values
-    .filter(value =>
-      moment(new Date(value.validTime.split('/')[0])).isSame(date, 'day'))
-    .map(v => v.value);
-  return filtered;
-}
-
-function getAverageNOAAValueForDate(property, date) {
-  const avg = safeAverage(filterNOAAValuesByDate(property.values, date));
-  return avg;
-}
 
 export function getSortedPointsForDate(augmentedComparison, date) {
   const sorted = [...augmentedComparison.comparisonPoints];
