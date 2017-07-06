@@ -27,15 +27,16 @@ const ChartWrapper = styled.div`
 
 class DateGridLine extends Component {
   static propTypes = {
-    datum: PropTypes.number.isRequired,
+    tickValues: PropTypes.arrayOf(PropTypes.number),
   };
 
   static defaultProps = {
-    datum: 0,
+    tickValues: [],
   };
 
   render() {
-    if (moment(this.props.datum).hour() !== 0) {
+    const datum = this.props.tickValues[this.props.index];
+    if (moment(datum).hour() !== 0) {
       // only show labels at midnight
       return null;
     }
@@ -130,7 +131,7 @@ const calculateChartData = comparison => {
   });
   const domain = {
     y: [minScore - 2, maxScore + 2],
-    x: [minTime, maxTime],
+    x: [minTime, maxTime + 1000 * 60 * 60],
   };
   return {
     hasData,
@@ -209,7 +210,7 @@ export default class ComparisonGraph extends PureComponent {
         <VictoryChart
           theme={ComparisonGraphTheme}
           domain={domain}
-          domainPadding={{x: [20, 20], y: [0, 0]}}
+          domainPadding={{x: [0, 0], y: [0, 0]}}
         >
           <VictoryAxis
             orientation="bottom"
@@ -221,7 +222,7 @@ export default class ComparisonGraph extends PureComponent {
               />
             }
             tickValues={tickValues}
-            gridComponent={<DateGridLine />}
+            gridComponent={<DateGridLine tickValues={tickValues} />}
             tickFormat={time => moment(new Date(time)).format(DateLabel.FORMAT)}
             tickComponent={<EmptyTick />}
             axisComponent={<EmptyTick />}

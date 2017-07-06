@@ -1,3 +1,4 @@
+import Truncate from 'react-truncate';
 import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
 import LoadingIndicator from 'app/components/LoadingIndicator';
@@ -50,6 +51,9 @@ const PointLink = styled.a`
 
 const ShortForecastCell = Cell.extend`
   font-size: 14px;
+  width: 150px;
+  overflow: hidden;
+  padding: 0px;
 `;
 
 const Row = styled.tr`
@@ -140,7 +144,7 @@ export default class SingleDayForecastComparison extends PureComponent {
             <ColumnHeader style={{width: 50}}>Wind</ColumnHeader>
             <ColumnHeader style={{width: 50}}>Chance</ColumnHeader>
             <ColumnHeader style={{width: 50}}>Quantity</ColumnHeader>
-            <ColumnHeader style={{width: 50}}>Forecast</ColumnHeader>
+            <ColumnHeader style={{width: 150}}>Forecast</ColumnHeader>
             <ColumnHeader />
           </HeaderRow>
           <HeaderRow>
@@ -249,7 +253,7 @@ export default class SingleDayForecastComparison extends PureComponent {
                   />
                 </Cell>
                 <ShortForecastCell>
-                  {dailyForecast.day.shortForecast}
+                  <Truncate>{dailyForecast.day.shortForecast}</Truncate>
                 </ShortForecastCell>
                 <Cell>
                   <Button
