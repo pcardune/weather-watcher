@@ -73,9 +73,7 @@ export class App extends Component {
           <Route path="/compare/:comparisonId" render={this.renderHomePage} />
           <Route component={NotFound} />
         </Switch>
-        <Footer>
-          Created by Paul Carduner
-        </Footer>
+        <Footer />
       </AppWrapper>
     );
   }

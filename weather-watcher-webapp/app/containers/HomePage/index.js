@@ -57,18 +57,14 @@ export class HomePage extends Component {
   };
 
   componentDidMount() {
-    this.onRefreshComparison();
+    this.props.onRefreshComparison(this.props.comparison);
   }
 
   componentDidUpdate(oldProps) {
     if (oldProps.comparison.id !== this.props.comparison.id) {
-      this.onRefreshComparison();
+      this.props.onRefreshComparison(this.props.comparison);
     }
   }
-
-  onRefreshComparison = () => {
-    this.props.onRefreshComparison(this.props.comparison);
-  };
 
   onChangeDate = currentDate => {
     this.setState({currentDate});
@@ -121,10 +117,6 @@ export class HomePage extends Component {
               <Button accent onClick={this.onClickAddLocation}>
                 Add Location
               </Button>
-              {hasPoints &&
-                <Button accent onClick={this.onRefreshComparison}>
-                  Refresh
-                </Button>}
             </Buttons>
           </CardHeader>
           <CardBody>
