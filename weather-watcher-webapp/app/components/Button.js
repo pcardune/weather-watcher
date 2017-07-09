@@ -65,7 +65,7 @@ function Button(props) {
   let button = (
     <A
       href={props.href}
-      onClick={props.onClick}
+      onClick={!props.disabled && props.onClick}
       accent={props.accent}
       flat={props.flat}
       style={props.style}
@@ -91,7 +91,7 @@ function Button(props) {
   }
 
   return (
-    <div>
+    <div className={props.className}>
       {button}
     </div>
   );
@@ -106,6 +106,7 @@ Button.propTypes = {
   flat: PropTypes.bool,
   style: PropTypes.object,
   disabled: PropTypes.bool,
+  className: PropTypes.string,
 };
 
 export default Button;

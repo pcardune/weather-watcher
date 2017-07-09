@@ -9,6 +9,7 @@ import {connect} from 'react-redux';
 import styled from 'styled-components';
 import moment from 'moment-mini';
 
+import {ButtonBar} from 'app/components/forms';
 import MultiDayForecastComparison
   from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
@@ -33,13 +34,9 @@ const HelpText = styled.p`
   padding: 50px;
 `;
 
-const Buttons = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: flex-end;
-  > * {
-    margin-left: 25px;
-  }
+const AddFormWrapper = styled.div`
+  padding: ${props => props.theme.padding.standard};
+  border-bottom: 1px solid ${props => props.theme.colors.divider};
 `;
 
 export class HomePage extends Component {
@@ -113,13 +110,24 @@ export class HomePage extends Component {
                 onChange={this.onChangeComparisonName}
               />
             </h1>
-            <Buttons>
-              <Button accent onClick={this.onClickAddLocation}>
+            <ButtonBar>
+              <Button
+                accent
+                disabled={this.state.showAddForm}
+                onClick={this.onClickAddLocation}
+              >
                 Add Location
               </Button>
-            </Buttons>
+            </ButtonBar>
           </CardHeader>
           <CardBody>
+            {this.state.showAddForm &&
+              <AddFormWrapper>
+                <AddComparisonPointForm
+                  onClose={this.hideAddForm}
+                  onAdd={this.onAddComparisonPoint}
+                />
+              </AddFormWrapper>}
             {hasPoints
               ? <MultiDayForecastComparison
                   date={this.state.currentDate}
@@ -132,11 +140,6 @@ export class HomePage extends Component {
                 </HelpText>}
           </CardBody>
         </Card>
-        <AddComparisonPointForm
-          isOpen={this.state.showAddForm}
-          onClose={this.hideAddForm}
-          onAdd={this.onAddComparisonPoint}
-        />
       </article>
     );
   }

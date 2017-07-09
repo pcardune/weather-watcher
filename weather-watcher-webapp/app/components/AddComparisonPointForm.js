@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 import React, {Component, PropTypes} from 'react';
-import {Map, Marker, Popup, TileLayer} from 'react-leaflet';
+import {Map, Marker, TileLayer} from 'react-leaflet';
 import 'react-geosuggest/module/geosuggest.css';
 
 import {round} from 'app/utils/math';
 import Button from './Button';
-import Dialog, {DialogBody, DialogFooter} from './Dialog';
-import {FormField, Input, Label, HelpText} from './forms';
+import {FormField, Input, Label, HelpText, ButtonBar} from './forms';
 import LocationTypeahead from './LocationTypeahead';
 
 const LocationInfo = styled.div`
@@ -15,12 +14,13 @@ const LocationInfo = styled.div`
   > * {
     width: 100%;
   }
+  margin-bottom: ${props => props.theme.padding.standard};
 `;
 
 export default class AddComparisonPointForm extends Component {
   static propTypes = {
-    ...Dialog.propTypes,
     onAdd: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
   };
 
   state = {
@@ -31,10 +31,8 @@ export default class AddComparisonPointForm extends Component {
     },
   };
 
-  componentDidUpdate(oldProps) {
-    if (!oldProps.isOpen && this.props.isOpen) {
-      this.locationInput.focus();
-    }
+  componentDidMount() {
+    this.locationInput.focus();
   }
 
   onChange = event => {
@@ -66,66 +64,64 @@ export default class AddComparisonPointForm extends Component {
   };
 
   render() {
-    const {onAdd, ...dialogProps} = this.props;
-
     return (
-      <Dialog {...dialogProps} title="Add Location">
-        <DialogBody>
-          <LocationInfo>
-            <div>
-              <FormField>
-                <Label>Name:</Label>
-                <Input
-                  type="text"
-                  name="name"
-                  value={this.state.name}
-                  onChange={this.onChange}
-                />
-              </FormField>
-              <FormField>
-                <Label>Coordinates:</Label>
-                {round(this.state.position.lat, 4)}
-                ,
-                {' '}
-                {round(this.state.position.lng, 4)}
-                <HelpText>
-                  click the map or drag the marker to change coordinates
-                </HelpText>
-              </FormField>
-            </div>
-            <div>
-              <FormField>
-                <LocationTypeahead
-                  ref={el => this.locationInput = el}
-                  onChange={this.onChangeLocation}
-                />
-              </FormField>
-              <Map
-                center={this.state.position}
-                zoom={11}
-                style={{height: 300}}
-                onClick={this.onMapClick}
-              >
-                <TileLayer
-                  url="http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
-                  attribution="© <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                />
-                <Marker
-                  position={this.state.position}
-                  draggable
-                  onDragEnd={this.onMarkerDragEnd}
-                />
-              </Map>
-            </div>
-          </LocationInfo>
-        </DialogBody>
-        <DialogFooter>
+      <div>
+        <LocationInfo>
+          <div>
+            <FormField>
+              <Label>Name:</Label>
+              <Input
+                type="text"
+                name="name"
+                value={this.state.name}
+                onChange={this.onChange}
+              />
+            </FormField>
+            <FormField>
+              <Label>Coordinates:</Label>
+              {round(this.state.position.lat, 4)}
+              ,
+              {' '}
+              {round(this.state.position.lng, 4)}
+              <HelpText>
+                click the map or drag the marker to change coordinates
+              </HelpText>
+            </FormField>
+          </div>
+          <div>
+            <FormField>
+              <LocationTypeahead
+                ref={el => {
+                  this.locationInput = el;
+                }}
+                onChange={this.onChangeLocation}
+              />
+            </FormField>
+            <Map
+              center={this.state.position}
+              zoom={11}
+              style={{height: 300}}
+              onClick={this.onMapClick}
+            >
+              <TileLayer
+                url="http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
+                attribution="© <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+              />
+              <Marker
+                position={this.state.position}
+                draggable
+                onDragEnd={this.onMarkerDragEnd}
+              />
+            </Map>
+          </div>
+        </LocationInfo>
+        <ButtonBar>
           <Button flat type="button" onClick={this.props.onClose}>
             Cancel
           </Button>
           <Button type="button" onClick={this.onClickAdd}>Add</Button>
-        </DialogFooter>
-      </Dialog>
+        </ButtonBar>
+      </div>
     );
   }
 }

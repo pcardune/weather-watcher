@@ -24,3 +24,12 @@ export const HelpText = styled.div`
   color: ${props => props.theme.colors.secondaryText};
   font-size: small;
 `;
+
+export const ButtonBar = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  > * {
+    margin-left: ${props => props.theme.padding.standard};
+  }
+`;
