@@ -58,7 +58,7 @@ const WEIGHTS = {
   TEMP: -2,
 };
 
-function getScoreForTime(grid, time) {
+function getScoreForTime(grid, time, scoreConfig) {
   const precip = grid.getValue('probabilityOfPrecipitation', time);
   const windSpeed = grid.getValue('windSpeed', time);
   const precipQuantity = grid.getValue('quantitativePrecipitation', time);
@@ -68,19 +68,19 @@ function getScoreForTime(grid, time) {
       WEIGHTS.PRECIPITATION_QUANTITY * precipQuantity +
         WEIGHTS.PRECIPITATION_PERCENT * precip +
         WEIGHTS.WIND_SPEED * windSpeed +
-        WEIGHTS.TEMP * Math.abs(temp - 18.3)
+        WEIGHTS.TEMP * Math.abs(temp - scoreConfig.idealTemp)
     );
   return {score, time};
 }
 
 export class InterpolatedScoreFunction {
-  constructor({interpolatedGridForecast, options}) {
+  constructor({interpolatedGridForecast, scoreConfig}) {
     this.grid = interpolatedGridForecast;
-    this.options = options;
+    this.scoreConfig = scoreConfig;
   }
 
   getScore(time) {
-    return getScoreForTime(this.grid, time);
+    return getScoreForTime(this.grid, time, this.scoreConfig);
   }
 
   getScoresForDate(date, interval = 'PT1H') {

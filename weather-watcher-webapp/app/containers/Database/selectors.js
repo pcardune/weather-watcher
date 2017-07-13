@@ -57,7 +57,11 @@ export const makeSelectAugmentedComparison = createSelector(
   (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts, fetches) =>
     comparisonId => {
       const comparison = comparisons.get(comparisonId);
+      const scoreConfig = comparison.scoreConfig || {
+        idealTemp: 18.5,
+      };
       return comparison && {
+        scoreConfig,
         ...comparison,
         comparisonPoints: comparison.comparisonPointIds.map(pointId => {
           const point = comparisonPoints.get(pointId);
@@ -93,6 +97,7 @@ export const makeSelectAugmentedComparison = createSelector(
               interpolatedGridForecast: new InterpolatedGridForecast(
                 noaaGridForecast
               ),
+              scoreConfig,
             }),
           };
         }),

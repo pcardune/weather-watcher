@@ -16,6 +16,7 @@ import {AugmentedComparisonShape} from 'app/propTypes';
 import Button from 'app/components/Button';
 import {Card, CardHeader, CardBody} from 'app/components/Card';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
+import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
 import DatePager from 'app/components/DatePager';
 import InlineInput from 'app/components/InlineInput';
 import {updateComparison} from 'app/containers/Database/actions';
@@ -34,7 +35,7 @@ const HelpText = styled.p`
   padding: 50px;
 `;
 
-const AddFormWrapper = styled.div`
+const InnerPane = styled.div`
   padding: ${props => props.theme.padding.standard};
   border-bottom: 1px solid ${props => props.theme.colors.divider};
 `;
@@ -45,12 +46,13 @@ export class HomePage extends Component {
     onRefreshComparison: PropTypes.func.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
     onAddComparisonPoint: PropTypes.func.isRequired,
-    onUpdateComparsion: PropTypes.func.isRequired,
+    onUpdateComparison: PropTypes.func.isRequired,
   };
 
   state = {
     currentDate: moment(new Date()).startOf('date').toDate(),
     showAddForm: false,
+    showCustomizeForm: false,
   };
 
   componentDidMount() {
@@ -74,6 +76,10 @@ export class HomePage extends Component {
     );
   };
 
+  toggleCustomize = () => {
+    this.setState({showCustomizeForm: !this.state.showCustomizeForm});
+  };
+
   onClickAddLocation = () => {
     this.setState({showAddForm: !this.state.showAddForm});
   };
@@ -91,7 +97,11 @@ export class HomePage extends Component {
   };
 
   onChangeComparisonName = name => {
-    this.props.onUpdateComparsion({...this.props.comparison, name});
+    this.props.onUpdateComparison({...this.props.comparison, name});
+  };
+
+  onChangeScoreConfig = scoreConfig => {
+    this.props.onUpdateComparison({...this.props.comparison, scoreConfig});
   };
 
   render() {
@@ -113,21 +123,40 @@ export class HomePage extends Component {
             <ButtonBar>
               <Button
                 accent
-                disabled={this.state.showAddForm}
+                disabled={
+                  this.state.showAddForm || this.state.showCustomizeForm
+                }
                 onClick={this.onClickAddLocation}
               >
                 Add Location
+              </Button>
+              <Button
+                accent
+                disabled={
+                  this.state.showAddForm || this.state.showCustomizeForm
+                }
+                onClick={this.toggleCustomize}
+              >
+                Customize
               </Button>
             </ButtonBar>
           </CardHeader>
           <CardBody>
             {this.state.showAddForm &&
-              <AddFormWrapper>
+              <InnerPane>
                 <AddComparisonPointForm
                   onClose={this.hideAddForm}
                   onAdd={this.onAddComparisonPoint}
                 />
-              </AddFormWrapper>}
+              </InnerPane>}
+            {this.state.showCustomizeForm &&
+              <InnerPane>
+                <CustomizeScoreForm
+                  onClose={this.toggleCustomize}
+                  scoreConfig={this.props.comparison.scoreConfig}
+                  onChange={this.onChangeScoreConfig}
+                />
+              </InnerPane>}
             {hasPoints
               ? <MultiDayForecastComparison
                   date={this.state.currentDate}
@@ -149,7 +178,7 @@ export const mapDispatchToProps = {
   onAddComparisonPoint: addComparisonPoint,
   onRemoveComparisonPoint: removeComparisonPoint,
   onRefreshComparison: refreshComparison,
-  onUpdateComparsion: updateComparison,
+  onUpdateComparison: updateComparison,
 };
 
 const mapStateToProps = (state, {comparisonId}) => ({

@@ -1,9 +1,14 @@
 import {PropTypes} from 'react';
 
+export const ScoreConfigShape = PropTypes.shape({
+  idealTemp: PropTypes.number.isRequired,
+});
+
 export const ComparisonProps = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   comparisonPointIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  scoreConfig: ScoreConfigShape,
 };
 
 export const ComparisonShape = PropTypes.shape(ComparisonProps);

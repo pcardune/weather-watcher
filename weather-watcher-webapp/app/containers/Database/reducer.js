@@ -5,6 +5,7 @@
  */
 
 import {fromJS, OrderedMap} from 'immutable';
+import {ComparisonProps} from 'app/propTypes';
 import {
   FETCH_NOAA_POINT,
   RECEIVE_NOAA_POINT,
@@ -237,11 +238,16 @@ function databaseReducer(state = initialState, action) {
         ['comparisonPoints', action.comparisonPoint.id],
         action.comparisonPoint
       );
-    case UPDATE_COMPARISON:
+    case UPDATE_COMPARISON: {
+      const update = {};
+      Object.keys(ComparisonProps).forEach(key => {
+        update[key] = action.comparison[key];
+      });
       return state.updateIn(
         ['comparisons', action.comparison.id],
-        comparison => ({...comparison, ...action.comparison})
+        comparison => ({...comparison, ...update})
       );
+    }
     case CREATE_COMPARISON:
       return state.setIn(
         ['comparisons', action.comparison.id],
