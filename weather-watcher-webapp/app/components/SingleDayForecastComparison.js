@@ -150,7 +150,13 @@ class DesktopForecastRow extends PureComponent {
     date: PropTypes.instanceOf(Date).isRequired,
     selected: PropTypes.bool.isRequired,
     onRemove: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
   };
+
+  onClick = () => {
+    this.props.onClick(this.props.point);
+  };
+
   render() {
     const {point, date} = this.props;
     const dailyForecast = getDailyForecastForPoint(point, date);
@@ -158,7 +164,7 @@ class DesktopForecastRow extends PureComponent {
       <Row
         desktopOnly
         key={point.id}
-        onClick={() => this.onClickRow(point)}
+        onClick={this.onClick}
         selected={this.props.selected}
       >
         <Cell style={{position: 'relative'}}>
@@ -237,7 +243,13 @@ class PhoneForecastRow extends PureComponent {
     point: AugmentedComparisonPointShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
     selected: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
   };
+
+  onClick = () => {
+    this.props.onClick(this.props.point);
+  };
+
   render() {
     const {point, date} = this.props;
     const dailyForecast = getDailyForecastForPoint(point, date);
@@ -245,7 +257,7 @@ class PhoneForecastRow extends PureComponent {
       <Row
         phoneOnly
         key={point.id}
-        onClick={() => this.onClickRow(point)}
+        onClick={this.onClick}
         selected={this.props.selected}
       >
         <Cell style={{position: 'relative'}}>
@@ -389,6 +401,7 @@ export default class SingleDayForecastComparison extends PureComponent {
                   date={date}
                   selected={this.props.selectedComparisonPointId === point.id}
                   onRemove={this.props.onRemoveComparisonPoint}
+                  onClick={this.onClickRow}
                 />,
                 <PhoneForecastRow
                   key={`${point.id}-phone`}
@@ -396,6 +409,7 @@ export default class SingleDayForecastComparison extends PureComponent {
                   date={date}
                   selected={this.props.selectedComparisonPointId === point.id}
                   onRemove={this.props.onRemoveComparisonPoint}
+                  onClick={this.onClickRow}
                 />,
               ];
             })
