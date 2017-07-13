@@ -65,7 +65,7 @@ const ShortForecastCell = Cell.extend`
   padding: 0px;
 `;
 
-const HideOnDesktop = props => props.theme.media.desktopOnly`
+const HideOnDesktop = props => props.theme.media.desktop`
   display: none;
 `;
 
