@@ -4,7 +4,6 @@
 
 import React from 'react';
 import {mount} from 'enzyme';
-import {IntlProvider} from 'react-intl';
 
 import {HomePage, mapDispatchToProps} from '../index';
 import {refreshComparison} from '../actions';
@@ -12,11 +11,7 @@ import {refreshComparison} from '../actions';
 xdescribe('<HomePage />', () => {
   it('should refresh the comparison on mount', () => {
     const onRefreshComparison = jest.fn();
-    mount(
-      <IntlProvider locale="en">
-        <HomePage onRefreshComparison={onRefreshComparison} />
-      </IntlProvider>
-    );
+    mount(<HomePage onRefreshComparison={onRefreshComparison} />);
     expect(onRefreshComparison).toHaveBeenCalled();
   });
 

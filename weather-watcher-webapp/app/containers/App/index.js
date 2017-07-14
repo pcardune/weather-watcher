@@ -46,15 +46,13 @@ export class App extends Component {
     this.props.history.push(`/compare/${comparison.id}`);
   };
 
-  renderHomePage = ({match: {params: {comparisonId}}}) => {
-    return (
-      <Bundle load={loadHomePage} store={this.props.store}>
-        {HomePage =>
-          HomePage &&
-          <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />}
-      </Bundle>
-    );
-  };
+  renderHomePage = ({match: {params: {comparisonId}}}) => (
+    <Bundle load={loadHomePage} store={this.props.store}>
+      {HomePage =>
+        HomePage &&
+        <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />}
+    </Bundle>
+  );
 
   render() {
     return (

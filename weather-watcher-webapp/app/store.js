@@ -52,4 +52,6 @@ export default function configureStore(initialState = {}, callback) {
       });
     });
   }
+
+  return store;
 }
