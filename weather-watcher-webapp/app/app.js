@@ -51,12 +51,12 @@ openSansObserver.load().then(
 );
 
 const config = {
-  apiKey: 'AIzaSyDnmrQ7fly13bzqOZlNfhBA3ml1juw5d-8',
-  authDomain: 'weather-watcher-2e593.firebaseapp.com',
-  databaseURL: 'https://weather-watcher-2e593.firebaseio.com',
-  projectId: 'weather-watcher-2e593',
-  storageBucket: 'weather-watcher-2e593.appspot.com',
-  messagingSenderId: '236272840837',
+  apiKey: 'AIzaSyA9dBTF1MZE3jyhjwG37unYMhbQEGurZF4',
+  authDomain: 'weather-watcher-170701.firebaseapp.com',
+  databaseURL: 'https://weather-watcher-170701.firebaseio.com',
+  projectId: 'weather-watcher-170701',
+  storageBucket: 'weather-watcher-170701.appspot.com',
+  messagingSenderId: '936791071551',
 };
 firebase.initializeApp(config);
 
