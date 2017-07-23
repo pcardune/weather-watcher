@@ -29,6 +29,14 @@
   - [routing](js/routing.md)
 
 ## Overview
+weather-watcher-app is a React web application built from react-boilerplate.
+It uses Yarn for JavaScript package management.
+
+There is no server in this codebase - html and js files are served up by
+Firebase's static file hosting.
+Continuous deployment does not exist yet.
+A manual script needs to be run to update the files on Firebase
+in order for the latest code changes to be deployed.
 
 ### Quickstart
 make sure you have the latest version of node installed
