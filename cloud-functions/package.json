@@ -1,0 +1,26 @@
+{
+  "name": "weather-watcher-cloud-functions",
+  "description": "Cloud Functions for Firebase",
+  "dependencies": {
+    "babel-preset-stage-0": "^6.24.1",
+    "firebase-admin": "^4.1.2",
+    "firebase-functions": "^0.5",
+    "isomorphic-fetch": "^2.2.1"
+  },
+  "private": true,
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.2",
+    "eslint-plugin-import": "^2.6.1",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0"
+  },
+  "main": "build/index.js",
+  "scripts": {
+    "build": "babel src -d build",
+    "deploy": "yarn run build && firebase deploy --only functions"
+  }
+}

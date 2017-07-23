@@ -23,6 +23,7 @@ module.exports = options => ({
         include: [
           path.resolve(__dirname, '../../../core'),
           path.resolve(__dirname, '../../app'),
+          path.resolve(__dirname, '../../../cloud-functions/src'),
         ],
         query: options.babelQuery,
       },
