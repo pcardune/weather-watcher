@@ -4,9 +4,13 @@ import admin from 'firebase-admin';
 import {NOAAPoint} from './noaa';
 
 const functions = require('firebase-functions');
+const PubSub = require('@google-cloud/pubsub');
 
 admin.initializeApp(functions.config().firebase);
 const db = admin.database();
+const pubsubClient = PubSub({
+  projectId: 'weather-watcher-170701',
+});
 
 /**
  * Fetches the noaa point for the given comparison point object from firebase. If no
@@ -46,31 +50,47 @@ async function fetchNOAAPointForComparisonPoint(comparisonPoint) {
   };
 }
 
+export const updateComparisonPoint = functions.pubsub
+  .topic('comparison-point-update')
+  .onPublish(async event => {
+    const {comparisonPoint} = event.data.json;
+
+    console.log('Updating comparison point', comparisonPoint.id);
+    const {noaaPoint} = await fetchNOAAPointForComparisonPoint(comparisonPoint);
+
+    const dailyForecast = await noaaPoint.fetchDailyForecast();
+    await db.ref(dailyForecast.getFirebasePath()).set(dailyForecast.data);
+    console.log('Updated daily forecast', dailyForecast.getFirebasePath());
+
+    const hourlyForecast = await noaaPoint.fetchHourlyForecast();
+    await db.ref(hourlyForecast.getFirebasePath()).set(hourlyForecast.data);
+    console.log('Updated hourly forecast', hourlyForecast.getFirebasePath());
+
+    const gridForecast = await noaaPoint.fetchGridDataForecast();
+    await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
+    console.log('Updated grid forecast', gridForecast.getFirebasePath());
+  });
+
 export const hourlyJob = functions.pubsub
   .topic('hourly-tick')
   .onPublish(async () => {
     console.log('Fetching comparison points to update');
     const snapshot = await db.ref('comparisonPoints').once('value');
 
+    // The name for the new topic
+    const comparisonPointUpdateTopic = pubsubClient.topic(
+      'comparison-point-update'
+    );
+
     const comparisonPoints = snapshot.val();
-    for (const comparisonPointId of Object.keys(comparisonPoints)) {
-      const comparisonPoint = comparisonPoints[comparisonPointId];
-
-      console.log('Updating comparison point', comparisonPoint.id);
-      const {noaaPoint} = await fetchNOAAPointForComparisonPoint(
-        comparisonPoint
-      );
-
-      const dailyForecast = await noaaPoint.fetchDailyForecast();
-      await db.ref(dailyForecast.getFirebasePath()).set(dailyForecast.data);
-      console.log('Updated daily forecast', dailyForecast.getFirebasePath());
-
-      const hourlyForecast = await noaaPoint.fetchHourlyForecast();
-      await db.ref(hourlyForecast.getFirebasePath()).set(hourlyForecast.data);
-      console.log('Updated hourly forecast', hourlyForecast.getFirebasePath());
-
-      const gridForecast = await noaaPoint.fetchGridDataForecast();
-      await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
-      console.log('Updated grid forecast', gridForecast.getFirebasePath());
-    }
+    console.log(
+      'kicking off',
+      Object.keys(comparisonPoints).length,
+      'update jobs'
+    );
+    comparisonPointUpdateTopic.publish(
+      Object.keys(comparisonPoints).map(key => ({
+        comparisonPoint: comparisonPoints[key],
+      }))
+    );
   });

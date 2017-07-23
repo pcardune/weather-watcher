@@ -2,6 +2,7 @@
   "name": "weather-watcher-cloud-functions",
   "description": "Cloud Functions for Firebase",
   "dependencies": {
+    "@google-cloud/pubsub": "^0.13.2",
     "babel-preset-stage-0": "^6.24.1",
     "firebase-admin": "^4.1.2",
     "firebase-functions": "^0.5",
