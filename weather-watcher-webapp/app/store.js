@@ -5,6 +5,7 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import {fromJS} from 'immutable';
 import createSagaMiddleware from 'redux-saga';
+import thunkMiddleware from 'redux-thunk';
 import {persistStore, autoRehydrate} from 'redux-persist-immutable';
 import localForage from 'localforage';
 import createReducer from './reducers';
@@ -15,7 +16,7 @@ export default function configureStore(initialState = {}, callback) {
   // Create the store with two middlewares
   // 1. sagaMiddleware: Makes redux-sagas work
   // 2. routerMiddleware: Syncs the location/URL path to the state
-  const middlewares = [sagaMiddleware];
+  const middlewares = [sagaMiddleware, thunkMiddleware];
 
   const enhancers = [applyMiddleware(...middlewares), autoRehydrate()];
 
