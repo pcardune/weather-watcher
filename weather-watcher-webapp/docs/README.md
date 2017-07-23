@@ -1,4 +1,4 @@
-# Documentation
+# Weather-watcher-webapp
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@
   - [routing](js/routing.md)
 
 ## Overview
-weather-watcher-app is a React web application built from react-boilerplate.
+weather-watcher-webapp is a React web application built from react-boilerplate.
 It uses Yarn for JavaScript package management.
 
 There is no server in this codebase - html and js files are served up by
@@ -70,10 +70,10 @@ cd ../weather-watcher-webapp
 yarn link "weather-watcher-cloud-functions"
 yarn start
 ```
-visit localhost:3000 in a web browser
 
-install React devtools
-install Redux devtools
+* visit localhost:3000 in a web browser
+* install React devtools
+* install Redux devtools
 
 ### Structure
 
