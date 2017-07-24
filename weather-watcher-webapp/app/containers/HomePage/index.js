@@ -113,7 +113,7 @@ export class HomePage extends Component {
                 onChange={this.onChangeComparisonName}
               />
             </h1>
-            <ButtonBar>
+            {/*<ButtonBar>
               <Button
                 accent
                 disabled={
@@ -132,7 +132,7 @@ export class HomePage extends Component {
               >
                 Customize
               </Button>
-            </ButtonBar>
+            </ButtonBar>*/}
           </CardHeader>
           <CardBody>
             {this.state.showAddForm &&

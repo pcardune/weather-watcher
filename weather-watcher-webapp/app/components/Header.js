@@ -64,9 +64,9 @@ class Header extends Component {
               {comparison.name}
             </QuickLink>
           )}
-          <QuickButton onClick={this.props.onNewComparison}>
+          {/*<QuickButton onClick={this.props.onNewComparison}>
             + New Comparison
-          </QuickButton>
+          </QuickButton>*/}
         </QuickLinks>
       </div>
     );
