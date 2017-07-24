@@ -50,25 +50,27 @@ async function fetchNOAAPointForComparisonPoint(comparisonPoint) {
   };
 }
 
+async function updateComparisonPointForecasts(comparisonPoint) {
+  console.log('Updating comparison point', comparisonPoint.id);
+  const {noaaPoint} = await fetchNOAAPointForComparisonPoint(comparisonPoint);
+
+  const dailyForecast = await noaaPoint.fetchDailyForecast();
+  await db.ref(dailyForecast.getFirebasePath()).set(dailyForecast.data);
+  console.log('Updated daily forecast', dailyForecast.getFirebasePath());
+
+  const hourlyForecast = await noaaPoint.fetchHourlyForecast();
+  await db.ref(hourlyForecast.getFirebasePath()).set(hourlyForecast.data);
+  console.log('Updated hourly forecast', hourlyForecast.getFirebasePath());
+
+  const gridForecast = await noaaPoint.fetchGridDataForecast();
+  await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
+  console.log('Updated grid forecast', gridForecast.getFirebasePath());
+}
+
 export const updateComparisonPoint = functions.pubsub
   .topic('comparison-point-update')
   .onPublish(async event => {
-    const {comparisonPoint} = event.data.json;
-
-    console.log('Updating comparison point', comparisonPoint.id);
-    const {noaaPoint} = await fetchNOAAPointForComparisonPoint(comparisonPoint);
-
-    const dailyForecast = await noaaPoint.fetchDailyForecast();
-    await db.ref(dailyForecast.getFirebasePath()).set(dailyForecast.data);
-    console.log('Updated daily forecast', dailyForecast.getFirebasePath());
-
-    const hourlyForecast = await noaaPoint.fetchHourlyForecast();
-    await db.ref(hourlyForecast.getFirebasePath()).set(hourlyForecast.data);
-    console.log('Updated hourly forecast', hourlyForecast.getFirebasePath());
-
-    const gridForecast = await noaaPoint.fetchGridDataForecast();
-    await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
-    console.log('Updated grid forecast', gridForecast.getFirebasePath());
+    await updateComparisonPointForecasts(event.data.json.comparisonPoint);
   });
 
 export const hourlyJob = functions.pubsub
@@ -93,4 +95,10 @@ export const hourlyJob = functions.pubsub
         comparisonPoint: comparisonPoints[key],
       }))
     );
+  });
+
+export const onCreateComparisonPoint = functions.database
+  .ref('/comparisonPoints/{comparisonPointId}')
+  .onCreate(async event => {
+    await updateComparisonPointForecasts(event.data.val());
   });
