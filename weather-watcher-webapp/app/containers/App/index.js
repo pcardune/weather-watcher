@@ -5,12 +5,10 @@ import styled from 'styled-components';
 import {Route, Switch, withRouter} from 'react-router-dom';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
-import {createStructuredSelector} from 'reselect';
 import {subscribeProps} from 'redux-firebase-mirror';
 
 import {myComparisons} from 'app/containers/Database/subscriptions';
 import {createComparison} from 'app/containers/Database/actions';
-import {selectComparisons} from 'app/containers/Database/selectors';
 import Header from 'app/components/Header';
 //import withProgressBar from 'app/components/ProgressBar';
 import Bundle from 'app/components/Bundle';
@@ -49,13 +47,12 @@ export class App extends Component {
     this.props.history.push(`/compare/${comparison.id}`);
   };
 
-  renderHomePage = ({match: {params: {comparisonId}}}) => (
+  renderHomePage = ({match: {params: {comparisonId}}}) =>
     <Bundle load={loadHomePage} store={this.props.store}>
       {HomePage =>
         HomePage &&
         <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />}
-    </Bundle>
-  );
+    </Bundle>;
 
   render() {
     return (

@@ -7,7 +7,7 @@ export const ScoreConfigShape = PropTypes.shape({
 export const ComparisonProps = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  comparisonPointIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  comparisonPointIds: PropTypes.object.isRequired,
   scoreConfig: ScoreConfigShape,
 };
 

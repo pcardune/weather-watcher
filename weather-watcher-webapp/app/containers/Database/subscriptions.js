@@ -1,10 +1,6 @@
 import memoize from 'lodash.memoize';
 import fromPairs from 'lodash.frompairs';
-import {
-  Subscription,
-  getValueAtPath,
-  getFirebaseMirror,
-} from 'redux-firebase-mirror';
+import {Subscription, getFirebaseMirror} from 'redux-firebase-mirror';
 import {List, Map} from 'immutable';
 import {coordinateArrayToFirebaseKey} from 'weather-watcher-cloud-functions/src/noaa';
 import {createSelector} from 'reselect';
@@ -138,7 +134,7 @@ const getAugmentedComparisonGetter = createSelector(
         comparison = {
           ...comparison,
           scoreConfig,
-          comparisonPoints: comparison.comparisonPointIds
+          comparisonPoints: Object.values(comparison.comparisonPointIds)
             .map(comparisonPointId => {
               let comparisonPoint = getAugmentedComparisonPoint(
                 comparisonPointId
@@ -226,9 +222,11 @@ export const augmentedComparisonPointById = new Subscription({
 export const augmentedComparisonById = new Subscription({
   paths: (state, {comparisonId}) => {
     let paths = comparisonById.paths(state, {comparisonId});
-    const comparison = comparisonById.value(state, {comparisonId});
+    const comparison = Items.comparisons(state)(comparisonId);
     if (comparison) {
-      comparison.comparisonPointIds.forEach(comparisonPointId => {
+      Object.values(
+        comparison.comparisonPointIds
+      ).forEach(comparisonPointId => {
         paths = paths.concat(
           augmentedComparisonPointById.paths(state, {comparisonPointId})
         );
@@ -236,7 +234,6 @@ export const augmentedComparisonById = new Subscription({
     }
     return paths;
   },
-  value: (state, {comparisonId}) => {
-    return getAugmentedComparisonGetter(state)(comparisonId);
-  },
+  value: (state, {comparisonId}) =>
+    getAugmentedComparisonGetter(state)(comparisonId),
 });

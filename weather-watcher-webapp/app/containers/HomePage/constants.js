@@ -9,6 +9,6 @@
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
 
-export const REFRESH_COMPARISON = 'weather-watcher/Home/REFRESH_COMPARISON';
-export const RECEIVE_COMPARISON = 'weather-watcher/Home/RECEIVE_COMPARISON';
 export const ADD_COMPARISON_POINT = 'weather-watcher/Home/ADD_COMPARISON_POINT';
+export const REMOVE_COMPARISON_POINT =
+  'weather-watcher/Home/REMOVE_COMPARISON_POINT';
