@@ -1,7 +1,5 @@
 import {OrderedMap} from 'immutable';
 import {createSelector} from 'reselect';
-import moment from 'moment-mini';
-import {safeAverage, safeMin, safeMax} from 'app/utils/math';
 
 import {InterpolatedGridForecast, InterpolatedScoreFunction} from './scoring';
 
@@ -20,23 +18,28 @@ export const selectDatabaseDomain = () => state => state.get('database');
 
 export const selectNOAAPoints = () =>
   createSelector(selectDatabaseDomain(), database =>
-    database.get('noaaPoints'));
+    database.get('noaaPoints')
+  );
 
 export const selectNOAAGridForecasts = () =>
   createSelector(selectDatabaseDomain(), database =>
-    database.get('noaaGridForecasts'));
+    database.get('noaaGridForecasts')
+  );
 
 export const selectNOAADailyForecasts = () =>
   createSelector(selectDatabaseDomain(), database =>
-    database.get('noaaDailyForecasts'));
+    database.get('noaaDailyForecasts')
+  );
 
 export const selectNOAAHourlyForecasts = () =>
   createSelector(selectDatabaseDomain(), database =>
-    database.get('noaaHourlyForecasts'));
+    database.get('noaaHourlyForecasts')
+  );
 
 export const selectComparisonPoints = () =>
   createSelector(selectDatabaseDomain(), database =>
-    database.get('comparisonPoints'));
+    database.get('comparisonPoints')
+  );
 
 export const selectComparisons = () =>
   createSelector(selectDatabaseDomain(), db => db.get('comparisons'));
@@ -54,35 +57,46 @@ export const makeSelectAugmentedComparison = createSelector(
     selectNOAAHourlyForecasts(),
     selectFetches(),
   ],
-  (comparisons, comparisonPoints, noaaPoints, noaaGridForecasts, noaaDailyForecasts, noaaHourlyForecasts, fetches) =>
-    comparisonId => {
-      const comparison = comparisons.get(comparisonId);
-      const scoreConfig = comparison.scoreConfig || {
-        idealTemp: 18.5,
-      };
-      return comparison && {
+  (
+    comparisons,
+    comparisonPoints,
+    noaaPoints,
+    noaaGridForecasts,
+    noaaDailyForecasts,
+    noaaHourlyForecasts,
+    fetches
+  ) => comparisonId => {
+    const comparison = comparisons.get(comparisonId);
+    const scoreConfig = comparison.scoreConfig || {
+      idealTemp: 18.5,
+    };
+    return (
+      comparison && {
         scoreConfig,
         ...comparison,
         comparisonPoints: comparison.comparisonPointIds.map(pointId => {
           const point = comparisonPoints.get(pointId);
           const noaaPoint = noaaPoints.get(point.noaaPointId);
-          const noaaGridForecast = noaaPoint &&
+          const noaaGridForecast =
+            noaaPoint &&
             noaaGridForecasts
               .get(noaaPoint.properties.forecastGridData, OrderedMap())
               .valueSeq()
               .get(-1);
-          const noaaHourlyForecast = noaaPoint &&
+          const noaaHourlyForecast =
+            noaaPoint &&
             noaaHourlyForecasts
               .get(noaaPoint.properties.forecastHourly, OrderedMap())
               .valueSeq()
               .get(-1);
-          const noaaDailyForecast = noaaPoint &&
+          const noaaDailyForecast =
+            noaaPoint &&
             noaaDailyForecasts
               .get(noaaPoint.properties.forecast, OrderedMap())
               .valueSeq()
               .get(-1);
-          const isRefreshing = (noaaGridForecast &&
-            fetches.get(noaaGridForecast.id)) ||
+          const isRefreshing =
+            (noaaGridForecast && fetches.get(noaaGridForecast.id)) ||
             (noaaHourlyForecast && fetches.get(noaaHourlyForecast.id)) ||
             (noaaDailyForecast && fetches.get(noaaDailyForecast.id)) ||
             (noaaPoint && fetches.get(noaaPoint.id));
@@ -101,6 +115,7 @@ export const makeSelectAugmentedComparison = createSelector(
             }),
           };
         }),
-      };
-    }
+      }
+    );
+  }
 );

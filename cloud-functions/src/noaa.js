@@ -1,6 +1,6 @@
 import 'isomorphic-fetch';
 
-function coordinateArrayToFirebaseKey(coordinates) {
+export function coordinateArrayToFirebaseKey(coordinates) {
   return coordinates.join('|').replace(/\./g, ',');
 }
 

@@ -14,7 +14,6 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {BrowserRouter as Router} from 'react-router-dom';
 import FontFaceObserver from 'fontfaceobserver';
-import {useScroll} from 'react-router-scroll';
 import 'sanitize.css/sanitize.css';
 import firebase from 'firebase';
 import {ThemeProvider} from 'styled-components';
@@ -59,7 +58,6 @@ const config = {
   messagingSenderId: '936791071551',
 };
 firebase.initializeApp(config);
-
 const initialState = {};
 configureStore(initialState, store => {
   loadDatabase({store});
@@ -74,6 +72,8 @@ configureStore(initialState, store => {
     document.getElementById('app')
   );
 });
+
+window.firebase = firebase;
 
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,

@@ -3,13 +3,16 @@ import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import styled from 'styled-components';
 import {Route, Switch, withRouter} from 'react-router-dom';
+import {compose} from 'redux';
 import {connect} from 'react-redux';
 import {createStructuredSelector} from 'reselect';
+import {subscribeProps} from 'redux-firebase-mirror';
 
+import {myComparisons} from 'app/containers/Database/subscriptions';
 import {createComparison} from 'app/containers/Database/actions';
 import {selectComparisons} from 'app/containers/Database/selectors';
 import Header from 'app/components/Header';
-import withProgressBar from 'app/components/ProgressBar';
+//import withProgressBar from 'app/components/ProgressBar';
 import Bundle from 'app/components/Bundle';
 import loadHomePage from 'bundle-loader?lazy!app/containers/HomePage/load';
 
@@ -78,13 +81,12 @@ export class App extends Component {
 }
 
 //export default withProgressBar(App);
-export default withRouter(
-  connect(
-    createStructuredSelector({
-      comparisons: selectComparisons(),
-    }),
-    {
-      createComparison,
-    }
-  )(App)
-);
+export default compose(
+  withRouter,
+  subscribeProps({
+    comparisons: myComparisons,
+  }),
+  connect(null, {
+    createComparison,
+  })
+)(App);
