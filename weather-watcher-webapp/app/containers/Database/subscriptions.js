@@ -2,9 +2,13 @@ import memoize from 'lodash.memoize';
 import fromPairs from 'lodash.frompairs';
 import {Subscription, getFirebaseMirror} from 'redux-firebase-mirror';
 import {List, Map} from 'immutable';
-import {coordinateArrayToFirebaseKey} from 'weather-watcher-cloud-functions/src/noaa';
 import {createSelector} from 'reselect';
 import {InterpolatedGridForecast, InterpolatedScoreFunction} from './scoring';
+
+// TODO fix build issue with this being in cloud functions
+export function coordinateArrayToFirebaseKey(coordinates) {
+  return coordinates.join('|').replace(/\./g, ',');
+}
 
 const BUILTIN_COMPARISON_IDS = [
   'wa-climb-crags',
