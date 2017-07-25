@@ -41,6 +41,12 @@
   },
   "pre-commit": "lint:staged",
   "babel": {
+    "ignore": [
+      "node_modules/firebase/*.js",
+      "node_modules/firebase/**/*.js",
+      "node_modules/react-leaflet/*.js",
+      "node_modules/react-leaflet/**/*.js"
+    ],
     "presets": [
       [
         "env",
