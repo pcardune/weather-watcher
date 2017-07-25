@@ -1,8 +1,9 @@
-import Number from 'app/components/Number';
 import React, {PureComponent} from 'react';
-import Theme from 'app/Theme';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+
+import Number from 'app/components/Number';
+import Theme from 'app/Theme';
 
 import {FORECAST_BAD, FORECAST_OK} from 'app/containers/HomePage/constants';
 
