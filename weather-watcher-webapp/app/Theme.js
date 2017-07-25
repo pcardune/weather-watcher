@@ -5,6 +5,8 @@ const sizes = {
 };
 
 export default {
+  // colors taken from the Material UI Color Palette
+  // https://material.io/guidelines/style/color.html#color-color-palette
   colors: {
     primaryDark: '#1976D2',
     primary: '#2196F3',
@@ -15,6 +17,9 @@ export default {
     primaryText: '#212121',
     secondaryText: '#757575',
     divider: '#BDBDBD',
+    forecastGood: '#4CAF50',
+    forecastOK: '#FFC107',
+    forecastBad: '#F44336',
   },
   shadows: {
     level1: '0 0 2px 0 rgba(0,0,0,.3), 0 2px 2px 0 rgba(0,0,0,.4)',
