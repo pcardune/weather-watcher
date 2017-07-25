@@ -15,7 +15,6 @@ const sagaMiddleware = createSagaMiddleware();
 export default function configureStore(initialState = {}, callback) {
   // Create the store with two middlewares
   // 1. sagaMiddleware: Makes redux-sagas work
-  // 2. routerMiddleware: Syncs the location/URL path to the state
   const middlewares = [sagaMiddleware, thunkMiddleware];
 
   const enhancers = [applyMiddleware(...middlewares), autoRehydrate()];
@@ -39,7 +38,13 @@ export default function configureStore(initialState = {}, callback) {
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 
-  persistStore(store, {storage: localForage}, () => callback(store));
+  persistStore(
+    store,
+    {blacklist: ['firebaseMirror'], storage: localForage},
+    () => callback(store)
+  );
+
+  //callback(store);
 
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */

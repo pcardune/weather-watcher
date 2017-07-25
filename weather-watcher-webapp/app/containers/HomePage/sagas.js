@@ -1,13 +1,7 @@
-import {takeLatest, put, select, takeEvery} from 'redux-saga/effects';
+import {takeEvery} from 'redux-saga/effects';
+import firebase from 'firebase';
 
-import {
-  createComparisonPoint,
-  updateComparison,
-  refreshComparisonPoint,
-} from 'app/containers/Database/actions';
-import {selectComparisons} from 'app/containers/Database/selectors';
-
-import {ADD_COMPARISON_POINT, REFRESH_COMPARISON} from './constants';
+import {ADD_COMPARISON_POINT, REMOVE_COMPARISON_POINT} from './constants';
 
 export function* watchAddComparisonPoint() {
   yield takeEvery(ADD_COMPARISON_POINT, function* createAndShowComparisonPoint({
@@ -16,27 +10,30 @@ export function* watchAddComparisonPoint() {
     longitude,
     comparisonId,
   }) {
-    const createAction = createComparisonPoint({name, latitude, longitude});
-    yield put(createAction);
-    const comparisons = yield select(selectComparisons());
-    const comparison = comparisons.get(comparisonId);
-    yield put(
-      updateComparison({
-        ...comparison,
-        comparisonPointIds: [
-          ...comparison.comparisonPointIds,
-          createAction.comparisonPoint.id,
-        ],
-      })
-    );
+    const id = firebase.database().ref('comparisonPoints').push().key;
+    firebase
+      .database()
+      .ref(`comparisonPoints/${id}`)
+      .set({id, name, latitude, longitude});
+    firebase
+      .database()
+      .ref(`comparisons/${comparisonId}/comparisonPointIds/${id}`)
+      .set(id);
   });
 }
 
-export function* watchRefreshComparison() {
-  yield takeLatest(REFRESH_COMPARISON, function*({comparison}) {
-    for (const comparisonPointId of comparison.comparisonPointIds) {
-      yield put(refreshComparisonPoint(comparisonPointId));
-    }
+export function* watchRemoveComparisonPoint() {
+  yield takeEvery(REMOVE_COMPARISON_POINT, function* removeComparisonPoint({
+    comparison,
+    comparisonPointId,
+  }) {
+    firebase
+      .database()
+      .ref(
+        `comparisons/${comparison.id}/comparisonPointIds/${comparisonPointId}`
+      )
+      .remove();
   });
 }
-export default [watchRefreshComparison, watchAddComparisonPoint];
+
+export default [watchAddComparisonPoint, watchRemoveComparisonPoint];

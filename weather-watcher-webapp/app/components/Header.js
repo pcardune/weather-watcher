@@ -24,9 +24,7 @@ const QuickLinkCSS = css`
   cursor: pointer;
 `;
 
-const QuickButton = styled.a`
-  ${QuickLinkCSS}
-`;
+const QuickButton = styled.a`${QuickLinkCSS};`;
 
 const QuickLink = styled(NavLink)`
   ${QuickLinkCSS}
@@ -57,7 +55,7 @@ class Header extends Component {
           <HeaderLogo to="/">Rad Weather</HeaderLogo>
         </NavBar>
         <QuickLinks>
-          {this.props.comparisons.valueSeq().map(comparison => (
+          {this.props.comparisons.valueSeq().map(comparison =>
             <QuickLink
               key={comparison.id}
               activeClassName="selected"
@@ -65,10 +63,10 @@ class Header extends Component {
             >
               {comparison.name}
             </QuickLink>
-          ))}
-          <QuickButton onClick={this.props.onNewComparison}>
+          )}
+          {/*<QuickButton onClick={this.props.onNewComparison}>
             + New Comparison
-          </QuickButton>
+          </QuickButton>*/}
         </QuickLinks>
       </div>
     );

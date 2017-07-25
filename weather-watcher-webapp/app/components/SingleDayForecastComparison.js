@@ -11,9 +11,6 @@ import {
 } from 'app/propTypes';
 
 const DeleteButton = styled(Button)`
-  position: absolute;
-  top: 0px;
-  right: 0px;
 `;
 
 const ColumnHeader = styled.th`
@@ -29,7 +26,7 @@ const HeaderRow = styled.tr`
   }
   ${props => props.theme.media.phone`
     display: none;
-  `}
+  `};
 `;
 
 const UnitCell = styled.th`
@@ -78,11 +75,12 @@ const Row = styled.tr`
   ${Cell}:first-child {
     padding-left: 35px;
   }
-  background: ${props => props.selected ? props.theme.colors.primaryLight : 'transparent'};
+  background: ${props =>
+    props.selected ? props.theme.colors.primaryLight : 'transparent'};
   cursor: pointer;
 
-  ${props => props.phoneOnly ? HideOnDesktop(props) : ''}
-  ${props => props.desktopOnly ? HideOnPhone(props) : ''}
+  ${props => (props.phoneOnly ? HideOnDesktop(props) : '')} ${props =>
+      props.desktopOnly ? HideOnPhone(props) : ''};
 `;
 
 const ComparisonTable = styled.table`
@@ -179,9 +177,7 @@ class DesktopForecastRow extends PureComponent {
         <Cell>
           <PointLink
             target="_blank"
-            href={
-              `http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`
-            }
+            href={`http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`}
           >
             {point.name}
           </PointLink>
@@ -220,7 +216,9 @@ class DesktopForecastRow extends PureComponent {
           />
         </Cell>
         <ShortForecastCell>
-          <Truncate>{dailyForecast.day.shortForecast}</Truncate>
+          <Truncate>
+            {dailyForecast.day.shortForecast}
+          </Truncate>
         </ShortForecastCell>
         <Cell>
           <DeleteButton
@@ -272,9 +270,7 @@ class PhoneForecastRow extends PureComponent {
         <Cell colSpan="8">
           <PointLink
             target="_blank"
-            href={
-              `http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`
-            }
+            href={`http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`}
           >
             {point.name}
           </PointLink>
@@ -286,8 +282,7 @@ class PhoneForecastRow extends PureComponent {
               point={point}
               type="min"
             />
-            ºF /
-            {' '}
+            ºF /{' '}
             <PointForecastRollup
               date={date}
               property="temperature"
@@ -390,7 +385,9 @@ export default class SingleDayForecastComparison extends PureComponent {
                     <Cell>
                       <LoadingIndicator />
                     </Cell>
-                    <Cell colSpan={8}>{point.name}</Cell>
+                    <Cell colSpan={8}>
+                      {point.name}
+                    </Cell>
                   </Row>,
                 ];
               }

@@ -88,11 +88,16 @@ module.exports = options => ({
     new webpack.NamedModulesPlugin(),
   ]),
   resolve: {
-    modules: ['app', 'node_modules'],
+    modules: [
+      path.resolve(__dirname, '../../app'),
+      path.resolve(__dirname, '../../node_modules'),
+      'node_modules',
+    ],
     extensions: ['.js', '.jsx', '.react.js'],
     mainFields: ['browser', 'jsnext:main', 'main'],
     alias: {
       app: path.resolve(__dirname, '../../app'),
+      firebase: path.resolve(__dirname, '../../node_modules/firebase'),
     },
   },
   devtool: options.devtool,

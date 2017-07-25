@@ -19,3 +19,8 @@
 
 * radweather.com
 * myadventureweather.com
+* pleasentweather.com
+* balmyweather.com
+* sendingweather.com
+* goldilocksweather.com
+* searchforthesun.com
