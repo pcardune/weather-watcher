@@ -8,6 +8,7 @@ const RollupFuncs = {min: safeMin, max: safeMax, avg: safeAverage};
 
 export default class RollupNumber extends PureComponent {
   static propTypes = {
+    childComponent: PropTypes.func,
     values: PropTypes.arrayOf(PropTypes.number),
     from: PropTypes.string,
     to: PropTypes.string,
@@ -17,6 +18,7 @@ export default class RollupNumber extends PureComponent {
   };
 
   static defaultProps = {
+    childComponent: Number,
     values: [],
     from: undefined,
     to: undefined,
@@ -28,6 +30,7 @@ export default class RollupNumber extends PureComponent {
   render() {
     const {values, type, ...rest} = this.props;
     const func = RollupFuncs[type];
-    return <Number {...rest} value={func(values)} />;
+    const Component = this.props.childComponent;
+    return <Component {...rest} value={func(values)} />;
   }
 }

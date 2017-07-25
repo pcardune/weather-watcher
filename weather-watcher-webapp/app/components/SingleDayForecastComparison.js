@@ -1,10 +1,13 @@
 import Truncate from 'react-truncate';
 import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
+import moment from 'moment-mini';
+
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import Button from 'app/components/Button';
 import RollupNumber from 'app/components/RollupNumber';
-import moment from 'moment-mini';
+import ScoreNumber from 'app/components/ScoreNumber';
+
 import {
   AugmentedComparisonShape,
   AugmentedComparisonPointShape,
@@ -169,6 +172,7 @@ class DesktopForecastRow extends PureComponent {
           {point.isRefreshing
             ? <LoadingIndicator />
             : <RollupNumber
+                childComponent={ScoreNumber}
                 values={point.interpolatedScore
                   .getScoresForDate(date)
                   .map(s => s.score)}
