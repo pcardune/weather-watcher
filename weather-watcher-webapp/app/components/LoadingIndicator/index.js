@@ -9,7 +9,7 @@ const Wrapper = styled.div`
   position: relative;
 `;
 
-const LoadingIndicator = props => (
+const LoadingIndicator = props =>
   <Wrapper {...props}>
     <Circle />
     <Circle rotate={30} delay={-1.1} />
@@ -23,7 +23,6 @@ const LoadingIndicator = props => (
     <Circle rotate={270} delay={-0.3} />
     <Circle rotate={300} delay={-0.2} />
     <Circle rotate={330} delay={-0.1} />
-  </Wrapper>
-);
+  </Wrapper>;
 
 export default LoadingIndicator;

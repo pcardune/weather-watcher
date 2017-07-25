@@ -63,7 +63,8 @@ function getScoreForTime(grid, time, scoreConfig) {
   const windSpeed = grid.getValue('windSpeed', time);
   const precipQuantity = grid.getValue('quantitativePrecipitation', time);
   const temp = grid.getValue('temperature', time);
-  const score = 100 +
+  const score =
+    100 +
     Math.round(
       WEIGHTS.PRECIPITATION_QUANTITY * precipQuantity +
         WEIGHTS.PRECIPITATION_PERCENT * precip +

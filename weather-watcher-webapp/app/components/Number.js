@@ -30,6 +30,10 @@ export default class Number extends PureComponent {
   };
 
   render() {
-    return <span>{formatNumber(this.props)}</span>;
+    return (
+      <span>
+        {formatNumber(this.props)}
+      </span>
+    );
   }
 }

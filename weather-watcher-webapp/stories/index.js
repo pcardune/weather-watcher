@@ -8,10 +8,8 @@ import {linkTo} from '@storybook/addon-links';
 
 import {Toolbar} from 'app/components/Toolbar';
 
-storiesOf('Overview', module).add('Basic Page Layout', () => (
+storiesOf('Overview', module).add('Basic Page Layout', () =>
   <div>
-    <Toolbar>
-      A Toolbar
-    </Toolbar>
+    <Toolbar>A Toolbar</Toolbar>
   </div>
-));
+);

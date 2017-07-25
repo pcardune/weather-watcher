@@ -15,8 +15,10 @@ export function interpolateTimestampedValues(
   {time: highTime, value: highValue},
   timestamp
 ) {
-  return lowValue +
-    (timestamp - lowTime) / (highTime - lowTime) * (highValue - lowValue);
+  return (
+    lowValue +
+    (timestamp - lowTime) / (highTime - lowTime) * (highValue - lowValue)
+  );
 }
 
 function isNumber(n) {
@@ -99,7 +101,8 @@ export function getTimeSeriesValue(timeSeries, timestamp) {
   }
   let mid, cmp;
 
-  let low = 0, high = timeSeries.length - 1;
+  let low = 0,
+    high = timeSeries.length - 1;
 
   const comparator = ({time: candidate}, timestampStr) =>
     (candidate < timestampStr && -1) || (candidate > timestampStr && 1) || 0;
@@ -107,7 +110,7 @@ export function getTimeSeriesValue(timeSeries, timestamp) {
   while (low <= high) {
     /* Note that "(low + high) >>> 1" may overflow, and results in a typecast
      * to double (which gives the wrong results). */
-    mid = low + (high - low >> 1);
+    mid = low + ((high - low) >> 1);
     cmp = +comparator(timeSeries[mid], timestamp, mid, timeSeries);
 
     /* Too low. */

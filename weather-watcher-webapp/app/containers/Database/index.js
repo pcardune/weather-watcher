@@ -4,17 +4,15 @@
  *
  */
 
-import React, { PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { createStructuredSelector } from 'reselect';
+import React, {PropTypes} from 'react';
+import {connect} from 'react-redux';
+import {createStructuredSelector} from 'reselect';
 import makeSelectDatabase from './selectors';
 
-export class Database extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+export class Database extends React.PureComponent {
+  // eslint-disable-line react/prefer-stateless-function
   render() {
-    return (
-      <div>
-      </div>
-    );
+    return <div />;
   }
 }
 

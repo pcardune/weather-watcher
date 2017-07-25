@@ -80,9 +80,7 @@ export default class AddComparisonPointForm extends Component {
             <FormField>
               <Label>Coordinates:</Label>
               {round(this.state.position.lat, 4)}
-              ,
-              {' '}
-              {round(this.state.position.lng, 4)}
+              , {round(this.state.position.lng, 4)}
               <HelpText>
                 click the map or drag the marker to change coordinates
               </HelpText>
@@ -119,7 +117,9 @@ export default class AddComparisonPointForm extends Component {
           <Button flat type="button" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button type="button" onClick={this.onClickAdd}>Add</Button>
+          <Button type="button" onClick={this.onClickAdd}>
+            Add
+          </Button>
         </ButtonBar>
       </div>
     );

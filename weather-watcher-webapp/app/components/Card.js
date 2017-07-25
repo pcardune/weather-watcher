@@ -16,8 +16,7 @@ export const CardHeader = styled.div`
   }
 `;
 
-export const CardBody = styled.div`
-`;
+export const CardBody = styled.div``;
 
 export const Card = styled.div`
   max-width: 800px;

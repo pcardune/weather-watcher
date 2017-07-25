@@ -57,8 +57,8 @@ const buttonStyles = css`
   }
 `;
 
-const StyledButton = styled.button`${buttonStyles}`;
-const A = styled.a`${buttonStyles}`;
+const StyledButton = styled.button`${buttonStyles};`;
+const A = styled.a`${buttonStyles};`;
 
 function Button(props) {
   // Render an anchor tag
