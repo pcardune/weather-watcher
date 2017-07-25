@@ -61,6 +61,8 @@ firebase.initializeApp(config);
 const initialState = {};
 configureStore(initialState, store => {
   loadDatabase({store});
+  const landingScreen = document.getElementById('landing-screen');
+  landingScreen.parentNode.removeChild(landingScreen);
   ReactDOM.render(
     <Provider store={store}>
       <ThemeProvider theme={Theme}>
@@ -72,36 +74,3 @@ configureStore(initialState, store => {
     document.getElementById('app')
   );
 });
-
-window.firebase = firebase;
-
-// Install ServiceWorker and AppCache in the end since
-// it's not most important operation and if main code fails,
-// we do not want it installed
-//if (process.env.NODE_ENV === 'production') {
-//  const runtime = require('offline-plugin/runtime'); // eslint-disable-line global-require
-//  runtime.install({
-//    onInstalled: () => {
-//      console.log('SW Event:', 'onInstalled');
-//    },
-//    onUpdating: () => {
-//      console.log('SW Event:', 'onUpdating');
-//    },
-//    onUpdateReady: () => {
-//      console.log('SW Event:', 'onUpdateReady');
-//      // Tells to new SW to take control immediately
-//      runtime.applyUpdate();
-//    },
-//    onUpdated: () => {
-//      console.log('SW Event:', 'onUpdated');
-//      // Reload the webpage to load into the new version
-//      if (confirm('A new version is available, click ok to refresh')) {
-//        window.location.reload();
-//      }
-//    },
-//
-//    onUpdateFailed: () => {
-//      console.log('SW Event:', 'onUpdateFailed');
-//    },
-//  });
-//}
