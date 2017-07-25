@@ -4,6 +4,7 @@ import React, {PureComponent, PropTypes} from 'react';
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import Button from 'app/components/Button';
 import RollupNumber from 'app/components/RollupNumber';
+import ScoreNumber from 'app/components/ScoreNumber';
 import moment from 'moment-mini';
 import {
   AugmentedComparisonShape,
@@ -169,6 +170,7 @@ class DesktopForecastRow extends PureComponent {
           {point.isRefreshing
             ? <LoadingIndicator />
             : <RollupNumber
+                childComponent={ScoreNumber}
                 values={point.interpolatedScore
                   .getScoresForDate(date)
                   .map(s => s.score)}

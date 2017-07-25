@@ -12,3 +12,5 @@
 export const ADD_COMPARISON_POINT = 'weather-watcher/Home/ADD_COMPARISON_POINT';
 export const REMOVE_COMPARISON_POINT =
   'weather-watcher/Home/REMOVE_COMPARISON_POINT';
+export const FORECAST_BAD = 60;
+export const FORECAST_OK = 85;
