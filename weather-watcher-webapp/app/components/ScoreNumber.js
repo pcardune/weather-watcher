@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import Number from 'app/components/Number';
 import Theme from 'app/Theme';
 
-import {FORECAST_BAD, FORECAST_OK} from 'app/containers/HomePage/constants';
+import {FORECAST_BAD, FORECAST_OK} from 'app/constants';
 
 const Circle = styled.div`
   background-color: ${props => props.color};
