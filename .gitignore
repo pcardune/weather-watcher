@@ -58,3 +58,6 @@ typings/
 .env
 
 .babel-cache
+
+# Sublime text editor workspace file
+weather-watcher.sublime-workspace
