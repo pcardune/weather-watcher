@@ -35,7 +35,6 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
     "deploy": "npm run build && firebase deploy",
-    "prettier": "find app internals stories server -name \"*.js\" | xargs prettier --write --single-quote --no-bracket-spacing --trailing-comma es5",
     "precommit": "lint-staged"
   },
   "lint-staged": {
