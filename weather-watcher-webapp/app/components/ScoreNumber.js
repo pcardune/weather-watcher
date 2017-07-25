@@ -28,27 +28,14 @@ function getColorFromScore(score) {
 
 /* eslint-disable react/no-unused-prop-types */
 export default class ScoreNumber extends PureComponent {
-  static propTypes = {
-    value: PropTypes.number,
-    from: PropTypes.string,
-    to: PropTypes.string,
-    roundTo: PropTypes.number,
-    nanText: PropTypes.string,
-  };
-
-  static defaultProps = {
-    value: undefined,
-    from: undefined,
-    to: undefined,
-    roundTo: undefined,
-    nanText: '-',
-  };
+  static propTypes = Number.propTypes;
+  static defaultProps = Number.defaultProps;
 
   render() {
     const color = getColorFromScore(this.props.value);
     return (
       <Circle color={color}>
-        <Number value={this.props.value} />
+        <Number {...this.props} />
       </Circle>
     );
   }
