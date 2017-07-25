@@ -115,13 +115,16 @@ function dependencyHandlers() {
 
   // If DLLs are explicitly defined, we automatically create a DLLReferencePlugin for each of them.
   const dllManifests = Object.keys(dllPlugin.dlls).map(name =>
-    path.join(dllPath, `/${name}.json`));
+    path.join(dllPath, `/${name}.json`)
+  );
 
   return dllManifests.map(manifestPath => {
     if (!fs.existsSync(path)) {
       if (!fs.existsSync(manifestPath)) {
         logger.error(
-          `The following Webpack DLL manifest is missing: ${path.basename(manifestPath)}`
+          `The following Webpack DLL manifest is missing: ${path.basename(
+            manifestPath
+          )}`
         );
         logger.error(`Expected to find it in ${dllPath}`);
         logger.error('Please run: npm run build:dll');
@@ -157,7 +160,8 @@ function templateContent() {
     : Object.keys(dllPlugin.dlls);
 
   dllNames.forEach(dllName =>
-    body.append(`<script data-dll='true' src='/${dllName}.dll.js'></script>`));
+    body.append(`<script data-dll='true' src='/${dllName}.dll.js'></script>`)
+  );
 
   return doc.toString();
 }

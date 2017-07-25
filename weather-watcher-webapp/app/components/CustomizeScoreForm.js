@@ -15,11 +15,7 @@ const SlideWrapper = styled.div`
   width: 20em;
 `;
 
-const Wrapper = styled.div`
-  ${SlideWrapper} {
-    margin-right: 25px;
-  }
-`;
+const Wrapper = styled.div`${SlideWrapper} {margin-right: 25px;}`;
 
 export default class CustomizeScoreForm extends PureComponent {
   static propTypes = {

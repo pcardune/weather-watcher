@@ -8,13 +8,10 @@ const sharedCss = css`
   padding: 0;
 `;
 
-const EditableButton = styled.button`
-  ${sharedCss}
-  cursor: pointer;
-`;
+const EditableButton = styled.button`${sharedCss} cursor: pointer;`;
 const EditableInput = styled.input`
-  ${sharedCss}
-  border-bottom: 1px solid ${props => props.theme.colors.textOnPrimary};
+  ${sharedCss} border-bottom: 1px solid ${props =>
+      props.theme.colors.textOnPrimary};
 `;
 
 export default class InlineInput extends PureComponent {
@@ -72,7 +69,9 @@ export default class InlineInput extends PureComponent {
       );
     }
     return (
-      <EditableButton onClick={this.onClick}>{this.props.value}</EditableButton>
+      <EditableButton onClick={this.onClick}>
+        {this.props.value}
+      </EditableButton>
     );
   }
 }

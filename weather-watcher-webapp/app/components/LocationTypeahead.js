@@ -39,7 +39,7 @@ export default class LocationTypeahead extends PureComponent {
         country="us"
         onSuggestSelect={this.props.onChange}
         placeholder="Search for a location..."
-        innerRef={el => this.geosuggest = el}
+        innerRef={el => (this.geosuggest = el)}
       />
     );
   }

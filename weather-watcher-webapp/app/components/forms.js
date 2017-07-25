@@ -7,18 +7,14 @@ export const inputStyle = css`
   box-shadow: none;
 `;
 
-export const Input = styled.input`
-  ${inputStyle}
-`;
+export const Input = styled.input`${inputStyle};`;
 
 export const Label = styled.label`
   width: 100px;
   display: inline-block;
 `;
 
-export const FormField = styled.div`
-  margin-bottom: 10px;
-`;
+export const FormField = styled.div`margin-bottom: 10px;`;
 
 export const HelpText = styled.div`
   color: ${props => props.theme.colors.secondaryText};

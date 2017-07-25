@@ -148,8 +148,9 @@ class FastLine extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return this.props.data !== nextProps.data ||
-      this.props.color !== nextProps.color;
+    return (
+      this.props.data !== nextProps.data || this.props.color !== nextProps.color
+    );
   }
 
   render() {
@@ -242,9 +243,10 @@ export default class ComparisonGraph extends PureComponent {
           />
           {data.map(({lineData, point}) => {
             const i = this.props.comparison.comparisonPoints.indexOf(point);
-            let color = ComparisonGraphTheme.stack.colorScale[
-              i % ComparisonGraphTheme.stack.colorScale.length
-            ];
+            let color =
+              ComparisonGraphTheme.stack.colorScale[
+                i % ComparisonGraphTheme.stack.colorScale.length
+              ];
             if (this.props.highlightPointId) {
               if (this.props.highlightPointId !== point.id) {
                 color = Color(color).lighten(0.5).string();
