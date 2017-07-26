@@ -10,7 +10,7 @@ import {subscribeProps} from 'redux-firebase-mirror';
 import {myComparisons} from 'app/containers/Database/subscriptions';
 import {createComparison} from 'app/containers/Database/actions';
 import Header from 'app/components/Header';
-//import withProgressBar from 'app/components/ProgressBar';
+import LoadingBar from 'app/components/LoadingBar';
 import Bundle from 'app/components/Bundle';
 import loadHomePage from 'bundle-loader?lazy!app/containers/HomePage/load';
 
@@ -50,8 +50,9 @@ export class App extends Component {
   renderHomePage = ({match: {params: {comparisonId}}}) =>
     <Bundle load={loadHomePage} store={this.props.store}>
       {HomePage =>
-        HomePage &&
-        <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />}
+        HomePage
+          ? <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />
+          : <LoadingBar />}
     </Bundle>;
 
   render() {
@@ -77,7 +78,6 @@ export class App extends Component {
   }
 }
 
-//export default withProgressBar(App);
 export default compose(
   withRouter,
   subscribeProps({

@@ -11,6 +11,7 @@ import moment from 'moment-mini';
 import {compose} from 'redux';
 import {subscribeProps} from 'redux-firebase-mirror';
 
+import LoadingBar from 'app/components/LoadingBar';
 import {ButtonBar} from 'app/components/forms';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
@@ -95,10 +96,8 @@ export class HomePage extends Component {
   };
 
   render() {
-    if (!this.props.comparison) {
-      return <div>loading...</div>;
-    }
-    const hasPoints = this.props.comparison.comparisonPoints.length > 0;
+    const {comparison} = this.props;
+    const hasPoints = comparison && comparison.comparisonPoints.length > 0;
     return (
       <article>
         <DatePager
@@ -108,32 +107,36 @@ export class HomePage extends Component {
         <Card>
           <CardHeader>
             <h1>
-              <InlineInput
-                value={this.props.comparison.name}
-                onChange={this.onChangeComparisonName}
-              />
+              {comparison &&
+                <InlineInput
+                  value={comparison.name}
+                  onChange={this.onChangeComparisonName}
+                />}
             </h1>
-            {/*<ButtonBar>
-              <Button
+            {/*
+                <ButtonBar>
+                <Button
                 accent
                 disabled={
-                  this.state.showAddForm || this.state.showCustomizeForm
+                this.state.showAddForm || this.state.showCustomizeForm
                 }
                 onClick={this.onClickAddLocation}
-              >
+                >
                 Add Location
-              </Button>
-              <Button
+                </Button>
+                <Button
                 accent
                 disabled={
-                  this.state.showAddForm || this.state.showCustomizeForm
+                this.state.showAddForm || this.state.showCustomizeForm
                 }
                 onClick={this.toggleCustomize}
-              >
+                >
                 Customize
-              </Button>
-            </ButtonBar>*/}
+                </Button>
+                </ButtonBar>
+              */}
           </CardHeader>
+          {!comparison && <LoadingBar />}
           <CardBody>
             {this.state.showAddForm &&
               <InnerPane>
@@ -146,19 +149,21 @@ export class HomePage extends Component {
               <InnerPane>
                 <CustomizeScoreForm
                   onClose={this.toggleCustomize}
-                  scoreConfig={this.props.comparison.scoreConfig}
+                  scoreConfig={comparison.scoreConfig}
                   onChange={this.onChangeScoreConfig}
                 />
               </InnerPane>}
             {hasPoints
               ? <MultiDayForecastComparison
                   date={this.state.currentDate}
-                  comparison={this.props.comparison}
+                  comparison={comparison}
                   onRemoveComparisonPoint={this.onRemoveComparisonPoint}
                   onClickDate={this.onChangeDate}
                 />
               : <HelpText>
-                  Add a location to start comparing forecasts.
+                  {comparison
+                    ? 'Add a location to start comparing forecasts.'
+                    : 'Loading...'}
                 </HelpText>}
           </CardBody>
         </Card>
