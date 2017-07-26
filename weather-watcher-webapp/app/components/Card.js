@@ -7,7 +7,7 @@ export const CardHeader = styled.div`
   flex-direction: row;
   background: ${props => props.theme.colors.primary};
   color: ${props => props.theme.colors.textOnPrimary};
-  padding: 0 25px;
+  padding: 0 ${props => props.theme.padding.standard};
   min-height: 70px;
   h1 {
     font-size: 24px;
@@ -22,4 +22,7 @@ export const Card = styled.div`
   max-width: 800px;
   box-shadow: ${props => props.theme.shadows.level1};
   margin: auto;
+  ${props => props.theme.media.desktop`
+    min-width: 800px;
+  `};
 `;
