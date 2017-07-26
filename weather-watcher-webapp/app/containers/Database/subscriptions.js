@@ -3,7 +3,9 @@ import fromPairs from 'lodash.frompairs';
 import {Subscription, getFirebaseMirror} from 'redux-firebase-mirror';
 import {List, Map} from 'immutable';
 import {createSelector} from 'reselect';
+
 import {InterpolatedGridForecast, InterpolatedScoreFunction} from './scoring';
+import {selectScoreConfig} from './selectors';
 
 // TODO fix build issue with this being in cloud functions
 export function coordinateArrayToFirebaseKey(coordinates) {
@@ -127,14 +129,11 @@ const getAugmentedComparisonPointGetter = createSelector(
 );
 
 const getAugmentedComparisonGetter = createSelector(
-  [Items.comparisons, getAugmentedComparisonPointGetter],
-  (getComparison, getAugmentedComparisonPoint) =>
+  [Items.comparisons, getAugmentedComparisonPointGetter, selectScoreConfig],
+  (getComparison, getAugmentedComparisonPoint, scoreConfig) =>
     memoize(comparisonId => {
       let comparison = getComparison(comparisonId);
       if (comparison) {
-        const scoreConfig = comparison.scoreConfig || {
-          idealTemp: 18.5,
-        };
         comparison = {
           ...comparison,
           scoreConfig,

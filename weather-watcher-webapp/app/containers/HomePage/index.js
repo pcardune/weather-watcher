@@ -21,7 +21,7 @@ import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
 import DatePager from 'app/components/DatePager';
 import InlineInput from 'app/components/InlineInput';
-import {updateComparison} from 'app/containers/Database/actions';
+import {updateScoreConfig} from 'app/containers/Database/actions';
 import {augmentedComparisonById} from 'app/containers/Database/subscriptions';
 
 import {addComparisonPoint, removeComparisonPoint} from './actions';
@@ -43,7 +43,7 @@ export class HomePage extends Component {
     comparison: AugmentedComparisonShape,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
     onAddComparisonPoint: PropTypes.func.isRequired,
-    onUpdateComparison: PropTypes.func.isRequired,
+    onUpdateScoreConfig: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -92,7 +92,7 @@ export class HomePage extends Component {
   };
 
   onChangeScoreConfig = scoreConfig => {
-    this.props.onUpdateComparison({...this.props.comparison, scoreConfig});
+    this.props.onUpdateScoreConfig(scoreConfig);
   };
 
   render() {
@@ -113,28 +113,28 @@ export class HomePage extends Component {
                   onChange={this.onChangeComparisonName}
                 />}
             </h1>
-            {/*
-                <ButtonBar>
-                <Button
-                accent
-                disabled={
-                this.state.showAddForm || this.state.showCustomizeForm
-                }
-                onClick={this.onClickAddLocation}
+            {
+              <ButtonBar>
+                {/*<Button
+                  accent
+                  disabled={
+                    this.state.showAddForm || this.state.showCustomizeForm
+                  }
+                  onClick={this.onClickAddLocation}
                 >
-                Add Location
-                </Button>
+                  Add Location
+                </Button>*/}
                 <Button
-                accent
-                disabled={
-                this.state.showAddForm || this.state.showCustomizeForm
-                }
-                onClick={this.toggleCustomize}
+                  accent
+                  disabled={
+                    this.state.showAddForm || this.state.showCustomizeForm
+                  }
+                  onClick={this.toggleCustomize}
                 >
-                Customize
+                  Customize
                 </Button>
-                </ButtonBar>
-              */}
+              </ButtonBar>
+            }
           </CardHeader>
           {!comparison && <LoadingBar />}
           <CardBody>
@@ -176,7 +176,7 @@ export default compose(
   connect(null, {
     onAddComparisonPoint: addComparisonPoint,
     onRemoveComparisonPoint: removeComparisonPoint,
-    onUpdateComparison: updateComparison,
+    onUpdateScoreConfig: updateScoreConfig,
   }),
   subscribeProps({
     comparison: augmentedComparisonById,
