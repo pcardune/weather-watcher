@@ -1,4 +1,5 @@
 import {InterpolatedSequence, safeAverage} from 'app/utils/math';
+import convert from 'convert-units';
 import moment from 'moment-mini';
 
 export class InterpolatedGridForecast {
@@ -58,19 +59,61 @@ const WEIGHTS = {
   TEMP: -2,
 };
 
+function scoreForRange(range, value) {
+  const scores = {
+    red: 0,
+    yellow: 2,
+    green: 3,
+  };
+
+  if (value < range[0]) {
+    return scores.red;
+  } else if (value < range[1]) {
+    return (
+      scores.yellow -
+      (range[1] - value) / (range[1] - range[0]) * (scores.yellow - scores.red)
+    );
+  } else if (value < range[2]) {
+    return (
+      scores.green -
+      (range[2] - value) /
+        (range[2] - range[1]) *
+        (scores.green - scores.yellow)
+    );
+  } else if (value < range[3]) {
+    return (
+      scores.green -
+      (value - range[2]) /
+        (range[3] - range[2]) *
+        (scores.green - scores.yellow)
+    );
+  } else if (value < range[4]) {
+    return (
+      scores.yellow -
+      (value - range[3]) / (range[4] - range[3]) * (scores.yellow - scores.red)
+    );
+  }
+  return scores.red;
+}
+
 function getScoreForTime(grid, time, scoreConfig) {
   const precip = grid.getValue('probabilityOfPrecipitation', time);
-  const windSpeed = grid.getValue('windSpeed', time);
-  const precipQuantity = grid.getValue('quantitativePrecipitation', time);
-  const temp = grid.getValue('temperature', time);
+  const windSpeed = convert(grid.getValue('windSpeed', time))
+    .from('knot')
+    .to('m/h');
+  const precipQuantity = convert(
+    grid.getValue('quantitativePrecipitation', time)
+  )
+    .from('mm')
+    .to('in');
+  const temp = convert(grid.getValue('temperature', time)).from('C').to('F');
+
   const score =
-    100 +
-    Math.round(
-      WEIGHTS.PRECIPITATION_QUANTITY * precipQuantity +
-        WEIGHTS.PRECIPITATION_PERCENT * precip +
-        WEIGHTS.WIND_SPEED * windSpeed +
-        WEIGHTS.TEMP * Math.abs(temp - scoreConfig.idealTemp)
-    );
+    (scoreForRange(scoreConfig.tempRange, temp) +
+      scoreForRange(scoreConfig.windRange, windSpeed) +
+      scoreForRange(scoreConfig.precipRange, precip) +
+      scoreForRange(scoreConfig.quantityRange, precipQuantity)) *
+    10;
   return {score, time};
 }
 
