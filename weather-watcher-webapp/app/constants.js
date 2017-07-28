@@ -1,2 +1,23 @@
 export const FORECAST_BAD = 60;
 export const FORECAST_OK = 85;
+
+export const SCORE_COMPONENTS = {
+  temp: {
+    name: 'Temperature',
+  },
+  wind: {
+    name: 'Wind Speed',
+  },
+  precip: {
+    name: 'Chance of Rain',
+  },
+  precipQuantity: {
+    name: 'Amount of Rain',
+  },
+};
+
+export const SCORE_MULTIPLIERS = {
+  red: 0,
+  yellow: 2,
+  green: 3,
+};

@@ -1,24 +1,29 @@
-import {InterpolatedSequence, safeAverage} from 'app/utils/math';
+import SunCalc from 'suncalc';
 import convert from 'convert-units';
 import moment from 'moment-mini';
+import {InterpolatedSequence, safeAverage, sum} from 'app/utils/math';
+import {SCORE_MULTIPLIERS} from 'app/constants';
 
 export class InterpolatedGridForecast {
-  constructor(noaaGridForecast = {properties: {}}) {
+  constructor(noaaGridForecast) {
     this.timeSeries = {};
-    Object.keys(noaaGridForecast.properties).forEach(prop => {
-      const values = noaaGridForecast.properties[prop].values;
-      if (values) {
-        this.timeSeries[prop] = new InterpolatedSequence(
-          values.map(props => {
-            const {validTime, value} = props;
-            return {
-              value,
-              time: new Date(validTime.split('/')[0]).getTime(),
-            };
-          })
-        );
-      }
-    });
+    this.noaaGridForecast = noaaGridForecast;
+    if (noaaGridForecast) {
+      Object.keys(noaaGridForecast.properties).forEach(prop => {
+        const values = noaaGridForecast.properties[prop].values;
+        if (values) {
+          this.timeSeries[prop] = new InterpolatedSequence(
+            values.map(props => {
+              const {validTime, value} = props;
+              return {
+                value,
+                time: new Date(validTime.split('/')[0]).getTime(),
+              };
+            })
+          );
+        }
+      });
+    }
   }
 
   getValue(propName, time) {
@@ -52,48 +57,39 @@ export class InterpolatedGridForecast {
   }
 }
 
-const WEIGHTS = {
-  WIND_SPEED: -1,
-  PRECIPITATION_PERCENT: -0.5,
-  PRECIPITATION_QUANTITY: -1,
-  TEMP: -2,
-};
-
 function scoreForRange(range, value) {
-  const scores = {
-    red: 0,
-    yellow: 2,
-    green: 3,
-  };
-
   if (value < range[0]) {
-    return scores.red;
+    return SCORE_MULTIPLIERS.red;
   } else if (value < range[1]) {
     return (
-      scores.yellow -
-      (range[1] - value) / (range[1] - range[0]) * (scores.yellow - scores.red)
+      SCORE_MULTIPLIERS.yellow -
+      (range[1] - value) /
+        (range[1] - range[0]) *
+        (SCORE_MULTIPLIERS.yellow - SCORE_MULTIPLIERS.red)
     );
   } else if (value < range[2]) {
     return (
-      scores.green -
+      SCORE_MULTIPLIERS.green -
       (range[2] - value) /
         (range[2] - range[1]) *
-        (scores.green - scores.yellow)
+        (SCORE_MULTIPLIERS.green - SCORE_MULTIPLIERS.yellow)
     );
   } else if (value < range[3]) {
     return (
-      scores.green -
+      SCORE_MULTIPLIERS.green -
       (value - range[2]) /
         (range[3] - range[2]) *
-        (scores.green - scores.yellow)
+        (SCORE_MULTIPLIERS.green - SCORE_MULTIPLIERS.yellow)
     );
   } else if (value < range[4]) {
     return (
-      scores.yellow -
-      (value - range[3]) / (range[4] - range[3]) * (scores.yellow - scores.red)
+      SCORE_MULTIPLIERS.yellow -
+      (value - range[3]) /
+        (range[4] - range[3]) *
+        (SCORE_MULTIPLIERS.yellow - SCORE_MULTIPLIERS.red)
     );
   }
-  return scores.red;
+  return SCORE_MULTIPLIERS.red;
 }
 
 function getScoreForTime(grid, time, scoreConfig) {
@@ -108,13 +104,17 @@ function getScoreForTime(grid, time, scoreConfig) {
     .to('in');
   const temp = convert(grid.getValue('temperature', time)).from('C').to('F');
 
+  const scoreComponents = {
+    temp: scoreForRange(scoreConfig.tempRange, temp),
+    wind: scoreForRange(scoreConfig.windRange, windSpeed),
+    precip: scoreForRange(scoreConfig.precipRange, precip),
+    precipQuantity: scoreForRange(scoreConfig.quantityRange, precipQuantity),
+  };
+
+  const components = Object.values(scoreComponents);
   const score =
-    (scoreForRange(scoreConfig.tempRange, temp) +
-      scoreForRange(scoreConfig.windRange, windSpeed) +
-      scoreForRange(scoreConfig.precipRange, precip) +
-      scoreForRange(scoreConfig.quantityRange, precipQuantity)) *
-    10;
-  return {score, time};
+    sum(components) / components.length / SCORE_MULTIPLIERS.green * 100;
+  return {score, scoreComponents, time};
 }
 
 export class InterpolatedScoreFunction {
@@ -128,9 +128,17 @@ export class InterpolatedScoreFunction {
   }
 
   getScoresForDate(date, interval = 'PT1H') {
+    if (!this.grid.noaaGridForecast) {
+      return [];
+    }
+    const [
+      longitude,
+      latitude,
+    ] = this.grid.noaaGridForecast.geometry.coordinates[0][0];
+    const times = SunCalc.getTimes(date, latitude, longitude);
     return this.getScoresForInterval(
-      moment(date).startOf('date').valueOf(),
-      moment(date).endOf('date').valueOf(),
+      moment(date).set('hour', times.sunrise.getHours()).valueOf(),
+      moment(date).set('hour', times.sunset.getHours()).valueOf(),
       interval
     );
   }
@@ -150,9 +158,21 @@ export class InterpolatedScoreFunction {
   }
 
   getAverageScoreForDate(date) {
-    return this.getAverageScoreForInterval(
+    if (!this.grid.noaaGridForecast) {
+      return 0;
+    }
+    const [
+      longitude,
+      latitude,
+    ] = this.grid.noaaGridForecast.geometry.coordinates[0][0];
+    const times = SunCalc.getTimes(
       moment(date).startOf('date').valueOf(),
-      moment(date).endOf('date').valueOf()
+      latitude,
+      longitude
+    );
+    return this.getAverageScoreForInterval(
+      moment(date).set('hour', times.sunrise.getHours()).valueOf(),
+      moment(date).set('hour', times.sunset.getHours()).valueOf()
     );
   }
 

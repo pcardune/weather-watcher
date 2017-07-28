@@ -146,6 +146,10 @@ export class InterpolatedSequence {
 }
 
 export function round(num, numDigits = 0) {
-  const factor = Math.pow(10, numDigits);
+  const factor = 10 ** numDigits;
   return Math.round(num * factor) / factor;
+}
+
+export function sum(nums) {
+  return nums.reduce((a, b) => a + b, 0);
 }

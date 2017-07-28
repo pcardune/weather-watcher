@@ -184,6 +184,7 @@
     "reselect": "2.5.4",
     "sanitize.css": "4.1.0",
     "styled-components": "^2.1.0",
+    "suncalc": "^1.8.0",
     "uuid": "^3.0.1",
     "victory": "^0.21.0",
     "warning": "3.0.0",

@@ -2,11 +2,14 @@ import Truncate from 'react-truncate';
 import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
 import moment from 'moment-mini';
+import Tooltip from 'rc-tooltip';
+import 'rc-tooltip/assets/bootstrap.css';
 
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import Button from 'app/components/Button';
 import RollupNumber from 'app/components/RollupNumber';
 import ScoreNumber from 'app/components/ScoreNumber';
+import {SCORE_MULTIPLIERS, SCORE_COMPONENTS} from 'app/constants';
 
 import {
   AugmentedComparisonShape,
@@ -145,6 +148,36 @@ function getDailyForecastForPoint(point, date) {
   return dailyForecast;
 }
 
+const ScoreComponentsDescription = ({scoreComponents}) => {
+  const componentsByScore = {
+    red: [],
+    yellow: [],
+    green: [],
+  };
+  for (const key in SCORE_COMPONENTS) {
+    if (scoreComponents[key] <= SCORE_MULTIPLIERS.red) {
+      componentsByScore.red.push(SCORE_COMPONENTS[key].name);
+    } else if (scoreComponents[key] <= SCORE_MULTIPLIERS.yellow) {
+      componentsByScore.yellow.push(SCORE_COMPONENTS[key].name);
+    } else {
+      componentsByScore.green.push(SCORE_COMPONENTS[key].name);
+    }
+  }
+  return (
+    <ul>
+      <li>
+        Green: {componentsByScore.green.join(', ')}
+      </li>
+      <li>
+        Yellow: {componentsByScore.yellow.join(', ')}
+      </li>
+      <li>
+        Red: {componentsByScore.red.join(', ')}
+      </li>
+    </ul>
+  );
+};
+
 class DesktopForecastRow extends PureComponent {
   static propTypes = {
     point: AugmentedComparisonPointShape.isRequired,
@@ -161,6 +194,23 @@ class DesktopForecastRow extends PureComponent {
   render() {
     const {point, date} = this.props;
     const dailyForecast = getDailyForecastForPoint(point, date);
+    const scores = point.interpolatedScore.getScoresForDate(date);
+    let badness = {};
+    scores.forEach(score => {
+      for (const key in score.scoreComponents) {
+        if (!badness[key]) {
+          badness[key] = score.scoreComponents[key];
+        } else {
+          badness[key] = Math.min(badness[key], score.scoreComponents[key]);
+        }
+      }
+    });
+    const scoreTooltip = (
+      <span>
+        <ScoreComponentsDescription scoreComponents={badness} />
+      </span>
+    );
+
     return (
       <Row
         desktopOnly
@@ -171,12 +221,14 @@ class DesktopForecastRow extends PureComponent {
         <Cell style={{position: 'relative'}}>
           {point.isRefreshing
             ? <LoadingIndicator />
-            : <RollupNumber
-                childComponent={ScoreNumber}
-                values={point.interpolatedScore
-                  .getScoresForDate(date)
-                  .map(s => s.score)}
-              />}
+            : <Tooltip placement="left" overlay={scoreTooltip}>
+                <span>
+                  <RollupNumber
+                    childComponent={ScoreNumber}
+                    values={scores.map(s => s.score)}
+                  />
+                </span>
+              </Tooltip>}
         </Cell>
         <Cell>
           <PointLink
