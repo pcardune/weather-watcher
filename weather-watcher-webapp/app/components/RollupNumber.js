@@ -1,10 +1,15 @@
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 
-import {safeAverage, safeMin, safeMax} from 'app/utils/math';
+import {safeAverage, safeMin, safeMax, safeSum} from 'app/utils/math';
 import Number from './Number';
 
-const RollupFuncs = {min: safeMin, max: safeMax, avg: safeAverage};
+const RollupFuncs = {
+  min: safeMin,
+  max: safeMax,
+  avg: safeAverage,
+  sum: safeSum,
+};
 
 export default class RollupNumber extends PureComponent {
   static propTypes = {

@@ -255,13 +255,19 @@ class DesktopForecastRow extends PureComponent {
           />
         </Cell>
         <Cell>
-          <PointForecastRollup date={date} property="windSpeed" point={point} />
+          <PointForecastRollup
+            date={date}
+            property="windSpeed"
+            point={point}
+            type="max"
+          />
         </Cell>
         <Cell>
           <PointForecastRollup
             date={date}
             property="probabilityOfPrecipitation"
             point={point}
+            type="max"
           />
         </Cell>
         <Cell>
@@ -269,6 +275,7 @@ class DesktopForecastRow extends PureComponent {
             date={date}
             property="quantitativePrecipitation"
             point={point}
+            type="sum"
           />
         </Cell>
         <ShortForecastCell>
@@ -277,7 +284,7 @@ class DesktopForecastRow extends PureComponent {
           </Truncate>
         </ShortForecastCell>
         <Cell>
-          <DeleteButton
+          {/*<DeleteButton
             type="button"
             value={point.id}
             flat
@@ -285,7 +292,7 @@ class DesktopForecastRow extends PureComponent {
             onClick={() => this.props.onRemove(point.id)}
           >
             X
-          </DeleteButton>
+          </DeleteButton>*/}
         </Cell>
       </Row>
     );

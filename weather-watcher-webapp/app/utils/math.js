@@ -84,6 +84,17 @@ export function safeMax(nums) {
   return max;
 }
 
+export function safeSum(nums) {
+  return nums.reduce(
+    (accumulator, b) => accumulator + (isNumber(b) ? b : 0),
+    0
+  );
+}
+
+export function sum(nums) {
+  return nums.reduce((a, b) => a + b, 0);
+}
+
 /**
  * Return the value within the given time series at the given time. If no data point
  * exists at that exact time, one will be interpolated between the two nearest values.
@@ -148,8 +159,4 @@ export class InterpolatedSequence {
 export function round(num, numDigits = 0) {
   const factor = 10 ** numDigits;
   return Math.round(num * factor) / factor;
-}
-
-export function sum(nums) {
-  return nums.reduce((a, b) => a + b, 0);
 }
