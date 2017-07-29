@@ -13,6 +13,7 @@ import Header from 'app/components/Header';
 import LoadingBar from 'app/components/LoadingBar';
 import Bundle from 'app/components/Bundle';
 import loadHomePage from 'bundle-loader?lazy!app/containers/HomePage/load';
+import loadFAQ from 'bundle-loader?lazy!app/containers/FAQPage/load';
 
 const Footer = styled.div`
   margin: 50px;
@@ -55,6 +56,11 @@ export class App extends Component {
           : <LoadingBar />}
     </Bundle>;
 
+  renderFAQ = () =>
+    <Bundle load={loadFAQ}>
+      {FAQPage => FAQPage && <FAQPage />}
+    </Bundle>;
+
   render() {
     return (
       <AppWrapper>
@@ -75,6 +81,7 @@ export class App extends Component {
         <Switch>
           <Route exact path="/" render={this.renderHomePage} />
           <Route path="/compare/:comparisonId" render={this.renderHomePage} />
+          <Route path="/faq" render={this.renderFAQ} />
           <Route component={NotFound} />
         </Switch>
         <Footer />
