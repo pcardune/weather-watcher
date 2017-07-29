@@ -28,6 +28,7 @@ export default class FAQPage extends Component {
           <CardBody>
             <List>
               <ListQuestion>How are the scores determined?</ListQuestion>
+              {/* TODO: Update the score FAQ once we've settled on a scoring algorithm */}
               <ListAnswer>Magic!</ListAnswer>
               <ListQuestion>
                 {`How come a location I'm interested in isn't listed?`}
