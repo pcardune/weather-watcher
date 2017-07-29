@@ -6,6 +6,7 @@ import memoize from 'lodash.memoize';
 
 import {AugmentedComparisonShape} from 'app/propTypes';
 import {safeAverage} from 'app/utils/math';
+import {getForecastDates} from 'app/utils/dates';
 
 import {getScoreColor} from './ScoreNumber';
 import Number from './Number';
@@ -41,25 +42,16 @@ export default class ComparisonChart extends PureComponent {
     this.props.onClickDate(date);
   });
 
-  getWeeklyScore = memoize(point => {
-    const scores = [];
-    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-      scores.push(
-        point.interpolatedScore.getAverageScoreForDate(
-          moment(new Date()).startOf('date').add(dayOffset, 'days').toDate()
-        ).score
-      );
-    }
-    return safeAverage(scores);
-  });
+  getWeeklyScore = memoize(point =>
+    safeAverage(
+      getForecastDates().map(
+        date => point.interpolatedScore.getAverageScoreForDate(date).score
+      )
+    )
+  );
 
   render() {
-    const dates = [];
-    for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-      dates.push(
-        moment(new Date()).startOf('date').add(dayOffset, 'days').toDate()
-      );
-    }
+    const dates = getForecastDates();
 
     const sortedPoints = [...this.props.comparison.comparisonPoints];
     sortedPoints.sort(

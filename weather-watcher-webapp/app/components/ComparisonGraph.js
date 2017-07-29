@@ -15,6 +15,7 @@ import {
 } from 'victory';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import Theme from 'app/Theme';
+import {getForecastDates} from 'app/utils/dates';
 import ComparisonGraphTheme from './ComparisonGraphTheme';
 
 const ChartWrapper = styled.div`
@@ -100,12 +101,7 @@ const calculateChartData = comparison => {
   let maxTime = -Infinity;
   let hasData = false;
 
-  const dates = [];
-  for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
-    dates.push(
-      moment(new Date()).startOf('date').add(dayOffset, 'days').toDate()
-    );
-  }
+  const dates = getForecastDates();
   const data = comparison.comparisonPoints.map(point => {
     const lineData = [];
     dates.slice(0, 6).forEach(date => {
