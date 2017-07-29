@@ -98,8 +98,8 @@ const ComparisonTable = styled.table`
 
 function makeSortFunc(date) {
   return (p1, p2) =>
-    p2.interpolatedScore.getAverageScoreForDate(date) -
-    p1.interpolatedScore.getAverageScoreForDate(date);
+    p2.interpolatedScore.getAverageScoreForDate(date).score -
+    p1.interpolatedScore.getAverageScoreForDate(date).score;
 }
 
 class PointForecastRollup extends PureComponent {
@@ -223,9 +223,10 @@ class DesktopForecastRow extends PureComponent {
             ? <LoadingIndicator />
             : <Tooltip placement="left" overlay={scoreTooltip}>
                 <span>
-                  <RollupNumber
-                    childComponent={ScoreNumber}
-                    values={scores.map(s => s.score)}
+                  <ScoreNumber
+                    score={point.interpolatedScore.getAverageScoreForDate(
+                      this.props.date
+                    )}
                   />
                 </span>
               </Tooltip>}
