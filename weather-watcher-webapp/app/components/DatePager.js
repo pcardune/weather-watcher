@@ -12,13 +12,7 @@ const DateHeader = styled.h1`
   text-align: center;
 `;
 
-const Wrapper = styled.div`
-  max-width: 670px;
-  display: flex;
-  margin: auto;
-  align-items: center;
-  justify-content: space-around;
-`;
+const Wrapper = styled.div`margin-bottom: 0px;`;
 
 export default class DatePager extends PureComponent {
   static propTypes = {
@@ -58,22 +52,35 @@ export default class DatePager extends PureComponent {
 
   render() {
     return (
-      <Wrapper>
-        <Button
-          onClick={this.onClickPrevDate}
-          disabled={!this.canClickPrevDate()}
-        >
-          ◀ {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
-        </Button>
-        <DateHeader>
-          {moment(this.props.currentDate).format('dddd')}
-        </DateHeader>
-        <Button
-          onClick={this.onClickNextDate}
-          disabled={!this.canClickNextDate()}
-        >
-          {moment(this.props.currentDate).add(1, 'days').format('ddd')} ▶
-        </Button>
+      <Wrapper className="row valign-wrapper">
+        <div className="col m4 s5 center-align">
+          <Button
+            onClick={this.onClickPrevDate}
+            disabled={!this.canClickPrevDate()}
+            iconLeft="chevron_left"
+            accent
+          >
+            {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
+          </Button>
+        </div>
+        <div className="col m4 s2 center-align">
+          <h1 className="hide-on-small-only">
+            {moment(this.props.currentDate).format('dddd')}
+          </h1>
+          <h1 className="hide-on-med-and-up">
+            {moment(this.props.currentDate).format('ddd')}
+          </h1>
+        </div>
+        <div className="col m4 s5 center-align">
+          <Button
+            onClick={this.onClickNextDate}
+            disabled={!this.canClickNextDate()}
+            iconRight="chevron_right"
+            accent
+          >
+            {moment(this.props.currentDate).add(1, 'days').format('ddd')}
+          </Button>
+        </div>
       </Wrapper>
     );
   }

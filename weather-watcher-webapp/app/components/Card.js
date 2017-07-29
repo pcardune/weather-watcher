@@ -1,28 +1,32 @@
+import React from 'react';
 import styled from 'styled-components';
 
-export const CardHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  background: ${props => props.theme.colors.primary};
-  color: ${props => props.theme.colors.textOnPrimary};
-  padding: 0 ${props => props.theme.padding.standard};
-  min-height: 70px;
-  h1 {
-    font-size: 24px;
-    font-weight: 100;
-    width: 100%;
-  }
-`;
+export function CardBody(props) {
+  return (
+    <div className={`card-content ${props.className}`}>
+      {props.children}
+    </div>
+  );
+}
 
-export const CardBody = styled.div``;
+const CardHeaderWrapper = styled.div`position: relative;`;
+export function CardHeader(props) {
+  return (
+    <CardHeaderWrapper
+      className={`card-content blue white-text ${props.className}`}
+    >
+      <div className="card-title">
+        {props.title}
+      </div>
+      {props.children}
+    </CardHeaderWrapper>
+  );
+}
 
-export const Card = styled.div`
-  max-width: 800px;
-  box-shadow: ${props => props.theme.shadows.level1};
-  margin: auto;
-  ${props => props.theme.media.desktop`
-    min-width: 800px;
-  `};
-`;
+export function Card(props) {
+  return (
+    <div {...props} className={`card ${props.className}`}>
+      {props.children}
+    </div>
+  );
+}
