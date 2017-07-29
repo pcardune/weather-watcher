@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import styled from 'styled-components';
-import {Route, Switch, withRouter} from 'react-router-dom';
+import {Link, Route, Switch, withRouter} from 'react-router-dom';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import {subscribeProps} from 'redux-firebase-mirror';
@@ -15,10 +15,17 @@ import Bundle from 'app/components/Bundle';
 import loadHomePage from 'bundle-loader?lazy!app/containers/HomePage/load';
 import loadFAQ from 'bundle-loader?lazy!app/containers/FAQPage/load';
 
-const Footer = styled.div`
-  margin: 50px;
-  text-align: center;
-  color: ${props => props.theme.colors.secondaryText};
+const Body = styled.div`min-height: 60vh;`;
+
+const Footer = styled.footer`
+  h4,
+  h5 {
+    font-family: 'Clicker Script', cursive;
+    font-weight: bold;
+  }
+  a {
+    color: white;
+  }
 `;
 
 const AppWrapper = styled.div`
@@ -78,13 +85,41 @@ export class App extends Component {
           onNewComparison={this.onNewComparison}
           comparisons={this.props.comparisons}
         />
-        <Switch>
-          <Route exact path="/" render={this.renderHomePage} />
-          <Route path="/compare/:comparisonId" render={this.renderHomePage} />
-          <Route path="/faq" render={this.renderFAQ} />
-          <Route component={NotFound} />
-        </Switch>
-        <Footer />
+        <Body>
+          <Switch>
+            <Route exact path="/" render={this.renderHomePage} />
+            <Route path="/compare/:comparisonId" render={this.renderHomePage} />
+            <Route path="/faq" render={this.renderFAQ} />
+            <Route component={NotFound} />
+          </Switch>
+        </Body>
+        <Footer className="page-footer blue">
+          <div className="container">
+            <div className="row">
+              <div className="col s12 m6">
+                <h4 className="amber-text">Goldilocks Weather</h4>
+                <p className="grey-text text-lighten-4">
+                  weather that{"'"}s{' '}
+                  <em>
+                    <u>just</u>
+                  </em>{' '}
+                  right
+                </p>
+              </div>
+              <div className="col s12 m6">
+                <h4>Links</h4>
+                <ul>
+                  <li>
+                    <Link to="/FAQ">FAQ</Link>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div className="footer-copyright">
+            <div className="container">© 2017 goldilocksweather.com</div>
+          </div>
+        </Footer>
       </AppWrapper>
     );
   }
