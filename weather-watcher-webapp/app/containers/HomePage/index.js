@@ -99,75 +99,73 @@ export class HomePage extends Component {
     const {comparison} = this.props;
     const hasPoints = comparison && comparison.comparisonPoints.length > 0;
     return (
-      <article>
+      <div className="container">
         <DatePager
           onChange={this.onChangeDate}
           currentDate={this.state.currentDate}
         />
-        <Card>
-          <CardHeader>
-            <h1>
-              {comparison &&
-                <InlineInput
-                  value={comparison.name}
-                  onChange={this.onChangeComparisonName}
-                />}
-            </h1>
-            {
-              <ButtonBar>
-                {/*<Button
-                  accent
-                  disabled={
-                    this.state.showAddForm || this.state.showCustomizeForm
-                  }
-                  onClick={this.onClickAddLocation}
-                >
-                  Add Location
-                </Button>*/}
+        <div className="row">
+          <div className="col s12">
+            <Card>
+              <CardHeader title={comparison.name}>
                 <Button
+                  large
+                  floating
                   accent
+                  icon="settings"
+                  className="halfway-fab"
                   disabled={
                     this.state.showAddForm || this.state.showCustomizeForm
                   }
                   onClick={this.toggleCustomize}
-                >
-                  Customize
-                </Button>
-              </ButtonBar>
-            }
-          </CardHeader>
-          {!comparison && <LoadingBar />}
-          <CardBody>
-            {this.state.showAddForm &&
-              <InnerPane>
-                <AddComparisonPointForm
-                  onClose={this.hideAddForm}
-                  onAdd={this.onAddComparisonPoint}
                 />
-              </InnerPane>}
-            {this.state.showCustomizeForm &&
-              <InnerPane>
-                <CustomizeScoreForm
-                  onClose={this.toggleCustomize}
-                  scoreConfig={comparison.scoreConfig}
-                  onChange={this.onChangeScoreConfig}
-                />
-              </InnerPane>}
-            {hasPoints
-              ? <MultiDayForecastComparison
-                  date={this.state.currentDate}
-                  comparison={comparison}
-                  onRemoveComparisonPoint={this.onRemoveComparisonPoint}
-                  onClickDate={this.onChangeDate}
-                />
-              : <HelpText>
-                  {comparison
-                    ? 'Add a location to start comparing forecasts.'
-                    : 'Loading...'}
-                </HelpText>}
-          </CardBody>
-        </Card>
-      </article>
+                {/*<ButtonBar>
+                    <Button
+                    accent
+                    disabled={
+                    this.state.showAddForm || this.state.showCustomizeForm
+                    }
+                    onClick={this.onClickAddLocation}
+                    >
+                    Add Location
+                    </Button>
+
+                    </ButtonBar>*/}
+              </CardHeader>
+              {!comparison && <LoadingBar />}
+              <CardBody>
+                {this.state.showAddForm &&
+                  <InnerPane>
+                    <AddComparisonPointForm
+                      onClose={this.hideAddForm}
+                      onAdd={this.onAddComparisonPoint}
+                    />
+                  </InnerPane>}
+                {this.state.showCustomizeForm &&
+                  <InnerPane>
+                    <CustomizeScoreForm
+                      onClose={this.toggleCustomize}
+                      scoreConfig={comparison.scoreConfig}
+                      onChange={this.onChangeScoreConfig}
+                    />
+                  </InnerPane>}
+                {hasPoints
+                  ? <MultiDayForecastComparison
+                      date={this.state.currentDate}
+                      comparison={comparison}
+                      onRemoveComparisonPoint={this.onRemoveComparisonPoint}
+                      onClickDate={this.onChangeDate}
+                    />
+                  : <HelpText>
+                      {comparison
+                        ? 'Add a location to start comparing forecasts.'
+                        : 'Loading...'}
+                    </HelpText>}
+              </CardBody>
+            </Card>
+          </div>
+        </div>
+      </div>
     );
   }
 }
