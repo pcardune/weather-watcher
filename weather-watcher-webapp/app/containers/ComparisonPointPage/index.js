@@ -1,16 +1,34 @@
 import React, {Component, PropTypes} from 'react';
+import {compose} from 'redux';
+import {connect} from 'react-redux';
+import {subscribeProps} from 'redux-firebase-mirror';
 
-export default class ComparisonPointPage extends Component {
+import {ComparisonPointShape} from 'app/propTypes';
+import {augmentedComparisonPointById} from 'app/containers/Database/subscriptions';
+import {Card, CardHeader, CardBody} from 'app/components/Card';
+
+export class ComparisonPointPage extends Component {
   static propTypes = {
-    // TODO: is there a stricter definition of an ID type?
-    comparisonPointId: PropTypes.string.isRequired,
+    comparisonPoint: ComparisonPointShape,
   };
 
   render() {
     return (
-      <h1>
-        {this.props.comparisonPointId}
-      </h1>
+      <Card>
+        <CardHeader>
+          <h1>
+            {this.props.comparisonPoint.name}
+          </h1>
+        </CardHeader>
+        <CardBody />
+      </Card>
     );
   }
 }
+
+export default compose(
+  connect(null, {}),
+  subscribeProps({
+    comparisonPoint: augmentedComparisonPointById,
+  })
+)(ComparisonPointPage);
