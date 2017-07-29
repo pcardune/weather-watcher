@@ -62,8 +62,9 @@ export default class DatePager extends PureComponent {
         <Button
           onClick={this.onClickPrevDate}
           disabled={!this.canClickPrevDate()}
+          iconLeft="chevron_left"
         >
-          ◀ {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
+          {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
         </Button>
         <DateHeader>
           {moment(this.props.currentDate).format('dddd')}
@@ -71,8 +72,9 @@ export default class DatePager extends PureComponent {
         <Button
           onClick={this.onClickNextDate}
           disabled={!this.canClickNextDate()}
+          iconRight="chevron_right"
         >
-          {moment(this.props.currentDate).add(1, 'days').format('ddd')} ▶
+          {moment(this.props.currentDate).add(1, 'days').format('ddd')}
         </Button>
       </Wrapper>
     );
