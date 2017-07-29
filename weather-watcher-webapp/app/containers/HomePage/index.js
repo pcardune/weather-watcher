@@ -149,19 +149,19 @@ export class HomePage extends Component {
                       onChange={this.onChangeScoreConfig}
                     />
                   </InnerPane>}
-                {hasPoints
-                  ? <MultiDayForecastComparison
-                      date={this.state.currentDate}
-                      comparison={comparison}
-                      onRemoveComparisonPoint={this.onRemoveComparisonPoint}
-                      onClickDate={this.onChangeDate}
-                    />
-                  : <HelpText>
-                      {comparison
-                        ? 'Add a location to start comparing forecasts.'
-                        : 'Loading...'}
-                    </HelpText>}
               </CardBody>
+              {hasPoints
+                ? <MultiDayForecastComparison
+                    date={this.state.currentDate}
+                    comparison={comparison}
+                    onRemoveComparisonPoint={this.onRemoveComparisonPoint}
+                    onClickDate={this.onChangeDate}
+                  />
+                : <HelpText>
+                    {comparison
+                      ? 'Add a location to start comparing forecasts.'
+                      : 'Loading...'}
+                  </HelpText>}
             </Card>
           </div>
         </div>

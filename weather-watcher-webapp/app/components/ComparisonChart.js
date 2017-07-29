@@ -14,16 +14,20 @@ import Number from './Number';
 const Table = styled.table`width: 100%;`;
 
 const PointName = styled.td`
-  padding: 0 ${props => props.theme.padding.standard};
+  padding: 0 0 0 ${props => props.theme.padding.standard};
   border-top: 1px solid ${props => props.theme.colors.divider};
+  ${props => props.theme.media.phone`padding: 0 5px;`};
 `;
 
 const Th = styled.th`
   font-weight: ${props => (props.selected ? 'bold' : 'normal')};
   cursor: pointer;
+  text-align: center;
+  padding: 0;
 `;
 
 const ScoreBox = styled.td`
+  padding: 0;
   width: 11%;
   border: 1px solid ${props => props.theme.colors.divider};
   background-color: ${getScoreColor};
@@ -76,7 +80,7 @@ export default class ComparisonChart extends PureComponent {
         <tbody>
           {sortedPoints.map(point =>
             <tr key={point.id}>
-              <PointName>
+              <PointName className="truncate">
                 {point.name}
               </PointName>
               {dates.map(date => {
