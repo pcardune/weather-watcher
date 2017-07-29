@@ -159,7 +159,7 @@ export class InterpolatedScoreFunction {
 
   getAverageScoreForDate(date) {
     if (!this.grid.noaaGridForecast) {
-      return 0;
+      return {score: 0, scoreComponents: {}};
     }
     const [
       longitude,
@@ -178,6 +178,16 @@ export class InterpolatedScoreFunction {
 
   getAverageScoreForInterval(startTime, endTime, interval = 'PT1H') {
     const scores = this.getScoresForInterval(startTime, endTime, interval);
-    return safeAverage(scores.map(s => s.score));
+    return {
+      score: safeAverage(scores.map(s => s.score)),
+      scoreComponents: {
+        wind: safeAverage(scores.map(s => s.scoreComponents.wind)),
+        temp: safeAverage(scores.map(s => s.scoreComponents.temp)),
+        precip: safeAverage(scores.map(s => s.scoreComponents.precip)),
+        precipQuantity: safeAverage(
+          scores.map(s => s.scoreComponents.precipQuantity)
+        ),
+      },
+    };
   }
 }

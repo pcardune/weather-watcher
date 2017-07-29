@@ -141,7 +141,7 @@ describe('InterpolatedScoreFunction', () => {
       expect(
         score.getAverageScoreForDate(
           new Date('2017-06-16T14:00:00+00:00').getTime()
-        )
+        ).score
       ).toEqual(70.58333333333333);
     });
   });
