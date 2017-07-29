@@ -5,10 +5,19 @@ import styled, {css} from 'styled-components';
 import {Link, NavLink} from 'react-router-dom';
 
 const HeaderLogo = styled(Link)`
-  font-size: 10vw;
-  font-weight: 100;
   display: inline-block;
   text-decoration: none;
+
+  h1 {
+    font-family: 'Clicker Script', cursive;
+    font-weight: bold;
+    margin-bottom: 0;
+    font-size: 4em;
+  }
+  h5 {
+    margin-bottom: 1em;
+    font-weight: 300;
+  }
 `;
 
 const QuickLinks = styled.div`
@@ -52,7 +61,16 @@ class Header extends Component {
     return (
       <div>
         <NavBar>
-          <HeaderLogo to="/">Rad Weather</HeaderLogo>
+          <HeaderLogo to="/">
+            <h1 className="amber-text text-lighten-2">Goldilocks Weather</h1>
+            <h5 className="amber-text text-lighten-5">
+              weather that's{' '}
+              <em>
+                <u>just</u>
+              </em>{' '}
+              right
+            </h5>
+          </HeaderLogo>
         </NavBar>
         <QuickLinks>
           {this.props.comparisons.valueSeq().map(comparison =>
@@ -65,8 +83,8 @@ class Header extends Component {
             </QuickLink>
           )}
           {/*<QuickButton onClick={this.props.onNewComparison}>
-            + New Comparison
-          </QuickButton>*/}
+              + New Comparison
+              </QuickButton>*/}
         </QuickLinks>
       </div>
     );

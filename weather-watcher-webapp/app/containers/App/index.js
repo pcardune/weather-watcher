@@ -59,9 +59,14 @@ export class App extends Component {
     return (
       <AppWrapper>
         <Helmet
-          titleTemplate="%s - Weather Watcher"
-          defaultTitle="Weather Watcher"
-          meta={[{name: 'description', content: 'Watch the weather'}]}
+          titleTemplate="%s - Goldilocks Weather"
+          defaultTitle="Goldilocks Weather"
+          meta={[
+            {
+              name: 'description',
+              content: "Find the weather that's just right",
+            },
+          ]}
         />
         <Header
           onNewComparison={this.onNewComparison}

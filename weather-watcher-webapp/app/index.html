@@ -4,10 +4,15 @@
     <!-- The first thing in any HTML file should be the charset -->
     <meta charset="utf-8">
     <!-- Make the page mobile compatible -->
-    <!--meta name="viewport" content="width=device-width, initial-scale=1"-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <!-- Allow installing the app to the homescreen -->
     <link rel="manifest" href="manifest.json">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
+
     <meta name="mobile-web-app-capable" content="yes">
+    <link href="https://fonts.googleapis.com/css?family=Berkshire+Swash|Clicker+Script|Covered+By+Your+Grace|Great+Vibes|Merienda|Mr+Dafoe|Princess+Sofia|Rouge+Script|Sofia|Yesteryear" rel="stylesheet">
     <title>Weather Watcher</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
@@ -37,16 +42,25 @@
      #landing-screen {
        font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
        text-align: center;
-       font-weight: 100;
-       font-size: 10vw;
-       color: #FFFFFF;
        background: #2196F3;
        position: absolute;
        left: 0;
        top: 0;
        right: 0;
      }
+     #landing-screen h1 {
+       font-family: 'Clicker Script', cursive;
+       font-weight: bold;
+       margin-bottom: 0;
+       font-size: 4em;
+     }
+     #landing-screen h5 {
+       margin-bottom: 1em;
+       font-weight: 300;
+     }
+
      #landing-screen-loading {
+       color: #FFFFFF;
        background: #1976D2;
        text-align: center;
        padding: 10px;
@@ -60,7 +74,10 @@
     <noscript>If you're seeing this message, that means <strong>JavaScript has been disabled on your browser</strong>, please <strong>enable JS</strong> to make this app work.</noscript>
 
     <div id="landing-screen">
-      Rad Weather
+      <h1 class="amber-text text-lighten-2">Goldilocks Weather</h1>
+      <h5 class="amber-text text-lighten-5">
+        weather that's <em><u>just</u></em> right
+      </h5>
       <div id="landing-screen-loading">
         Loading...
       </div>
