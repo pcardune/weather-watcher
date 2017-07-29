@@ -10,9 +10,9 @@ import {ComparisonPointShape} from 'app/propTypes';
 import {augmentedComparisonPointById} from 'app/containers/Database/subscriptions';
 import {Card, CardHeader, CardBody} from 'app/components/Card';
 
-const ScrollingContainer = styled.div`
-  max-height: 300px;
-  overflow-y: scroll;
+const ForecastPeriodHeader = styled.div`
+  margin-bottom: 0px;
+  font-weight: bold;
 `;
 
 export class ComparisonPointPage extends Component {
@@ -35,26 +35,32 @@ export class ComparisonPointPage extends Component {
           </h1>
         </CardHeader>
         <CardBody>
-          <div>{`${roundedElevationFeet} ft.`}</div>
-          <ScrollingContainer>
+          <div className="row">
+            <div className="col s12">
+              {`${roundedElevationFeet} ft.`}
+            </div>
+          </div>
+          <div>
             {comparisonPoint.noaaDailyForecast.properties.periods.map(period =>
               <div>
-                <h4>
-                  {period.name}
-                </h4>
-                <div>
-                  <span>
+                <ForecastPeriodHeader className="row">
+                  <div className="col s12">
+                    {period.name}
+                  </div>
+                </ForecastPeriodHeader>
+                <div className="row">
+                  <div className="col s1">
                     {`${convert(period.temperature)
                       .from(period.temperatureUnit)
                       .to('F')} \u2109`}
-                  </span>
-                  <span>
+                  </div>
+                  <div className="col s11">
                     {period.detailedForecast}
-                  </span>
+                  </div>
                 </div>
               </div>
             )}
-          </ScrollingContainer>
+          </div>
         </CardBody>
       </Card>
     );
