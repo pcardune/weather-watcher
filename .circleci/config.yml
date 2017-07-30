@@ -40,3 +40,8 @@ jobs:
       - run:
           working_directory: ~/repo/weather-watcher-webapp
           command: yarn test
+      - deploy:
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              yarn run deploy
+            fi
