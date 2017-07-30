@@ -107,7 +107,7 @@ export class HomePage extends Component {
         <div className="row">
           <div className="col s12">
             <Card>
-              <CardHeader title={comparison.name}>
+              <CardHeader title={comparison && comparison.name}>
                 <Button
                   large
                   floating
