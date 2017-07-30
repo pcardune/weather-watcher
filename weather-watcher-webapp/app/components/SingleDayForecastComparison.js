@@ -219,20 +219,13 @@ class DesktopForecastRow extends PureComponent {
   render() {
     const {point, date} = this.props;
     const dailyForecast = getDailyForecastForPoint(point, date);
-    const scores = point.interpolatedScore.getScoresForDate(date);
-    let badness = {};
-    scores.forEach(score => {
-      for (const key in score.scoreComponents) {
-        if (!badness[key]) {
-          badness[key] = score.scoreComponents[key];
-        } else {
-          badness[key] = Math.min(badness[key], score.scoreComponents[key]);
-        }
-      }
-    });
     const scoreTooltip = (
       <span>
-        <ScoreComponentsDescription scoreComponents={badness} />
+        <ScoreComponentsDescription
+          scoreComponents={point.interpolatedScore.getBadnessForDate(
+            this.props.date
+          )}
+        />
       </span>
     );
 

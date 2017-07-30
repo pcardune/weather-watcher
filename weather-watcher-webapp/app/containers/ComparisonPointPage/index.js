@@ -49,27 +49,9 @@ export class ComparisonPointPage extends Component {
         .to('ft')
     );
 
-    // make interpolated score function
     const interpolatedScore = new InterpolatedScoreFunction({
       interpolatedGridForecast: new InterpolatedGridForecast(noaaGridForecast),
       scoreConfig,
-    });
-
-    // use interpolated score function to get the score
-    const date = new Date(
-      comparisonPoint.noaaDailyForecast.properties.periods[0].startTime
-    );
-    const scores = interpolatedScore.getScoresForDate(date);
-    scores.forEach((score, index) => {
-      const badness = {};
-      for (const key in score.scoreComponents) {
-        if (!badness[key]) {
-          badness[key] = score.scoreComponents[key];
-        } else {
-          badness[key] = Math.min(badness[key], score.scoreComponents[key]);
-        }
-      }
-      scores[index].badness = badness;
     });
 
     return (
@@ -102,11 +84,9 @@ export class ComparisonPointPage extends Component {
                           overlay={
                             <span>
                               <ScoreComponentsDescription
-                                scoreComponents={
-                                  interpolatedScore.getAverageScoreForDate(
-                                    new Date(period.startTime)
-                                  ).badness
-                                }
+                                scoreComponents={interpolatedScore.getBadnessForDate(
+                                  new Date(period.startTime)
+                                )}
                               />
                             </span>
                           }
