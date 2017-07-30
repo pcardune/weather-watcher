@@ -45,12 +45,8 @@ export class InterpolatedGridForecast {
   getValuesForInterval(propName, startTime, endTime, interval = 'PT1H') {
     const values = [];
 
-    const duration = moment.duration(interval);
-    for (
-      let t = startTime;
-      t < endTime;
-      t = moment(t).add(duration).valueOf()
-    ) {
+    const duration = moment.duration(interval).asMilliseconds();
+    for (let t = startTime; t < endTime; t += duration) {
       values.push(this.getValue(propName, t));
     }
     return values;
@@ -146,12 +142,8 @@ export class InterpolatedScoreFunction {
   getScoresForInterval(startTime, endTime, interval = 'PT1H') {
     const scores = [];
 
-    const duration = moment.duration(interval);
-    for (
-      let t = startTime;
-      t < endTime;
-      t = moment(t).add(duration).valueOf()
-    ) {
+    const duration = moment.duration(interval).asMilliseconds();
+    for (let t = startTime; t < endTime; t += duration) {
       scores.push(this.getScore(t));
     }
     return scores;
