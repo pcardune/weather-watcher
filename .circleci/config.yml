@@ -26,6 +26,9 @@ jobs:
           - v1-dependencies-{{ checksum "weather-watcher-webapp/package.json" }}
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
+      - restore_cache:
+          keys:
+          - yarn-cache
 
       - run:
           working_directory: ~/repo/weather-watcher-webapp
@@ -33,14 +36,15 @@ jobs:
 
       - save_cache:
           paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "weather-watcher-webapp/package.json" }}
+            - ~/.yarn-cache
+          key: yarn-cache
 
       # run tests!
       - run:
           working_directory: ~/repo/weather-watcher-webapp
           command: yarn test
       - deploy:
+          working_directory: ~/repo/weather-watcher-webapp
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
               yarn run deploy
