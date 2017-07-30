@@ -34,7 +34,8 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "deploy": "npm run build && firebase deploy",
+    "deploy:prod": "npm run build && firebase use weather-watcher-170701 && firebase deploy",
+    "deploy:prod-ci": "npm run build && firebase use weather-watcher-170701 && firebase deploy --token=$FIREBASE_TOKEN --non-interactive",
     "precommit": "lint-staged"
   },
   "lint-staged": {
@@ -243,6 +244,7 @@
     "husky": "^0.14.3",
     "image-webpack-loader": "2.0.0",
     "imports-loader": "0.6.5",
+    "jasmine-reporters": "^2.2.1",
     "jest-cli": "^20.0.4",
     "lint-staged": "^4.0.2",
     "ngrok": "2.2.4",
