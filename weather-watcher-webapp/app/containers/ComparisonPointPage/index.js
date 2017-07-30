@@ -62,11 +62,7 @@ export class ComparisonPointPage extends Component {
     return (
       <div className="container">
         <Card>
-          <CardHeader>
-            <h1>
-              {comparisonPoint.name}
-            </h1>
-          </CardHeader>
+          <CardHeader title={comparisonPoint.name} />
           <CardBody>
             <div className="row">
               <div className="col s12">
@@ -81,7 +77,7 @@ export class ComparisonPointPage extends Component {
                       {period.name}
                     </div>
                   </ForecastPeriodHeader>
-                  <div className="row">
+                  <div className="row valign-wrapper">
                     <div className="col s1">
                       <Tooltip
                         placement="left"
