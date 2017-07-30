@@ -5,11 +5,21 @@ import convert from 'convert-units';
 import React, {Component, PropTypes} from 'react';
 import styled from 'styled-components';
 import {subscribeProps} from 'redux-firebase-mirror';
+import Tooltip from 'rc-tooltip';
 
-import {ComparisonPointShape} from 'app/propTypes';
+import {ComparisonPointShape, ScoreConfigShape} from 'app/propTypes';
 import {augmentedComparisonPointById} from 'app/containers/Database/subscriptions';
 import {Card, CardHeader, CardBody} from 'app/components/Card';
+import {
+  InterpolatedGridForecast,
+  InterpolatedScoreFunction,
+} from 'app/containers/Database/scoring';
+import {
+  getDailyForecastForPoint,
+  ScoreComponentsDescription,
+} from 'app/components/SingleDayForecastComparison';
 import LoadingBar from 'app/components/LoadingBar';
+import ScoreNumber from 'app/components/ScoreNumber';
 import {selectScoreConfig} from 'app/containers/Database/selectors';
 
 const ForecastPeriodHeader = styled.div`
@@ -20,6 +30,7 @@ const ForecastPeriodHeader = styled.div`
 export class ComparisonPointPage extends Component {
   static propTypes = {
     comparisonPoint: ComparisonPointShape,
+    scoreConfig: ScoreConfigShape,
   };
 
   render() {
@@ -29,11 +40,38 @@ export class ComparisonPointPage extends Component {
       return <LoadingBar />;
     }
 
+    const scoreConfig = this.props.scoreConfig;
+    const noaaGridForecast = this.props.comparisonPoint.noaaGridForecast;
+
     const roundedElevationFeet = _.round(
       convert(comparisonPoint.noaaGridForecast.properties.elevation.value)
         .from('m')
         .to('ft')
     );
+
+    // make interpolated score function
+    const interpolatedScore = new InterpolatedScoreFunction({
+      interpolatedGridForecast: new InterpolatedGridForecast(noaaGridForecast),
+      scoreConfig,
+    });
+
+    // use interpolated score function to get the score
+    const date = new Date(
+      comparisonPoint.noaaDailyForecast.properties.periods[0].startTime
+    );
+    const scores = interpolatedScore.getScoresForDate(date);
+    scores.forEach((score, index) => {
+      const badness = {};
+      for (const key in score.scoreComponents) {
+        if (!badness[key]) {
+          badness[key] = score.scoreComponents[key];
+        } else {
+          badness[key] = Math.min(badness[key], score.scoreComponents[key]);
+        }
+      }
+      scores[index].badness = badness;
+    });
+
     return (
       <div className="container">
         <Card>
@@ -59,11 +97,35 @@ export class ComparisonPointPage extends Component {
                     </ForecastPeriodHeader>
                     <div className="row">
                       <div className="col s1">
+                        <Tooltip
+                          placement="left"
+                          overlay={
+                            <span>
+                              <ScoreComponentsDescription
+                                scoreComponents={
+                                  interpolatedScore.getAverageScoreForDate(
+                                    new Date(period.startTime)
+                                  ).badness
+                                }
+                              />
+                            </span>
+                          }
+                        >
+                          <span>
+                            <ScoreNumber
+                              score={interpolatedScore.getAverageScoreForDate(
+                                new Date(period.startTime)
+                              )}
+                            />
+                          </span>
+                        </Tooltip>
+                      </div>
+                      <div className="col s1">
                         {`${convert(period.temperature)
                           .from(period.temperatureUnit)
                           .to('F')} \u2109`}
                       </div>
-                      <div className="col s11">
+                      <div className="col s10">
                         {period.detailedForecast}
                       </div>
                     </div>

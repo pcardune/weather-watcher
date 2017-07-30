@@ -154,7 +154,7 @@ class PointForecastRollup extends PureComponent {
   }
 }
 
-function getDailyForecastForPoint(point, date) {
+export function getDailyForecastForPoint(point, date) {
   const dailyForecast = {
     day: {},
     night: {},
@@ -173,7 +173,7 @@ function getDailyForecastForPoint(point, date) {
   return dailyForecast;
 }
 
-const ScoreComponentsDescription = ({scoreComponents}) => {
+export const ScoreComponentsDescription = ({scoreComponents}) => {
   const componentsByScore = {
     red: [],
     yellow: [],
