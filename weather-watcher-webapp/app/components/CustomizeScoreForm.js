@@ -18,22 +18,12 @@ function gradient(left, right) {
 }
 
 const SlideWrapper = styled.div`
-  display: inline-block;
-  width: 30em;
+  margin-bottom: 20px;
+  padding: 0 0 0 20px;
+  ${props => props.theme.media.phone`padding-top: 10px;`};
 `;
 
-const Wrapper = styled.div`
-  ${SlideWrapper} {
-    margin-right: 25px;
-    margin-left: 25px;
-  }
-  ${FormField} {
-    padding-bottom: 20px;
-  }
-  ${Label} {
-    width: 150px;
-  }
-`;
+const Wrapper = styled.div``;
 
 const {forecastBad, forecastGood, forecastOK} = Theme.colors;
 
@@ -159,20 +149,22 @@ class ScoreRange extends PureComponent {
       };
     }
     return (
-      <SlideWrapper>
-        <Range
-          {...this.props}
-          railStyle={ScoreRange.railStyle}
-          handleStyle={ScoreRange.handleStyle}
-          trackStyle={ScoreRange.trackStyle}
-          value={this.state.value}
-          onChange={this.onChange}
-          onAfterChange={this.onAfterChange}
-          marks={marks}
-          dotStyle={ScoreRange.dotStyle}
-          handle={this.handleWithTooltip}
-        />
-      </SlideWrapper>
+      <div className="col s12 m9">
+        <SlideWrapper>
+          <Range
+            {...this.props}
+            railStyle={ScoreRange.railStyle}
+            handleStyle={ScoreRange.handleStyle}
+            trackStyle={ScoreRange.trackStyle}
+            value={this.state.value}
+            onChange={this.onChange}
+            onAfterChange={this.onAfterChange}
+            marks={marks}
+            dotStyle={ScoreRange.dotStyle}
+            handle={this.handleWithTooltip}
+          />
+        </SlideWrapper>
+      </div>
     );
   }
 }
@@ -202,7 +194,7 @@ export default class CustomizeScoreForm extends PureComponent {
             pushable
             min={0}
             max={100}
-            markLabel=" ºF"
+            markLabel="ºF"
             value={scoreConfig.tempRange}
             onChange={this.onChangeRange('tempRange')}
           />
@@ -213,7 +205,7 @@ export default class CustomizeScoreForm extends PureComponent {
             pushable
             min={0}
             max={50}
-            markLabel=" mph"
+            markLabel="mph"
             value={scoreConfig.windRange}
             onChange={this.onChangeRange('windRange')}
           />
@@ -224,7 +216,7 @@ export default class CustomizeScoreForm extends PureComponent {
             pushable
             min={0}
             max={100}
-            markLabel=" %"
+            markLabel="%"
             value={scoreConfig.precipRange}
             onChange={this.onChangeRange('precipRange')}
           />

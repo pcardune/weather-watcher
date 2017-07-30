@@ -52,6 +52,13 @@ const Cell = styled.td`
   }
 `;
 
+const RowLabel = styled.span`
+  font-size: .8em;
+  color: ${props => props.theme.colors.secondaryText};
+  display: inline-block;
+  width: 4em;
+`;
+
 const PointLink = styled.a`
   color: ${props => props.theme.colors.primaryText};
   text-decoration: none;
@@ -80,6 +87,7 @@ const Row = styled.tr`
   border-bottom: 1px solid #eee;
   ${Cell}:first-child {
     padding-left: 35px;
+    ${props => props.theme.media.phone`padding-left: 10px`};
   }
   background: ${props =>
     props.selected ? props.theme.colors.primaryLight : 'transparent'};
@@ -286,14 +294,14 @@ class DesktopForecastRow extends PureComponent {
         </ShortForecastCell>
         <Cell>
           {/*<DeleteButton
-            type="button"
-            value={point.id}
-            flat
-            style={{fontWeight: '500'}}
-            onClick={() => this.props.onRemove(point.id)}
-          >
-            X
-          </DeleteButton>*/}
+              type="button"
+              value={point.id}
+              flat
+              style={{fontWeight: '500'}}
+              onClick={() => this.props.onRemove(point.id)}
+              >
+              X
+              </DeleteButton>*/}
         </Cell>
       </Row>
     );
@@ -325,10 +333,10 @@ class PhoneForecastRow extends PureComponent {
         <Cell style={{position: 'relative'}}>
           {point.isRefreshing
             ? <LoadingIndicator />
-            : <RollupNumber
-                values={point.interpolatedScore
-                  .getScoresForDate(date)
-                  .map(s => s.score)}
+            : <ScoreNumber
+                score={point.interpolatedScore.getAverageScoreForDate(
+                  this.props.date
+                )}
               />}
         </Cell>
         <Cell colSpan="8">
@@ -339,7 +347,7 @@ class PhoneForecastRow extends PureComponent {
             {point.name}
           </PointLink>
           <div>
-            Temp:{' '}
+            <RowLabel>Temp: </RowLabel>
             <PointForecastRollup
               date={date}
               property="temperature"
@@ -356,7 +364,7 @@ class PhoneForecastRow extends PureComponent {
             ºF
           </div>
           <div>
-            Wind:{' '}
+            <RowLabel>Wind: </RowLabel>
             <PointForecastRollup
               date={date}
               property="windSpeed"
@@ -365,7 +373,7 @@ class PhoneForecastRow extends PureComponent {
             mph
           </div>
           <div>
-            Rain{' '}
+            <RowLabel>Rain: </RowLabel>
             <PointForecastRollup
               date={date}
               property="probabilityOfPrecipitation"
@@ -379,7 +387,10 @@ class PhoneForecastRow extends PureComponent {
             />
             {'"'}
           </div>
-          {dailyForecast.day.shortForecast}
+          <div>
+            <RowLabel />
+            {dailyForecast.day.shortForecast}
+          </div>
         </Cell>
       </Row>
     );
