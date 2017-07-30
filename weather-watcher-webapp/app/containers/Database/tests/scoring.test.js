@@ -1,5 +1,6 @@
 import {InterpolatedScoreFunction, InterpolatedGridForecast} from '../scoring';
 import sampleNOAAGridForecast from './sampleNOAAGridForecast.json';
+import {DEFAULT_SCORE_CONFIG} from '../constants';
 
 describe('InterpolatedGridForecast', () => {
   const grid = new InterpolatedGridForecast({
@@ -123,16 +124,23 @@ describe('InterpolatedScoreFunction', () => {
     interpolatedGridForecast: new InterpolatedGridForecast(
       sampleNOAAGridForecast
     ),
-    scoreConfig: {
-      idealTemp: 18.3,
-    },
+    scoreConfig: DEFAULT_SCORE_CONFIG,
   });
 
   describe('getScore', () => {
     it('returns the score at the given time', () => {
       expect(
         score.getScore(new Date('2017-06-16T14:00:00+00:00').getTime())
-      ).toEqual({score: 60, time: 1497621600000});
+      ).toEqual({
+        score: 58.05449636792378,
+        scoreComponents: {
+          precip: 0.1777777777777776,
+          precipQuantity: 2.6666504,
+          temp: 2.60000000000001,
+          wind: 1.5221113863730666,
+        },
+        time: 1497621600000,
+      });
     });
   });
 
@@ -142,7 +150,7 @@ describe('InterpolatedScoreFunction', () => {
         score.getAverageScoreForDate(
           new Date('2017-06-16T14:00:00+00:00').getTime()
         ).score
-      ).toEqual(70.58333333333333);
+      ).toEqual(68.50740829619826);
     });
   });
 
@@ -151,30 +159,166 @@ describe('InterpolatedScoreFunction', () => {
       expect(
         score.getScoresForDate(new Date('2017-06-16T14:00:00+00:00').getTime())
       ).toEqual([
-        {score: 63, time: 1497596400000},
-        {score: 63, time: 1497600000000},
-        {score: 63, time: 1497603600000},
-        {score: 61, time: 1497607200000},
-        {score: 60, time: 1497610800000},
-        {score: 59, time: 1497614400000},
-        {score: 60, time: 1497618000000},
-        {score: 60, time: 1497621600000},
-        {score: 61, time: 1497625200000},
-        {score: 62, time: 1497628800000},
-        {score: 63, time: 1497632400000},
-        {score: 64, time: 1497636000000},
-        {score: 70, time: 1497639600000},
-        {score: 75, time: 1497643200000},
-        {score: 80, time: 1497646800000},
-        {score: 80, time: 1497650400000},
-        {score: 80, time: 1497654000000},
-        {score: 82, time: 1497657600000},
-        {score: 83, time: 1497661200000},
-        {score: 83, time: 1497664800000},
-        {score: 81, time: 1497668400000},
-        {score: 80, time: 1497672000000},
-        {score: 80, time: 1497675600000},
-        {score: 81, time: 1497679200000},
+        {
+          score: 57.8596689399132,
+          scoreComponents: {
+            precip: 0.2666666666666666,
+            precipQuantity: 2.6666504,
+            temp: 2.56666666666665,
+            wind: 1.4431765394562668,
+          },
+          time: 1497614400000,
+        },
+        {
+          score: 57.95708265391849,
+          scoreComponents: {
+            precip: 0.22222222222222232,
+            precipQuantity: 2.6666504,
+            temp: 2.58333333333333,
+            wind: 1.4826439629146666,
+          },
+          time: 1497618000000,
+        },
+        {
+          score: 58.05449636792378,
+          scoreComponents: {
+            precip: 0.1777777777777776,
+            precipQuantity: 2.6666504,
+            temp: 2.60000000000001,
+            wind: 1.5221113863730666,
+          },
+          time: 1497621600000,
+        },
+        {
+          score: 58.42968785970708,
+          scoreComponents: {
+            precip: 0.1333333333333333,
+            precipQuantity: 2.6666504,
+            temp: 2.6500000000000496,
+            wind: 1.5615788098314667,
+          },
+          time: 1497625200000,
+        },
+        {
+          score: 58.91451108331852,
+          scoreComponents: {
+            precip: 0.08888888888888902,
+            precipQuantity: 2.6666504,
+            temp: 2.7,
+            wind: 1.6142020411093334,
+          },
+          time: 1497628800000,
+        },
+        {
+          score: 59.399334306930704,
+          scoreComponents: {
+            precip: 0.04444444444444429,
+            precipQuantity: 2.6666504,
+            temp: 2.75000000000004,
+            wind: 1.6668252723872001,
+          },
+          time: 1497632400000,
+        },
+        {
+          score: 59.88415753054214,
+          scoreComponents: {
+            precip: 0,
+            precipQuantity: 2.6666504,
+            temp: 2.79999999999999,
+            wind: 1.7194485036650669,
+          },
+          time: 1497636000000,
+        },
+        {
+          score: 65.20341048320354,
+          scoreComponents: {
+            precip: 0.24444444444444424,
+            precipQuantity: 2.6666504,
+            temp: 2.89999999999998,
+            wind: 2.01331441354,
+          },
+          time: 1497639600000,
+        },
+        {
+          score: 71.2749613372609,
+          scoreComponents: {
+            precip: 0.48888888888888915,
+            precipQuantity: 2.6666504,
+            temp: 2.9500000000000197,
+            wind: 2.4474560715824,
+          },
+          time: 1497643200000,
+        },
+        {
+          score: 77.34651219131754,
+          scoreComponents: {
+            precip: 0.7333333333333334,
+            precipQuantity: 2.6666504,
+            temp: 2.9999999999999702,
+            wind: 2.8815977296248,
+          },
+          time: 1497646800000,
+        },
+        {
+          score: 77.56353030856133,
+          scoreComponents: {
+            precip: 0.9777777777777776,
+            precipQuantity: 2.6666504,
+            temp: 2.89999999999998,
+            wind: 2.7631954592496,
+          },
+          time: 1497650400000,
+        },
+        {
+          score: 77.78054842580437,
+          scoreComponents: {
+            precip: 1.2222222222222223,
+            precipQuantity: 2.6666504,
+            temp: 2.7999999999999003,
+            wind: 2.6447931888744,
+          },
+          time: 1497654000000,
+        },
+        {
+          score: 79.24756654304839,
+          scoreComponents: {
+            precip: 1.4666666666666668,
+            precipQuantity: 2.6666504,
+            temp: 2.84999999999994,
+            wind: 2.5263909184992,
+          },
+          time: 1497657600000,
+        },
+        {
+          score: 79.21384128575318,
+          scoreComponents: {
+            precip: 1.6333333333333333,
+            precipQuantity: 2.7222086666666665,
+            temp: 2.89999999999998,
+            wind: 2.2501189542904,
+          },
+          time: 1497661200000,
+        },
+        {
+          score: 79.25276327823127,
+          scoreComponents: {
+            precip: 1.8,
+            precipQuantity: 2.7777669333333335,
+            temp: 2.9500000000000197,
+            wind: 1.9825646600544,
+          },
+          time: 1497664800000,
+        },
+        {
+          score: 78.73646014373804,
+          scoreComponents: {
+            precip: 1.9666666666666666,
+            precipQuantity: 2.8333252,
+            temp: 2.85000000000003,
+            wind: 1.7983833505818667,
+          },
+          time: 1497668400000,
+        },
       ]);
     });
   });
