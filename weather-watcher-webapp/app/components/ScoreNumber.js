@@ -14,6 +14,9 @@ const Circle = styled.div`
   color: white;
   font-weight: bolder;
   text-align: center;
+  display: inline-block;
+  width: 2em;
+  height: 2em;
 `;
 
 const MOSTLY_BAD = safeAverage([

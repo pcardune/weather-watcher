@@ -1,3 +1,4 @@
+import React from 'react';
 import styled, {css} from 'styled-components';
 
 export const inputStyle = css`
@@ -9,12 +10,21 @@ export const inputStyle = css`
 
 export const Input = styled.input`${inputStyle};`;
 
-export const Label = styled.label`
-  width: 100px;
-  display: inline-block;
-`;
+export function Label(props) {
+  return (
+    <div className={`col s12 m2 ${props.className}`}>
+      {props.children}
+    </div>
+  );
+}
 
-export const FormField = styled.div`margin-bottom: 10px;`;
+export function FormField(props) {
+  return (
+    <div className={`row ${props.className}`}>
+      {props.children}
+    </div>
+  );
+}
 
 export const HelpText = styled.div`
   color: ${props => props.theme.colors.secondaryText};

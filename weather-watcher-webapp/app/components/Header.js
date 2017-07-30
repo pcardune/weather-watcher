@@ -18,6 +18,15 @@ const HeaderLogo = styled(Link)`
     margin-bottom: 1em;
     font-weight: 300;
   }
+
+  ${props => props.theme.media.phone`
+    h1 {
+      font-size: 3em;
+    }
+    h5 {
+      font-size: 1.5em;
+    }
+  `}
 `;
 
 const QuickLinks = styled.div`
