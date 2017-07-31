@@ -56,7 +56,7 @@ export default class SingleDayForecastComparison extends PureComponent {
         <ForecastTableHeader />
         <tbody>
           {[].concat(
-            ...sorted.map(point => {
+            ...sorted.map(point => [
               return point.isLoading || point.isLoadingForecast
                 ? <LoadingRow key={`${point.id}-loading`} />
                 : [
@@ -81,7 +81,6 @@ export default class SingleDayForecastComparison extends PureComponent {
                       onClick={this.onClickRow}
                     />,
                   ];
-            })
           )}
         </tbody>
       </ComparisonTable>

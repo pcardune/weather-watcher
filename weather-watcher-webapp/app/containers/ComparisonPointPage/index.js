@@ -2,10 +2,9 @@ import _ from 'lodash';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import convert from 'convert-units';
-import React, {Component, PropTypes} from 'react';
-import styled from 'styled-components';
+import moment from 'moment';
+import React, {Component} from 'react';
 import {subscribeProps} from 'redux-firebase-mirror';
-import Tooltip from 'rc-tooltip';
 
 import {ComparisonPointShape, ScoreConfigShape} from 'app/propTypes';
 import {augmentedComparisonPointById} from 'app/containers/Database/subscriptions';
@@ -14,14 +13,11 @@ import {
   InterpolatedGridForecast,
   InterpolatedScoreFunction,
 } from 'app/containers/Database/scoring';
-import {
-  getDailyForecastForPoint,
-  ScoreComponentsDescription,
-} from 'app/components/SingleDayForecastComparison';
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import LoadingBar from 'app/components/LoadingBar';
-import ScoreNumber from 'app/components/ScoreNumber';
 import {selectScoreConfig} from 'app/containers/Database/selectors';
+import {getForecastDates} from 'app/utils/dates';
+import {DesktopForecastRow, PhoneForecastRow} from 'app/components/ForecastRow';
 
 export class ComparisonPointPage extends Component {
   static propTypes = {
@@ -29,8 +25,13 @@ export class ComparisonPointPage extends Component {
     scoreConfig: ScoreConfigShape,
   };
 
+  static defaultProps = {
+    comparisonPoint: null,
+    scoreConfig: null,
+  };
+
   render() {
-    const comparisonPoint = this.props.comparisonPoint;
+    let {comparisonPoint} = this.props;
 
     if (!comparisonPoint) {
       return <LoadingBar />;
@@ -45,10 +46,15 @@ export class ComparisonPointPage extends Component {
         .to('ft')
     );
 
-    const interpolatedScore = new InterpolatedScoreFunction({
-      interpolatedGridForecast: new InterpolatedGridForecast(noaaGridForecast),
-      scoreConfig,
-    });
+    comparisonPoint = {
+      ...comparisonPoint,
+      interpolatedScore: new InterpolatedScoreFunction({
+        interpolatedGridForecast: new InterpolatedGridForecast(
+          noaaGridForecast
+        ),
+        scoreConfig,
+      }),
+    };
 
     return (
       <div className="container">
@@ -64,6 +70,22 @@ export class ComparisonPointPage extends Component {
               <div className="col s12">
                 <table>
                   <ForecastTableHeader />
+                  <tbody>
+                    {getForecastDates().map(date => [
+                      <DesktopForecastRow
+                        key={`${comparisonPoint.id}-desktop`}
+                        point={comparisonPoint}
+                        date={date}
+                        getName={() => moment(date).format('dddd')}
+                      />,
+                      <PhoneForecastRow
+                        key={`${comparisonPoint.id}-phone`}
+                        point={comparisonPoint}
+                        date={date}
+                        getName={() => moment(date).format('dddd')}
+                      />,
+                    ])}
+                  </tbody>
                 </table>
               </div>
             </div>

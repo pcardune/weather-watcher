@@ -125,9 +125,17 @@ export class DesktopForecastRow extends PureComponent {
   static propTypes = {
     point: AugmentedComparisonPointShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
-    selected: PropTypes.bool.isRequired,
-    onRemove: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
+    selected: PropTypes.bool,
+    onRemove: PropTypes.func,
+    onClick: PropTypes.func,
+    getName: PropTypes.func,
+  };
+
+  static defaultProps = {
+    selected: false,
+    onRemove: () => {},
+    onClick: () => {},
+    getName: props => props.point.name,
   };
 
   onClick = () => {
@@ -172,7 +180,7 @@ export class DesktopForecastRow extends PureComponent {
             target="_blank"
             href={`http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`}
           >
-            {point.name}
+            {this.props.getName(this.props)}
           </PointLink>
         </Cell>
         <Cell>
@@ -240,8 +248,15 @@ export class PhoneForecastRow extends PureComponent {
   static propTypes = {
     point: AugmentedComparisonPointShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
-    selected: PropTypes.bool.isRequired,
-    onClick: PropTypes.func.isRequired,
+    selected: PropTypes.bool,
+    onClick: PropTypes.func,
+    getName: PropTypes.func,
+  };
+
+  static defaultProps = {
+    selected: false,
+    onClick: () => {},
+    getName: props => props.point.name,
   };
 
   onClick = () => {
@@ -272,7 +287,7 @@ export class PhoneForecastRow extends PureComponent {
             target="_blank"
             href={`http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`}
           >
-            {point.name}
+            {this.props.getName(this.props)}
           </PointLink>
           <div>
             <RowLabel>Temp: </RowLabel>
