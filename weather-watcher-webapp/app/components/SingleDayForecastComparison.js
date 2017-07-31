@@ -8,6 +8,7 @@ import 'rc-tooltip/assets/bootstrap.css';
 import LoadingBar from './LoadingBar';
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import Button from 'app/components/Button';
+import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import RollupNumber from 'app/components/RollupNumber';
 import ScoreNumber from 'app/components/ScoreNumber';
 import {SCORE_MULTIPLIERS, SCORE_COMPONENTS} from 'app/constants';
@@ -16,33 +17,6 @@ import {
   AugmentedComparisonShape,
   AugmentedComparisonPointShape,
 } from 'app/propTypes';
-
-const DeleteButton = styled(Button)`
-`;
-
-const ColumnHeader = styled.th`
-  text-align: left;
-  padding: 5px 5px 0;
-  font-size: 14px;
-  font-weight: 400;
-`;
-
-const HeaderRow = styled.tr`
-  ${ColumnHeader}:first-child {
-    padding-left: 35px;
-  }
-  ${props => props.theme.media.phone`
-    display: none;
-  `};
-`;
-
-const UnitCell = styled.th`
-  text-align: left;
-  color: #aaa;
-  font-weight: normal;
-  font-size: 0.7em;
-  padding: 0px 5px 5px;
-`;
 
 const Cell = styled.td`
   padding: 5px;
@@ -303,7 +277,7 @@ class DesktopForecastRow extends PureComponent {
           </Truncate>
         </ShortForecastCell>
         <Cell>
-          {/*<DeleteButton
+          {/*<Button
               type="button"
               value={point.id}
               flat
@@ -311,7 +285,7 @@ class DesktopForecastRow extends PureComponent {
               onClick={() => this.props.onRemove(point.id)}
               >
               X
-              </DeleteButton>*/}
+              </Button>*/}
         </Cell>
       </Row>
     );
@@ -430,37 +404,7 @@ export default class SingleDayForecastComparison extends PureComponent {
     sorted.sort(makeSortFunc(date));
     return (
       <ComparisonTable>
-        <thead>
-          <HeaderRow>
-            <ColumnHeader colSpan={5} />
-            <ColumnHeader colSpan={2} style={{textAlign: 'center'}}>
-              Precipitation
-            </ColumnHeader>
-            <ColumnHeader colSpan={2} />
-          </HeaderRow>
-          <HeaderRow>
-            <ColumnHeader style={{width: 50}}>Score</ColumnHeader>
-            <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
-            <ColumnHeader style={{width: 50}}>Low</ColumnHeader>
-            <ColumnHeader style={{width: 50}}>High</ColumnHeader>
-            <ColumnHeader style={{width: 50}}>Wind</ColumnHeader>
-            <ColumnHeader style={{width: 50}}>Chance</ColumnHeader>
-            <ColumnHeader style={{width: 50}}>Quantity</ColumnHeader>
-            <ColumnHeader style={{width: 150}}>Forecast</ColumnHeader>
-            <ColumnHeader />
-          </HeaderRow>
-          <HeaderRow>
-            <UnitCell />
-            <UnitCell />
-            <UnitCell>ºF</UnitCell>
-            <UnitCell>ºF</UnitCell>
-            <UnitCell>mph</UnitCell>
-            <UnitCell>%</UnitCell>
-            <UnitCell>in</UnitCell>
-            <UnitCell />
-            <UnitCell />
-          </HeaderRow>
-        </thead>
+        <ForecastTableHeader />
         <tbody>
           {[].concat(
             ...sorted.map(point => {
