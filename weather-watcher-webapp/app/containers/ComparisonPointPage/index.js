@@ -18,14 +18,10 @@ import {
   getDailyForecastForPoint,
   ScoreComponentsDescription,
 } from 'app/components/SingleDayForecastComparison';
+import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import LoadingBar from 'app/components/LoadingBar';
 import ScoreNumber from 'app/components/ScoreNumber';
 import {selectScoreConfig} from 'app/containers/Database/selectors';
-
-const ForecastPeriodHeader = styled.div`
-  margin-bottom: 0px;
-  font-weight: bold;
-`;
 
 export class ComparisonPointPage extends Component {
   static propTypes = {
@@ -54,11 +50,6 @@ export class ComparisonPointPage extends Component {
       scoreConfig,
     });
 
-    const daylightPeriods = _.filter(
-      comparisonPoint.noaaDailyForecast.properties.periods,
-      period => !!period.isDaytime
-    );
-
     return (
       <div className="container">
         <Card>
@@ -69,48 +60,12 @@ export class ComparisonPointPage extends Component {
                 {`Elevation: ${roundedElevationFeet} ft.`}
               </div>
             </div>
-            <div>
-              {daylightPeriods.map(period =>
-                <div key={period.name}>
-                  <ForecastPeriodHeader className="row">
-                    <div className="col s12">
-                      {period.name}
-                    </div>
-                  </ForecastPeriodHeader>
-                  <div className="row valign-wrapper">
-                    <div className="col s1">
-                      <Tooltip
-                        placement="left"
-                        overlay={
-                          <span>
-                            <ScoreComponentsDescription
-                              scoreComponents={interpolatedScore.getBadnessForDate(
-                                new Date(period.startTime)
-                              )}
-                            />
-                          </span>
-                        }
-                      >
-                        <span>
-                          <ScoreNumber
-                            score={interpolatedScore.getAverageScoreForDate(
-                              new Date(period.startTime)
-                            )}
-                          />
-                        </span>
-                      </Tooltip>
-                    </div>
-                    <div className="col s1">
-                      {`${convert(period.temperature)
-                        .from(period.temperatureUnit)
-                        .to('F')} \u2109`}
-                    </div>
-                    <div className="col s10">
-                      {period.detailedForecast}
-                    </div>
-                  </div>
-                </div>
-              )}
+            <div className="row">
+              <div className="col s12">
+                <table>
+                  <ForecastTableHeader />
+                </table>
+              </div>
             </div>
           </CardBody>
         </Card>
