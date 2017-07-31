@@ -6,8 +6,8 @@ export const ScoreConfigShape = PropTypes.shape({
 
 export const ComparisonProps = {
   id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  comparisonPointIds: PropTypes.object.isRequired,
+  name: PropTypes.string,
+  comparisonPointIds: PropTypes.object,
   scoreConfig: ScoreConfigShape,
 };
 
@@ -15,9 +15,9 @@ export const ComparisonShape = PropTypes.shape(ComparisonProps);
 
 export const ComparisonPointProps = {
   id: PropTypes.string.isRequired,
-  name: PropTypes.string.isRequired,
-  latitude: PropTypes.number.isRequired,
-  longitude: PropTypes.number.isRequired,
+  name: PropTypes.string,
+  latitude: PropTypes.number,
+  longitude: PropTypes.number,
   noaaPointId: PropTypes.string,
   noaaGridForecastId: PropTypes.string,
 };
@@ -39,5 +39,5 @@ export const AugmentedComparisonPointShape = PropTypes.shape({
 
 export const AugmentedComparisonShape = PropTypes.shape({
   ...ComparisonProps,
-  comparisonPoints: PropTypes.arrayOf(AugmentedComparisonPointShape).isRequired,
+  comparisonPoints: PropTypes.arrayOf(AugmentedComparisonPointShape),
 });

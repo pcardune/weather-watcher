@@ -8,6 +8,7 @@ import {AugmentedComparisonShape} from 'app/propTypes';
 import {safeAverage} from 'app/utils/math';
 import {getForecastDates} from 'app/utils/dates';
 
+import LoadingIndicator from './LoadingIndicator';
 import {getScoreColor} from './ScoreNumber';
 import Number from './Number';
 
@@ -58,9 +59,12 @@ export default class ComparisonChart extends PureComponent {
     const dates = getForecastDates();
 
     const sortedPoints = [...this.props.comparison.comparisonPoints];
-    sortedPoints.sort(
-      (a, b) => this.getWeeklyScore(b) - this.getWeeklyScore(a)
-    );
+    sortedPoints.sort((a, b) => {
+      if (a.isLoading || b.isLoading) {
+        return a.isLoading ? 1 : -1;
+      }
+      return this.getWeeklyScore(b) - this.getWeeklyScore(a);
+    });
     return (
       <Table>
         <thead>
@@ -78,23 +82,46 @@ export default class ComparisonChart extends PureComponent {
           </tr>
         </thead>
         <tbody>
-          {sortedPoints.map(point =>
-            <tr key={point.id}>
-              <PointName className="truncate">
-                {point.name}
-              </PointName>
-              {dates.map(date => {
-                const score = point.interpolatedScore.getAverageScoreForDate(
-                  date
-                );
-                return (
-                  <ScoreBox key={date} score={score}>
-                    <Number value={score.score} />
-                  </ScoreBox>
-                );
-              })}
-            </tr>
-          )}
+          {sortedPoints.map(point => {
+            let content;
+            if (point.isLoading) {
+              return (
+                <tr key={point.id}>
+                  <PointName colSpan={dates.length + 1}>
+                    <LoadingIndicator /> Loading...
+                  </PointName>
+                </tr>
+              );
+            } else if (point.isLoadingForecast) {
+              return (
+                <tr key={point.id}>
+                  <PointName className="truncate">
+                    {point.name}
+                  </PointName>
+                  <td colSpan={dates.length}>
+                    <LoadingIndicator /> Loading...
+                  </td>
+                </tr>
+              );
+            }
+            return (
+              <tr key={point.id}>
+                <PointName className="truncate">
+                  {point.name}
+                </PointName>
+                {dates.map(date => {
+                  const score = point.interpolatedScore.getAverageScoreForDate(
+                    date
+                  );
+                  return (
+                    <ScoreBox key={date} score={score}>
+                      <Number value={score.score} />
+                    </ScoreBox>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
     );

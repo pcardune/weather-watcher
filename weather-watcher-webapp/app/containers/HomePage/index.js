@@ -97,7 +97,8 @@ export class HomePage extends Component {
 
   render() {
     const {comparison} = this.props;
-    const hasPoints = comparison && comparison.comparisonPoints.length > 0;
+    const hasPoints =
+      !comparison.isLoading && comparison.comparisonPoints.length > 0;
     return (
       <div className="container">
         <DatePager
@@ -107,7 +108,7 @@ export class HomePage extends Component {
         <div className="row">
           <div className="col s12">
             <Card>
-              <CardHeader title={comparison && comparison.name}>
+              <CardHeader title={comparison.name}>
                 <Button
                   large
                   floating
@@ -132,7 +133,7 @@ export class HomePage extends Component {
 
                     </ButtonBar>*/}
               </CardHeader>
-              {!comparison && <LoadingBar />}
+              {comparison.isLoading && <LoadingBar />}
               <CardBody>
                 {this.state.showAddForm &&
                   <InnerPane>
@@ -158,9 +159,9 @@ export class HomePage extends Component {
                     onClickDate={this.onChangeDate}
                   />
                 : <HelpText>
-                    {comparison
-                      ? 'Add a location to start comparing forecasts.'
-                      : 'Loading...'}
+                    {comparison.isLoading
+                      ? 'Loading...'
+                      : 'Add a location to start comparing forecasts.'}
                   </HelpText>}
             </Card>
           </div>

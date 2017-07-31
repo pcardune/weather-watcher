@@ -7,6 +7,7 @@ const Wrapper = styled.div`
   width: 20px;
   height: 20px;
   position: relative;
+  display: inline-block;
 `;
 
 const LoadingIndicator = props =>
