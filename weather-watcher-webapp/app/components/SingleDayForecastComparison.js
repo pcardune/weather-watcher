@@ -5,6 +5,7 @@ import moment from 'moment-mini';
 import Tooltip from 'rc-tooltip';
 import 'rc-tooltip/assets/bootstrap.css';
 
+import LoadingBar from './LoadingBar';
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import Button from 'app/components/Button';
 import RollupNumber from 'app/components/RollupNumber';
@@ -104,10 +105,26 @@ const ComparisonTable = styled.table`
   }
 `;
 
+function LoadingRow(date) {
+  return (
+    <Row>
+      <Cell colSpan={9}>
+        <LoadingIndicator /> Loading...
+      </Cell>
+    </Row>
+  );
+}
+
 function makeSortFunc(date) {
-  return (p1, p2) =>
-    p2.interpolatedScore.getAverageScoreForDate(date).score -
-    p1.interpolatedScore.getAverageScoreForDate(date).score;
+  return (p1, p2) => {
+    if (p1.isLoading || p2.isLoading) {
+      return p1.isLoading ? 1 : -1;
+    }
+    return (
+      p2.interpolatedScore.getAverageScoreForDate(date).score -
+      p1.interpolatedScore.getAverageScoreForDate(date).score
+    );
+  };
 }
 
 class PointForecastRollup extends PureComponent {
@@ -331,7 +348,7 @@ class PhoneForecastRow extends PureComponent {
         selected={this.props.selected}
       >
         <Cell style={{position: 'relative'}}>
-          {point.isRefreshing
+          {point.isLoading
             ? <LoadingIndicator />
             : <ScoreNumber
                 score={point.interpolatedScore.getAverageScoreForDate(
@@ -466,24 +483,30 @@ export default class SingleDayForecastComparison extends PureComponent {
                   </Row>,
                 ];
               }
-              return [
-                <DesktopForecastRow
-                  key={`${point.id}-desktop`}
-                  point={point}
-                  date={date}
-                  selected={this.props.selectedComparisonPointId === point.id}
-                  onRemove={this.props.onRemoveComparisonPoint}
-                  onClick={this.onClickRow}
-                />,
-                <PhoneForecastRow
-                  key={`${point.id}-phone`}
-                  point={point}
-                  date={date}
-                  selected={this.props.selectedComparisonPointId === point.id}
-                  onRemove={this.props.onRemoveComparisonPoint}
-                  onClick={this.onClickRow}
-                />,
-              ];
+              return point.isLoading || point.isLoadingForecast
+                ? <LoadingRow key={`${point.id}-loading`} />
+                : [
+                    <DesktopForecastRow
+                      key={`${point.id}-desktop`}
+                      point={point}
+                      date={date}
+                      selected={
+                        this.props.selectedComparisonPointId === point.id
+                      }
+                      onRemove={this.props.onRemoveComparisonPoint}
+                      onClick={this.onClickRow}
+                    />,
+                    <PhoneForecastRow
+                      key={`${point.id}-phone`}
+                      point={point}
+                      date={date}
+                      selected={
+                        this.props.selectedComparisonPointId === point.id
+                      }
+                      onRemove={this.props.onRemoveComparisonPoint}
+                      onClick={this.onClickRow}
+                    />,
+                  ];
             })
           )}
         </tbody>

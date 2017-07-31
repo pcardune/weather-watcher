@@ -9335,11 +9335,12 @@ reduce-function-call@^1.0.1:
   dependencies:
     balanced-match "^0.4.2"
 
-redux-firebase-mirror@0.0.6-beta.3:
-  version "0.0.6-beta.3"
-  resolved "https://registry.yarnpkg.com/redux-firebase-mirror/-/redux-firebase-mirror-0.0.6-beta.3.tgz#3bc94c5dab31f4ec7d768f1c2097949457a2b206"
+redux-firebase-mirror@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/redux-firebase-mirror/-/redux-firebase-mirror-0.0.7.tgz#632c3ac3b3e62b37cf95dfd80596c8ad631fffe7"
   dependencies:
     immutable "^3.8.1"
+    lodash.memoize "^4.1.2"
     redux-immutable "^4.0.0"
     reselect "^3.0.0"
   optionalDependencies:
