@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled, {css} from 'styled-components';
 import {Link, NavLink} from 'react-router-dom';
+import Theme from 'app/Theme';
 
 const HeaderLogo = styled(Link)`
   display: inline-block;
@@ -12,7 +13,7 @@ const HeaderLogo = styled(Link)`
     font-family: 'Clicker Script', cursive;
     font-weight: bold;
     margin-bottom: 0;
-    font-size: 4em;
+    font-size: 5em;
   }
   h5 {
     margin-bottom: 1em;
@@ -40,6 +41,8 @@ const QuickLinkCSS = css`
   color: ${props => props.theme.colors.textOnPrimary};
   text-decoration: none;
   cursor: pointer;
+  font-size: 24px;
+  font-weight: 300;
 `;
 
 const QuickButton = styled.a`${QuickLinkCSS};`;
@@ -52,7 +55,6 @@ const QuickLink = styled(NavLink)`
 `;
 
 const NavBar = styled.div`
-  background-color: ${props => props.theme.colors.primary};
   text-align: center;
   position: relative;
   ${HeaderLogo} {
@@ -69,7 +71,7 @@ class Header extends Component {
   render() {
     return (
       <div>
-        <NavBar>
+        <NavBar className={Theme.colorClass.primary}>
           <HeaderLogo to="/">
             <h1 className="amber-text text-lighten-2">Goldilocks Weather</h1>
             <h5 className="amber-text text-lighten-5">
@@ -81,7 +83,7 @@ class Header extends Component {
             </h5>
           </HeaderLogo>
         </NavBar>
-        <QuickLinks>
+        <QuickLinks className={Theme.colorClass.primaryDark}>
           {this.props.comparisons.valueSeq().map(comparison =>
             <QuickLink
               key={comparison.id}
@@ -92,8 +94,8 @@ class Header extends Component {
             </QuickLink>
           )}
           {/*<QuickButton onClick={this.props.onNewComparison}>
-              + New Comparison
-              </QuickButton>*/}
+                  + New Comparison
+                  </QuickButton>*/}
         </QuickLinks>
       </div>
     );

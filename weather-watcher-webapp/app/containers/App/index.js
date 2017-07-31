@@ -14,8 +14,12 @@ import LoadingBar from 'app/components/LoadingBar';
 import Bundle from 'app/components/Bundle';
 import loadHomePage from 'bundle-loader?lazy!app/containers/HomePage/load';
 import loadFAQ from 'bundle-loader?lazy!app/containers/FAQPage/load';
+import Theme from 'app/Theme';
 
-const Body = styled.div`min-height: 60vh;`;
+const Body = styled.div`
+  padding-top: 50px;
+  min-height: 60vh;
+`;
 
 const Footer = styled.footer`
   h4,
@@ -85,7 +89,7 @@ export class App extends Component {
           onNewComparison={this.onNewComparison}
           comparisons={this.props.comparisons}
         />
-        <Body>
+        <Body className="grey lighten-3">
           <Switch>
             <Route exact path="/" render={this.renderHomePage} />
             <Route path="/compare/:comparisonId" render={this.renderHomePage} />
@@ -93,10 +97,10 @@ export class App extends Component {
             <Route component={NotFound} />
           </Switch>
         </Body>
-        <Footer className="page-footer blue">
+        <Footer className={`page-footer ${Theme.colorClass.primary}`}>
           <div className="container">
             <div className="row">
-              <div className="col s12 m6">
+              <div className="col s12 m3">
                 <h4 className="amber-text">Goldilocks Weather</h4>
                 <p className="grey-text text-lighten-4">
                   weather that{"'"}s{' '}
@@ -106,7 +110,7 @@ export class App extends Component {
                   right
                 </p>
               </div>
-              <div className="col s12 m6">
+              <div className="col s12 m3">
                 <h4>Links</h4>
                 <ul>
                   <li>

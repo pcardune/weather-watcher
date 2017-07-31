@@ -1,15 +1,15 @@
 import React, {PureComponent, PropTypes} from 'react';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import SingleDayForecastComparison from './SingleDayForecastComparison';
-import ComparisonGraph from './ComparisonGraph';
-import ComparisonChart from './ComparisonChart';
+//import ComparisonGraph from './ComparisonGraph';
+import DatePager from './DatePager';
 
 export default class MultiDayForecastComparison extends PureComponent {
   static propTypes = {
     comparison: AugmentedComparisonShape.isRequired,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
     date: PropTypes.instanceOf(Date),
-    onClickDate: PropTypes.func.isRequired,
+    onChangeDate: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -31,6 +31,10 @@ export default class MultiDayForecastComparison extends PureComponent {
   render() {
     return (
       <div>
+        <DatePager
+          onChange={this.props.onChangeDate}
+          currentDate={this.props.date}
+        />
         <SingleDayForecastComparison
           key={this.props.date.toString()}
           comparison={this.props.comparison}
@@ -39,20 +43,15 @@ export default class MultiDayForecastComparison extends PureComponent {
           onSelectComparisonPoint={this.onSelectComparisonPoint}
           selectedComparisonPointId={this.state.selectedPointId}
         />
-        <ComparisonChart
-          comparison={this.props.comparison}
-          date={this.props.date}
-          onClickDate={this.props.onClickDate}
-        />
         {/*
-          This graph was deemed too confusing to be useful
-          <ComparisonGraph
+            This graph was deemed too confusing to be useful
+            <ComparisonGraph
             comparison={this.props.comparison}
             date={this.props.date}
             onClickDate={this.props.onClickDate}
             highlightPointId={this.state.selectedPointId}
-          />
-        */}
+            />
+          */}
       </div>
     );
   }

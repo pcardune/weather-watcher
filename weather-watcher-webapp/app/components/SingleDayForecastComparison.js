@@ -447,7 +447,7 @@ export default class SingleDayForecastComparison extends PureComponent {
           </HeaderRow>
           <HeaderRow>
             <ColumnHeader style={{width: 50}}>Score</ColumnHeader>
-            <ColumnHeader style={{minWidth: 200}}>Name</ColumnHeader>
+            <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
             <ColumnHeader style={{width: 50}}>Low</ColumnHeader>
             <ColumnHeader style={{width: 50}}>High</ColumnHeader>
             <ColumnHeader style={{width: 50}}>Wind</ColumnHeader>

@@ -1,5 +1,6 @@
 import React, {PureComponent, Children} from 'react';
 import PropTypes from 'prop-types';
+import Theme from 'app/Theme';
 
 export default class Button extends PureComponent {
   static propTypes = {
@@ -39,8 +40,8 @@ export default class Button extends PureComponent {
       ? 'btn-flat'
       : this.props.floating ? 'btn-floating' : 'btn';
     const accentClass = this.props.accent
-      ? 'amber grey-text text-darken-4'
-      : '';
+      ? [Theme.colorClass.accent, Theme.colorClass.textOnAccent].join(' ')
+      : Theme.colorClass.primary;
     const sizeClass = this.props.large ? 'btn-large' : '';
     return (
       <a

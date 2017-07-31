@@ -17,9 +17,15 @@ export default {
     primaryText: '#212121',
     secondaryText: '#757575',
     divider: '#BDBDBD',
-    forecastGood: '#4CAF50',
-    forecastOK: '#FFC107',
-    forecastBad: '#F44336',
+    forecastGood: '#c5e1a5',
+    forecastOK: '#ffe082',
+    forecastBad: '#ef9a9a',
+  },
+  colorClass: {
+    primary: 'grey darken-1',
+    primaryDark: 'grey darken-2',
+    accent: 'amber',
+    textOnAccent: 'grey-text text-darken-2',
   },
   shadows: {
     level1: '0 0 2px 0 rgba(0,0,0,.3), 0 2px 2px 0 rgba(0,0,0,.4)',

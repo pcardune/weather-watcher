@@ -11,12 +11,13 @@ const Circle = styled.div`
   background-color: ${props => props.color};
   border: 5px solid ${props => props.color};
   border-radius: 20px;
-  color: white;
+  color: ${props => props.theme.colors.primaryText};
   font-weight: bolder;
   text-align: center;
   display: inline-block;
   width: 2em;
   height: 2em;
+  font-weight: 300;
 `;
 
 const MOSTLY_BAD = safeAverage([
