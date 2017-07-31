@@ -5,13 +5,6 @@ import styled from 'styled-components';
 
 import Button from './Button';
 
-const DateHeader = styled.h1`
-  font-size: 36px;
-  font-weight: 300;
-  width: 30%;
-  text-align: center;
-`;
-
 const Wrapper = styled.div`margin-bottom: 0px;`;
 
 export default class DatePager extends PureComponent {
@@ -58,7 +51,6 @@ export default class DatePager extends PureComponent {
             onClick={this.onClickPrevDate}
             disabled={!this.canClickPrevDate()}
             iconLeft="chevron_left"
-            accent
           >
             {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
           </Button>
@@ -76,7 +68,6 @@ export default class DatePager extends PureComponent {
             onClick={this.onClickNextDate}
             disabled={!this.canClickNextDate()}
             iconRight="chevron_right"
-            accent
           >
             {moment(this.props.currentDate).add(1, 'days').format('ddd')}
           </Button>

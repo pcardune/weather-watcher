@@ -9,14 +9,31 @@ import {safeAverage} from 'app/utils/math';
 import {getForecastDates} from 'app/utils/dates';
 
 import LoadingIndicator from './LoadingIndicator';
-import {getScoreColor} from './ScoreNumber';
+import ScoreNumber, {getScoreColor} from './ScoreNumber';
 import Number from './Number';
 
-const Table = styled.table`width: 100%;`;
+const Wrapper = styled.div``;
+
+const Table = styled.table`
+  font-size: 18px;
+  td {
+    text-align: center;
+    padding: 5px;
+    width: 60px;
+  }
+  td:first-child {
+    text-align: left;
+    padding-left: 25px;
+    font-weight: 500;
+    width: 250px;
+  }
+  tr {
+    border-bottom: 1px solid #eee;
+  }
+`;
 
 const PointName = styled.td`
   padding: 0 0 0 ${props => props.theme.padding.standard};
-  border-top: 1px solid ${props => props.theme.colors.divider};
   ${props => props.theme.media.phone`padding: 0 5px;`};
 `;
 
@@ -25,15 +42,21 @@ const Th = styled.th`
   cursor: pointer;
   text-align: center;
   padding: 0;
+  font-size: 14px;
+  &:first-child {
+    text-align: left;
+    padding-left: ${props => props.theme.padding.standard};
+  }
 `;
 
 const ScoreBox = styled.td`
   padding: 0;
-  width: 11%;
-  border: 1px solid ${props => props.theme.colors.divider};
+  width: 10%;
+  border: 1px solid ${props => props.theme.colors.textOnPrimary};
   background-color: ${getScoreColor};
-  color: ${props => props.theme.colors.textOnPrimary};
+  color: ${props => props.theme.colors.primaryText};
   text-align: center;
+  font-weight: 300;
 `;
 
 export default class ComparisonChart extends PureComponent {
@@ -66,64 +89,71 @@ export default class ComparisonChart extends PureComponent {
       return this.getWeeklyScore(b) - this.getWeeklyScore(a);
     });
     return (
-      <Table>
-        <thead>
-          <tr>
-            <Th>Name</Th>
-            {dates.map(date =>
-              <Th
-                key={date}
-                onClick={this.onClickDate(date)}
-                selected={moment(date).isSame(this.props.date, 'day')}
-              >
-                {moment(date).format('ddd')}
-              </Th>
-            )}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedPoints.map(point => {
-            let content;
-            if (point.isLoading) {
-              return (
-                <tr key={point.id}>
-                  <PointName colSpan={dates.length + 1}>
-                    <LoadingIndicator /> Loading...
-                  </PointName>
-                </tr>
-              );
-            } else if (point.isLoadingForecast) {
+      <Wrapper>
+        <Table>
+          <thead>
+            <tr>
+              <Th>Location</Th>
+              {dates.map(date =>
+                <Th
+                  key={date}
+                  onClick={this.onClickDate(date)}
+                  selected={moment(date).isSame(this.props.date, 'day')}
+                >
+                  {moment(date).format('ddd')}
+                </Th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedPoints.map(point => {
+              let content;
+              if (point.isLoading) {
+                return (
+                  <tr key={point.id}>
+                    <PointName colSpan={dates.length + 1}>
+                      <LoadingIndicator /> Loading...
+                    </PointName>
+                  </tr>
+                );
+              } else if (point.isLoadingForecast) {
+                return (
+                  <tr key={point.id}>
+                    <PointName className="truncate">
+                      {point.name}
+                    </PointName>
+                    <td colSpan={dates.length}>
+                      <LoadingIndicator /> Loading...
+                    </td>
+                  </tr>
+                );
+              }
               return (
                 <tr key={point.id}>
                   <PointName className="truncate">
                     {point.name}
                   </PointName>
-                  <td colSpan={dates.length}>
-                    <LoadingIndicator /> Loading...
-                  </td>
+                  {dates.map(date => {
+                    const score = point.interpolatedScore.getAverageScoreForDate(
+                      date
+                    );
+                    return (
+                      <td>
+                        <ScoreNumber score={score} />
+                      </td>
+                    );
+                    return (
+                      <ScoreBox key={date} score={score}>
+                        <Number value={score.score} />
+                      </ScoreBox>
+                    );
+                  })}
                 </tr>
               );
-            }
-            return (
-              <tr key={point.id}>
-                <PointName className="truncate">
-                  {point.name}
-                </PointName>
-                {dates.map(date => {
-                  const score = point.interpolatedScore.getAverageScoreForDate(
-                    date
-                  );
-                  return (
-                    <ScoreBox key={date} score={score}>
-                      <Number value={score.score} />
-                    </ScoreBox>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
+            })}
+          </tbody>
+        </Table>
+      </Wrapper>
     );
   }
 }
