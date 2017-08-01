@@ -75,6 +75,16 @@ const HideOnPhone = props => props.theme.media.phone`
   display: none;
 `;
 
+export function LoadingRow(date) {
+  return (
+    <Row>
+      <Cell colSpan={9}>
+        <LoadingIndicator /> Loading...
+      </Cell>
+    </Row>
+  );
+}
+
 class PointForecastRollup extends PureComponent {
   static propTypes = {
     ...RollupNumber.propTypes,
@@ -274,7 +284,7 @@ export class PhoneForecastRow extends PureComponent {
         selected={this.props.selected}
       >
         <Cell style={{position: 'relative'}}>
-          {point.isRefreshing
+          {point.isLoading
             ? <LoadingIndicator />
             : <ScoreNumber
                 score={point.interpolatedScore.getAverageScoreForDate(
