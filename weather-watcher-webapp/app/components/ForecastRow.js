@@ -33,7 +33,7 @@ const RowLabel = styled.span`
   width: 4em;
 `;
 
-const PointLink = styled.a`
+export const PointLink = styled.a`
   color: ${props => props.theme.colors.primaryText};
   text-decoration: none;
   font-weight: 500;
@@ -162,12 +162,7 @@ export class DesktopForecastRow extends PureComponent {
     );
 
     return (
-      <Row
-        desktopOnly
-        key={point.id}
-        onClick={this.onClick}
-        selected={this.props.selected}
-      >
+      <Row desktopOnly key={point.id} selected={this.props.selected}>
         <Cell style={{position: 'relative'}}>
           {point.isRefreshing
             ? <LoadingIndicator />
@@ -182,10 +177,7 @@ export class DesktopForecastRow extends PureComponent {
               </Tooltip>}
         </Cell>
         <Cell>
-          <PointLink
-            target="_blank"
-            href={`http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`}
-          >
+          <PointLink target="_blank" href={`/locations/${point.id}`}>
             {this.props.getName(this.props)}
           </PointLink>
         </Cell>
@@ -273,12 +265,7 @@ export class PhoneForecastRow extends PureComponent {
     const {point, date} = this.props;
     const dailyForecast = getDailyForecastForPoint(point, date);
     return (
-      <Row
-        phoneOnly
-        key={point.id}
-        onClick={this.onClick}
-        selected={this.props.selected}
-      >
+      <Row phoneOnly key={point.id} selected={this.props.selected}>
         <Cell style={{position: 'relative'}}>
           {point.isLoading
             ? <LoadingIndicator />
@@ -289,10 +276,7 @@ export class PhoneForecastRow extends PureComponent {
               />}
         </Cell>
         <Cell colSpan="8">
-          <PointLink
-            target="_blank"
-            href={`http://forecast.weather.gov/MapClick.php?lon=${point.longitude}&lat=${point.latitude}`}
-          >
+          <PointLink target="_blank" href={`/locations/${point.id}`}>
             {this.props.getName(this.props)}
           </PointLink>
           <div>

@@ -9,6 +9,7 @@ import {safeAverage} from 'app/utils/math';
 import {getForecastDates} from 'app/utils/dates';
 
 import LoadingIndicator from './LoadingIndicator';
+import {PointLink} from 'app/components/ForecastRow';
 import ScoreNumber, {getScoreColor} from './ScoreNumber';
 import Number from './Number';
 
@@ -130,7 +131,9 @@ export default class ComparisonChart extends PureComponent {
               return (
                 <tr key={point.id}>
                   <PointName className="truncate">
-                    {point.name}
+                    <PointLink target="_blank" href={`/locations/${point.id}`}>
+                      {point.name}
+                    </PointLink>
                   </PointName>
                   {dates.map(date => {
                     const score = point.interpolatedScore.getAverageScoreForDate(
