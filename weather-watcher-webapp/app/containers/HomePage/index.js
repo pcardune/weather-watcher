@@ -12,6 +12,7 @@ import {compose} from 'redux';
 import {subscribeProps} from 'redux-firebase-mirror';
 import {withRouter} from 'react-router';
 
+import {Desktop} from 'app/components/Responsive';
 import LoadingBar from 'app/components/LoadingBar';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
@@ -170,20 +171,22 @@ export class HomePage extends Component {
               </CardBody>
             </Card>
             {hasPoints &&
-              <Card>
-                <CardHeader title="Weekly Score Comparison" />
-                <CardBody>
-                  <div className="row">
-                    <div className="col s12">
-                      <ComparisonChart
-                        comparison={comparison}
-                        date={this.state.currentDate}
-                        onClickDate={this.onChangeDate}
-                      />
+              <Desktop>
+                <Card>
+                  <CardHeader title="Weekly Score Comparison" />
+                  <CardBody>
+                    <div className="row">
+                      <div className="col s12">
+                        <ComparisonChart
+                          comparison={comparison}
+                          date={this.state.currentDate}
+                          onClickDate={this.onChangeDate}
+                        />
+                      </div>
                     </div>
-                  </div>
-                </CardBody>
-              </Card>}
+                  </CardBody>
+                </Card>
+              </Desktop>}
           </div>
         </div>
       </div>
