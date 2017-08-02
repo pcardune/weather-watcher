@@ -15,15 +15,15 @@ export default class SmartLink extends PureComponent {
     history: PropTypes.object.isRequired,
     className: PropTypes.string,
     children: PropTypes.node,
-    nav: PropTypes.bool,
     ...RouterLink.propTypes,
     ...NavLink.propTypes,
   };
 
   static defaultProps = {
+    ...NavLink.defaultProps,
+    ...RouterLink.defaultProps,
     className: '',
     children: null,
-    nav: false,
   };
 
   isActive = (match, location) => location.pathname === this.props.to;
@@ -46,7 +46,7 @@ export default class SmartLink extends PureComponent {
   }
 
   render() {
-    const {nav, activeClassName, className, children, to} = this.props;
+    const {activeClassName, className, children, to} = this.props;
     const [pathname, search] = to.split('?');
     const props = {
       className,
@@ -54,7 +54,7 @@ export default class SmartLink extends PureComponent {
       children,
     };
 
-    if (nav) {
+    if (activeClassName) {
       return (
         <NavLink
           {...props}

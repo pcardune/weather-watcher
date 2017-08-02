@@ -86,7 +86,6 @@ class Header extends Component {
           {this.props.comparisons.valueSeq().map(comparison =>
             <QuickLink
               key={comparison.id}
-              nav
               activeClassName="selected"
               to={`/compare/${comparison.id}`}
             >
