@@ -107,7 +107,6 @@ export class HomePage extends Component {
             <Card>
               <CardHeader title="Daily Forecast Comparison">
                 <Button
-                  large
                   floating
                   accent
                   icon="settings"
