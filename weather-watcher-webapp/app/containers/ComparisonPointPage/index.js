@@ -1,8 +1,9 @@
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import convert from 'convert-units';
+import {createStructuredSelector} from 'reselect';
 import moment from 'moment';
-import React, {Component} from 'react';
+import React, {PureComponent} from 'react';
 import styled from 'styled-components';
 import {subscribeProps} from 'redux-firebase-mirror';
 
@@ -14,11 +15,15 @@ import {
   InterpolatedScoreFunction,
 } from 'app/containers/Database/scoring';
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
-import LoadingBar from 'app/components/LoadingBar';
 import Number from 'app/components/Number';
 import {selectScoreConfig} from 'app/containers/Database/selectors';
 import {getForecastDates} from 'app/utils/dates';
-import {DesktopForecastRow, PhoneForecastRow} from 'app/components/ForecastRow';
+import {
+  DesktopForecastRow,
+  PhoneForecastRow,
+  LoadingRow,
+  PointLink,
+} from 'app/components/ForecastRow';
 
 const DescriptionList = styled.dl`
   margin: 0;
@@ -31,7 +36,7 @@ const DescriptionList = styled.dl`
   }
 `;
 
-export class ComparisonPointPage extends Component {
+export class ComparisonPointPage extends PureComponent {
   static propTypes = {
     comparisonPoint: ComparisonPointShape,
     scoreConfig: ScoreConfigShape,
@@ -45,8 +50,8 @@ export class ComparisonPointPage extends Component {
   render() {
     let {comparisonPoint} = this.props;
 
-    if (!comparisonPoint) {
-      return <LoadingBar />;
+    if (comparisonPoint.isLoading || comparisonPoint.isLoadingForecast) {
+      return <LoadingRow key={`${comparisonPoint.id}-loading`} />;
     }
 
     const scoreConfig = this.props.scoreConfig;
@@ -108,6 +113,16 @@ export class ComparisonPointPage extends Component {
                 </table>
               </div>
             </div>
+            <div className="row">
+              <div className="col s12">
+                <PointLink
+                  target="_blank"
+                  href={`http://forecast.weather.gov/MapClick.php?lon=${comparisonPoint.longitude}&lat=${comparisonPoint.latitude}`}
+                >
+                  Forecast information from NOAA
+                </PointLink>
+              </div>
+            </div>
           </CardBody>
         </Card>
       </div>
@@ -116,12 +131,7 @@ export class ComparisonPointPage extends Component {
 }
 
 export default compose(
-  connect(
-    state => ({
-      scoreConfig: selectScoreConfig(state),
-    }),
-    {}
-  ),
+  connect(createStructuredSelector({scoreConfig: selectScoreConfig})),
   subscribeProps({
     comparisonPoint: augmentedComparisonPointById,
   })
