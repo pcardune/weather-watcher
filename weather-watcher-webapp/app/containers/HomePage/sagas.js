@@ -1,5 +1,5 @@
 import {takeEvery} from 'redux-saga/effects';
-import firebase from 'firebase';
+import database from 'firebase/database';
 
 import {ADD_COMPARISON_POINT, REMOVE_COMPARISON_POINT} from './constants';
 
@@ -10,13 +10,11 @@ export function* watchAddComparisonPoint() {
     longitude,
     comparisonId,
   }) {
-    const id = firebase.database().ref('comparisonPoints').push().key;
-    firebase
-      .database()
+    const id = database().ref('comparisonPoints').push().key;
+    database()
       .ref(`comparisonPoints/${id}`)
       .set({id, name, latitude, longitude});
-    firebase
-      .database()
+    database()
       .ref(`comparisons/${comparisonId}/comparisonPointIds/${id}`)
       .set(id);
   });
@@ -27,8 +25,7 @@ export function* watchRemoveComparisonPoint() {
     comparison,
     comparisonPointId,
   }) {
-    firebase
-      .database()
+    database()
       .ref(
         `comparisons/${comparison.id}/comparisonPointIds/${comparisonPointId}`
       )

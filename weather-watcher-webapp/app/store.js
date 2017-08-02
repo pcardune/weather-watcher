@@ -6,13 +6,9 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import {fromJS} from 'immutable';
 import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
-import {persistStore, autoRehydrate} from 'redux-persist-immutable';
-import localForage from 'localforage';
 import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
-
-const PERSIST = false;
 
 export default function configureStore(initialState = {}, callback) {
   // Create the store with two middlewares
@@ -20,9 +16,6 @@ export default function configureStore(initialState = {}, callback) {
   const middlewares = [sagaMiddleware, thunkMiddleware];
 
   const enhancers = [applyMiddleware(...middlewares)];
-  if (PERSIST) {
-    enhancers.push(autoRehydrate());
-  }
 
   // If Redux DevTools Extension is installed use it, otherwise use Redux compose
   /* eslint-disable no-underscore-dangle */
@@ -44,15 +37,7 @@ export default function configureStore(initialState = {}, callback) {
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 
-  if (PERSIST) {
-    persistStore(
-      store,
-      {blacklist: ['firebaseMirror'], storage: localForage},
-      () => callback(store)
-    );
-  } else {
-    callback(store);
-  }
+  callback(store);
 
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */
