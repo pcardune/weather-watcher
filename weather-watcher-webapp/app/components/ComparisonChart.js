@@ -131,7 +131,7 @@ export default class ComparisonChart extends PureComponent {
               return (
                 <tr key={point.id}>
                   <PointName className="truncate">
-                    <PointLink target="_blank" href={`/locations/${point.id}`}>
+                    <PointLink href={`/locations/${point.id}`}>
                       {point.name}
                     </PointLink>
                   </PointName>

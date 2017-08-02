@@ -78,12 +78,12 @@ export class ComparisonPointPage extends PureComponent {
                   <dt>Elevation:</dt>
                   <dd>
                     <Number
-                      value={convert(
+                      value={
                         comparisonPoint.noaaGridForecast.properties.elevation
                           .value
-                      )
-                        .from('m')
-                        .to('ft')}
+                      }
+                      from="m"
+                      to="ft"
                     />
                     ft.
                   </dd>

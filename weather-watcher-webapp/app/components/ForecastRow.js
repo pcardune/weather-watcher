@@ -177,7 +177,7 @@ export class DesktopForecastRow extends PureComponent {
               </Tooltip>}
         </Cell>
         <Cell>
-          <PointLink target="_blank" href={`/locations/${point.id}`}>
+          <PointLink href={`/locations/${point.id}`}>
             {this.props.getName(this.props)}
           </PointLink>
         </Cell>
@@ -276,7 +276,7 @@ export class PhoneForecastRow extends PureComponent {
               />}
         </Cell>
         <Cell colSpan="8">
-          <PointLink target="_blank" href={`/locations/${point.id}`}>
+          <PointLink href={`/locations/${point.id}`}>
             {this.props.getName(this.props)}
           </PointLink>
           <div>
