@@ -168,6 +168,21 @@ export class InterpolatedScoreFunction {
     );
   }
 
+  getBadnessForDate(date) {
+    const scores = this.getScoresForDate(date);
+    const badness = {};
+    scores.forEach(score => {
+      for (const key in score.scoreComponents) {
+        if (!badness[key]) {
+          badness[key] = score.scoreComponents[key];
+        } else {
+          badness[key] = Math.min(badness[key], score.scoreComponents[key]);
+        }
+      }
+    });
+    return badness;
+  }
+
   getAverageScoreForInterval(startTime, endTime, interval = 'PT1H') {
     const scores = this.getScoresForInterval(startTime, endTime, interval);
     return {
