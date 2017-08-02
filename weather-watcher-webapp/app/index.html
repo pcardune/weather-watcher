@@ -7,7 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <!-- Allow installing the app to the homescreen -->
     <link rel="manifest" href="manifest.json">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css" rel="stylesheet">
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css">
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -43,7 +45,6 @@
      #landing-screen {
        font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
        text-align: center;
-       background: #2196F3;
        position: absolute;
        left: 0;
        top: 0;
@@ -53,7 +54,7 @@
        font-family: 'Clicker Script', cursive;
        font-weight: bold;
        margin-bottom: 0;
-       font-size: 4em;
+       font-size: 5em;
      }
      #landing-screen h5 {
        margin-bottom: 1em;
@@ -62,11 +63,10 @@
 
      #landing-screen-loading {
        color: #FFFFFF;
-       background: #1976D2;
        text-align: center;
        padding: 10px;
        font-weight: initial;
-       font-size: initial;
+       font-size: 24px;
      }
     </style>
   </head>
@@ -74,17 +74,17 @@
     <!-- Display a message if JS has been disabled on the browser. -->
     <noscript>If you're seeing this message, that means <strong>JavaScript has been disabled on your browser</strong>, please <strong>enable JS</strong> to make this app work.</noscript>
 
-    <div id="landing-screen">
+    <div id="landing-screen" class="grey darken-1">
       <h1 class="amber-text text-lighten-2">Goldilocks Weather</h1>
       <h5 class="amber-text text-lighten-5">
         weather that's <em><u>just</u></em> right
       </h5>
-      <div id="landing-screen-loading">
+      <div id="landing-screen-loading" class="grey darken-2">
         Loading...
       </div>
     </div>
     <!-- The app hooks into this div -->
-    <div id="app"></div>
+    <div id="app" class="grey lighten-3"></div>
     <!-- Roboto Font -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
     <!-- A lot of magic happens in this file. HtmlWebpackPlugin automatically includes all assets (e.g. bundle.js, main.css) with the correct HTML tags, which is why they are missing in this HTML file. Don't add any assets here! (Check out the webpack config files in internals/webpack for details) -->
