@@ -86,7 +86,8 @@
       }
     },
     "plugins": [
-      "styled-components"
+      "styled-components",
+      "transform-decorators-legacy"
     ]
   },
   "dllPlugin": {
@@ -160,10 +161,12 @@
     "localforage": "^1.5.0",
     "lodash": "4.17.2",
     "lodash.frompairs": "^4.0.1",
+    "lodash.isequal": "^4.5.0",
     "lodash.memoize": "^4.1.2",
     "minimist": "1.2.0",
     "moment-mini": "^2.18.1",
     "prop-types": "^15.5.10",
+    "query-string": "^5.0.0",
     "randomcolor": "^0.5.3",
     "rc-slider": "^8.2.0",
     "react": "15.4.1",
@@ -209,6 +212,7 @@
     "babel-plugin-react-intl": "^2.3.1",
     "babel-plugin-react-transform": "2.0.2",
     "babel-plugin-styled-components": "^1.1.7",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-proto-to-assign": "^6.23.0",
@@ -252,6 +256,7 @@
     "null-loader": "0.1.1",
     "offline-plugin": "4.5.2",
     "pre-commit": "1.1.3",
+    "react-addons-perf": "^15.4.2",
     "react-addons-test-utils": "15.4.1",
     "rimraf": "2.5.4",
     "shelljs": "0.7.5",
