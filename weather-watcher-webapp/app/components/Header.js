@@ -1,11 +1,10 @@
-import uuid from 'uuid';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled, {css} from 'styled-components';
-import {Link, NavLink} from 'react-router-dom';
 import Theme from 'app/Theme';
+import SmartLink from './SmartLink';
 
-const HeaderLogo = styled(Link)`
+const HeaderLogo = styled(SmartLink)`
   display: inline-block;
   text-decoration: none;
 
@@ -21,7 +20,7 @@ const HeaderLogo = styled(Link)`
   }
 
   ${props => props.theme.media.phone`
-    h1 {
+h1 {
       font-size: 3em;
     }
     h5 {
@@ -45,9 +44,9 @@ const QuickLinkCSS = css`
   font-weight: 300;
 `;
 
-const QuickButton = styled.a`${QuickLinkCSS};`;
+// const QuickButton = styled.a`${QuickLinkCSS};`;
 
-const QuickLink = styled(NavLink)`
+const QuickLink = styled(SmartLink)`
   ${QuickLinkCSS}
   &.selected {
     text-decoration: underline;
@@ -64,7 +63,7 @@ const NavBar = styled.div`
 
 class Header extends Component {
   static propTypes = {
-    onNewComparison: PropTypes.func.isRequired,
+    //    onNewComparison: PropTypes.func.isRequired,
     comparisons: PropTypes.object.isRequired,
   };
 
@@ -75,7 +74,7 @@ class Header extends Component {
           <HeaderLogo to="/">
             <h1 className="amber-text text-lighten-2">Goldilocks Weather</h1>
             <h5 className="amber-text text-lighten-5">
-              weather that's{' '}
+              weather that{"'"}s{' '}
               <em>
                 <u>just</u>
               </em>{' '}
@@ -87,13 +86,14 @@ class Header extends Component {
           {this.props.comparisons.valueSeq().map(comparison =>
             <QuickLink
               key={comparison.id}
+              nav
               activeClassName="selected"
               to={`/compare/${comparison.id}`}
             >
               {comparison.name}
             </QuickLink>
           )}
-          {/*<QuickButton onClick={this.props.onNewComparison}>
+          {/* <QuickButton onClick={this.props.onNewComparison}>
                   + New Comparison
                   </QuickButton>*/}
         </QuickLinks>

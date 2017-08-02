@@ -5,6 +5,7 @@ import moment from 'moment-mini';
 import Tooltip from 'rc-tooltip';
 import 'rc-tooltip/assets/bootstrap.css';
 
+import SmartLink from 'app/components/SmartLink';
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import Button from 'app/components/Button';
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
@@ -33,7 +34,7 @@ const RowLabel = styled.span`
   width: 4em;
 `;
 
-export const PointLink = styled.a`
+export const PointLink = styled(SmartLink)`
   color: ${props => props.theme.colors.primaryText};
   text-decoration: none;
   font-weight: 500;
@@ -177,7 +178,7 @@ export class DesktopForecastRow extends PureComponent {
               </Tooltip>}
         </Cell>
         <Cell>
-          <PointLink href={`/locations/${point.id}`}>
+          <PointLink to={`/locations/${point.id}`}>
             {this.props.getName(this.props)}
           </PointLink>
         </Cell>
@@ -276,7 +277,7 @@ export class PhoneForecastRow extends PureComponent {
               />}
         </Cell>
         <Cell colSpan="8">
-          <PointLink href={`/locations/${point.id}`}>
+          <PointLink to={`/locations/${point.id}`}>
             {this.props.getName(this.props)}
           </PointLink>
           <div>

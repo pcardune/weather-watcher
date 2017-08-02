@@ -1,6 +1,6 @@
 import {InterpolatedScoreFunction, InterpolatedGridForecast} from '../scoring';
 import sampleNOAAGridForecast from './sampleNOAAGridForecast.json';
-import {DEFAULT_SCORE_CONFIG} from '../constants';
+import {DEFAULT_SCORE_CONFIG} from 'app/constants';
 
 describe('InterpolatedGridForecast', () => {
   const grid = new InterpolatedGridForecast({
