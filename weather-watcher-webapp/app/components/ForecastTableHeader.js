@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PureComponent} from 'react';
 import styled from 'styled-components';
 
 const ColumnHeader = styled.th`
@@ -6,7 +6,12 @@ const ColumnHeader = styled.th`
   padding: 5px 5px 0;
   font-size: 14px;
   font-weight: 400;
+  width: ${props => props.width || 50}px;
 `;
+
+const PrecipitationColumnHeader = ColumnHeader.extend(`
+  text-align: center;
+`);
 
 const HeaderRow = styled.tr`
   ${props => props.theme.media.phone`
@@ -22,38 +27,40 @@ const UnitCell = styled.th`
   padding: 0px 5px 5px;
 `;
 
-export default function ForecastTableHeader() {
-  return (
-    <thead>
-      <HeaderRow>
-        <ColumnHeader colSpan={5} />
-        <ColumnHeader colSpan={2} style={{textAlign: 'center'}}>
-          Precipitation
-        </ColumnHeader>
-        <ColumnHeader colSpan={2} />
-      </HeaderRow>
-      <HeaderRow>
-        <ColumnHeader style={{width: 50}}>Score</ColumnHeader>
-        <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
-        <ColumnHeader style={{width: 50}}>Low</ColumnHeader>
-        <ColumnHeader style={{width: 50}}>High</ColumnHeader>
-        <ColumnHeader style={{width: 50}}>Wind</ColumnHeader>
-        <ColumnHeader style={{width: 50}}>Chance</ColumnHeader>
-        <ColumnHeader style={{width: 50}}>Quantity</ColumnHeader>
-        <ColumnHeader style={{width: 150}}>Forecast</ColumnHeader>
-        <ColumnHeader />
-      </HeaderRow>
-      <HeaderRow>
-        <UnitCell />
-        <UnitCell />
-        <UnitCell>ºF</UnitCell>
-        <UnitCell>ºF</UnitCell>
-        <UnitCell>mph</UnitCell>
-        <UnitCell>%</UnitCell>
-        <UnitCell>in</UnitCell>
-        <UnitCell />
-        <UnitCell />
-      </HeaderRow>
-    </thead>
-  );
+export default class ForecastTableHeader extends PureComponent {
+  render() {
+    return (
+      <thead>
+        <HeaderRow>
+          <ColumnHeader colSpan={5} />
+          <PrecipitationColumnHeader colSpan={2}>
+            Precipitation
+          </PrecipitationColumnHeader>
+          <ColumnHeader colSpan={2} />
+        </HeaderRow>
+        <HeaderRow>
+          <ColumnHeader>Score</ColumnHeader>
+          <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
+          <ColumnHeader>Low</ColumnHeader>
+          <ColumnHeader>High</ColumnHeader>
+          <ColumnHeader>Wind</ColumnHeader>
+          <ColumnHeader>Chance</ColumnHeader>
+          <ColumnHeader>Quantity</ColumnHeader>
+          <ColumnHeader width={150}>Forecast</ColumnHeader>
+          <ColumnHeader />
+        </HeaderRow>
+        <HeaderRow>
+          <UnitCell />
+          <UnitCell />
+          <UnitCell>ºF</UnitCell>
+          <UnitCell>ºF</UnitCell>
+          <UnitCell>mph</UnitCell>
+          <UnitCell>%</UnitCell>
+          <UnitCell>in</UnitCell>
+          <UnitCell />
+          <UnitCell />
+        </HeaderRow>
+      </thead>
+    );
+  }
 }
