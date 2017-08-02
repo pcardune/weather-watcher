@@ -9,9 +9,6 @@ const ColumnHeader = styled.th`
 `;
 
 const HeaderRow = styled.tr`
-  ${ColumnHeader}:first-child {
-    padding-left: 35px;
-  }
   ${props => props.theme.media.phone`
     display: none;
   `};

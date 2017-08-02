@@ -55,10 +55,6 @@ const Row = styled.tr`
   }
 
   border-bottom: 1px solid #eee;
-  ${Cell}:first-child {
-    padding-left: 35px;
-    ${props => props.theme.media.phone`padding-left: 10px`};
-  }
   background: ${props =>
     props.selected ? props.theme.colors.primaryLight : 'transparent'};
   cursor: pointer;

@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import convert from 'convert-units';
 import moment from 'moment';
 import React, {Component} from 'react';
+import styled from 'styled-components';
 import {subscribeProps} from 'redux-firebase-mirror';
 
 import {ComparisonPointShape, ScoreConfigShape} from 'app/propTypes';
@@ -18,6 +19,17 @@ import Number from 'app/components/Number';
 import {selectScoreConfig} from 'app/containers/Database/selectors';
 import {getForecastDates} from 'app/utils/dates';
 import {DesktopForecastRow, PhoneForecastRow} from 'app/components/ForecastRow';
+
+const DescriptionList = styled.dl`
+  margin: 0;
+  dd,
+  dt {
+    display: inline;
+  }
+  dd {
+    margin-left: 8px;
+  }
+`;
 
 export class ComparisonPointPage extends Component {
   static propTypes = {
@@ -57,15 +69,20 @@ export class ComparisonPointPage extends Component {
           <CardBody>
             <div className="row">
               <div className="col s12">
-                Elevation:
-                <Number
-                  value={convert(
-                    comparisonPoint.noaaGridForecast.properties.elevation.value
-                  )
-                    .from('m')
-                    .to('ft')}
-                />
-                ft.
+                <DescriptionList>
+                  <dt>Elevation:</dt>
+                  <dd>
+                    <Number
+                      value={convert(
+                        comparisonPoint.noaaGridForecast.properties.elevation
+                          .value
+                      )
+                        .from('m')
+                        .to('ft')}
+                    />
+                    ft.
+                  </dd>
+                </DescriptionList>
               </div>
             </div>
             <div className="row">

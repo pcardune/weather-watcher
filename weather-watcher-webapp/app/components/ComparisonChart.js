@@ -23,7 +23,6 @@ const Table = styled.table`
   }
   td:first-child {
     text-align: left;
-    padding-left: 25px;
     font-weight: 500;
     width: 250px;
   }
@@ -45,7 +44,7 @@ const Th = styled.th`
   font-size: 14px;
   &:first-child {
     text-align: left;
-    padding-left: ${props => props.theme.padding.standard};
+    padding-left: 5px;
   }
 `;
 

@@ -130,46 +130,58 @@ export class HomePage extends Component {
                     </ButtonBar>*/}
               </CardHeader>
               {comparison.isLoading && <LoadingBar />}
-              {(this.state.showAddForm || this.state.showCustomizeForm) &&
-                <CardBody>
-                  {this.state.showAddForm &&
-                    <InnerPane>
-                      <AddComparisonPointForm
-                        onClose={this.hideAddForm}
-                        onAdd={this.onAddComparisonPoint}
-                      />
-                    </InnerPane>}
-                  {this.state.showCustomizeForm &&
-                    <InnerPane>
-                      <CustomizeScoreForm
-                        onClose={this.toggleCustomize}
-                        scoreConfig={comparison.scoreConfig}
-                        onChange={this.onChangeScoreConfig}
-                      />
-                    </InnerPane>}
-                </CardBody>}
-              {hasPoints
-                ? <MultiDayForecastComparison
-                    onChangeDate={this.onChangeDate}
-                    date={this.state.currentDate}
-                    comparison={comparison}
-                    onRemoveComparisonPoint={this.onRemoveComparisonPoint}
-                  />
-                : <HelpText>
-                    {comparison.isLoading
-                      ? 'Loading...'
-                      : 'Add a location to start comparing forecasts.'}
-                  </HelpText>}
+              <CardBody>
+                {(this.state.showAddForm || this.state.showCustomizeForm) &&
+                  <div className="row">
+                    <div className="col s12">
+                      {this.state.showAddForm &&
+                        <InnerPane>
+                          <AddComparisonPointForm
+                            onClose={this.hideAddForm}
+                            onAdd={this.onAddComparisonPoint}
+                          />
+                        </InnerPane>}
+                      {this.state.showCustomizeForm &&
+                        <InnerPane>
+                          <CustomizeScoreForm
+                            onClose={this.toggleCustomize}
+                            scoreConfig={comparison.scoreConfig}
+                            onChange={this.onChangeScoreConfig}
+                          />
+                        </InnerPane>}
+                    </div>
+                  </div>}
+                <div className="row">
+                  <div className="col s12">
+                    {hasPoints
+                      ? <MultiDayForecastComparison
+                          onChangeDate={this.onChangeDate}
+                          date={this.state.currentDate}
+                          comparison={comparison}
+                          onRemoveComparisonPoint={this.onRemoveComparisonPoint}
+                        />
+                      : <HelpText>
+                          {comparison.isLoading
+                            ? 'Loading...'
+                            : 'Add a location to start comparing forecasts.'}
+                        </HelpText>}
+                  </div>
+                </div>
+              </CardBody>
             </Card>
             {hasPoints &&
               <Card>
                 <CardHeader title="Weekly Score Comparison" />
                 <CardBody>
-                  <ComparisonChart
-                    comparison={comparison}
-                    date={this.state.currentDate}
-                    onClickDate={this.props.onChangeDate}
-                  />
+                  <div className="row">
+                    <div className="col s12">
+                      <ComparisonChart
+                        comparison={comparison}
+                        date={this.state.currentDate}
+                        onClickDate={this.props.onChangeDate}
+                      />
+                    </div>
+                  </div>
                 </CardBody>
               </Card>}
           </div>
