@@ -108,14 +108,12 @@ const getAugmentedComparisonPointGetter = createSelector(
     Items.noaaPoints,
     Items.noaaDailyForecasts,
     Items.noaaGridForecasts,
-    Items.noaaHourlyForecasts,
   ],
   (
     getComparisonPoint,
     getNoaaPoint,
     getNoaaDailyForecast,
-    getNoaaGridForecast,
-    getNoaaHourlyForecast
+    getNoaaGridForecast
   ) =>
     memoize(comparisonPointId => {
       const comparisonPointFuture = getComparisonPoint(comparisonPointId);
@@ -132,18 +130,12 @@ const getAugmentedComparisonPointGetter = createSelector(
             const {value: grid, isLoading: isGridLoading} = getNoaaGridForecast(
               getGridForecastId(noaaPoint)
             );
-            const {
-              value: hourly,
-              isLoading: isHourlyLoading,
-            } = getNoaaHourlyForecast(getForecastId(noaaPoint));
             return {
               ...comparisonPoint,
-              isLoadingForecast:
-                isDailyLoading || isGridLoading || isHourlyLoading,
-              isLoading: isDailyLoading || isGridLoading || isHourlyLoading,
+              isLoadingForecast: isDailyLoading || isGridLoading,
+              isLoading: isDailyLoading || isGridLoading,
               noaaPoint,
               noaaDailyForecast: getLatest(daily),
-              noaaHourlyForecast: getLatest(hourly),
               noaaGridForecast: getLatest(grid),
             };
           }
