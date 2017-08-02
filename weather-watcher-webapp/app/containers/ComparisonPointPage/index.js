@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import convert from 'convert-units';
@@ -15,6 +14,7 @@ import {
 } from 'app/containers/Database/scoring';
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import LoadingBar from 'app/components/LoadingBar';
+import Number from 'app/components/Number';
 import {selectScoreConfig} from 'app/containers/Database/selectors';
 import {getForecastDates} from 'app/utils/dates';
 import {DesktopForecastRow, PhoneForecastRow} from 'app/components/ForecastRow';
@@ -40,12 +40,6 @@ export class ComparisonPointPage extends Component {
     const scoreConfig = this.props.scoreConfig;
     const noaaGridForecast = this.props.comparisonPoint.noaaGridForecast;
 
-    const roundedElevationFeet = _.round(
-      convert(comparisonPoint.noaaGridForecast.properties.elevation.value)
-        .from('m')
-        .to('ft')
-    );
-
     comparisonPoint = {
       ...comparisonPoint,
       interpolatedScore: new InterpolatedScoreFunction({
@@ -63,7 +57,15 @@ export class ComparisonPointPage extends Component {
           <CardBody>
             <div className="row">
               <div className="col s12">
-                {`Elevation: ${roundedElevationFeet} ft.`}
+                Elevation:
+                <Number
+                  value={convert(
+                    comparisonPoint.noaaGridForecast.properties.elevation.value
+                  )
+                    .from('m')
+                    .to('ft')}
+                />
+                ft.
               </div>
             </div>
             <div className="row">
