@@ -9,6 +9,7 @@ import {safeAverage} from 'app/utils/math';
 import {getForecastDates} from 'app/utils/dates';
 
 import LoadingIndicator from './LoadingIndicator';
+import {PointLink} from 'app/components/ForecastRow';
 import ScoreNumber, {getScoreColor} from './ScoreNumber';
 import Number from './Number';
 
@@ -23,7 +24,6 @@ const Table = styled.table`
   }
   td:first-child {
     text-align: left;
-    padding-left: 25px;
     font-weight: 500;
     width: 250px;
   }
@@ -45,7 +45,7 @@ const Th = styled.th`
   font-size: 14px;
   &:first-child {
     text-align: left;
-    padding-left: ${props => props.theme.padding.standard};
+    padding-left: 5px;
   }
 `;
 
@@ -131,7 +131,9 @@ export default class ComparisonChart extends PureComponent {
               return (
                 <tr key={point.id}>
                   <PointName className="truncate">
-                    {point.name}
+                    <PointLink href={`/locations/${point.id}`}>
+                      {point.name}
+                    </PointLink>
                   </PointName>
                   {dates.map(date => {
                     const score = point.interpolatedScore.getAverageScoreForDate(
