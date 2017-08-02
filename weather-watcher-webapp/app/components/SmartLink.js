@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {withRouter} from 'react-router';
 import {Link as RouterLink, NavLink} from 'react-router-dom';
+import isEqual from 'lodash.isequal';
 
 import {
   getPathWithScoreConfig,
@@ -27,22 +28,30 @@ export default class SmartLink extends PureComponent {
 
   isActive = (match, location) => location.pathname === this.props.to;
 
-  onClick = event => {
-    let {to} = this.props;
-    const scoreConfig = getScoreConfigFromLocation(this.props.history.location);
-    const [pathname, search] = to.split('?');
-    to = getPathWithScoreConfig({pathname, search}, scoreConfig);
-    this.props.history.push(to);
-    event.preventDefault();
+  state = {
+    scoreConfig: getScoreConfigFromLocation(this.props.location),
   };
+
+  componentDidMount() {
+    this.unlisten = this.props.history.listen(location => {
+      const scoreConfig = getScoreConfigFromLocation(location);
+      if (!isEqual(scoreConfig, this.state.scoreConfig)) {
+        this.setState({scoreConfig});
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.unlisten();
+  }
 
   render() {
     const {nav, activeClassName, className, children, to} = this.props;
+    const [pathname, search] = to.split('?');
     const props = {
       className,
-      to,
+      to: getPathWithScoreConfig({pathname, search}, this.state.scoreConfig),
       children,
-      onClick: this.onClick,
     };
 
     if (nav) {
