@@ -12,11 +12,13 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
-import {BrowserRouter as Router} from 'react-router-dom';
+import {Router} from 'react-router';
 import FontFaceObserver from 'fontfaceobserver';
 import 'sanitize.css/sanitize.css';
 import firebase from 'firebase';
 import {ThemeProvider} from 'styled-components';
+import ReactGA from 'react-ga';
+import createHistory from 'history/createBrowserHistory';
 
 // Import root app
 import App from 'containers/App';
@@ -35,6 +37,8 @@ import configureStore from './store';
 import './global-styles';
 import Theme from './Theme';
 
+const DEBUG = process.env.NODE_ENV !== 'production';
+
 // Observe loading of Open Sans (to remove open sans, remove the <link> tag in
 // the index.html file and this observer)
 const openSansObserver = new FontFaceObserver('Roboto', {});
@@ -48,6 +52,21 @@ openSansObserver.load().then(
     document.body.classList.remove('fontLoaded');
   }
 );
+
+ReactGA.initialize('UA-73170823-3', {
+  debug: DEBUG,
+});
+
+const history = createHistory();
+function trackPageView(location) {
+  if (DEBUG) {
+    ReactGA.ga('set', 'sendHitTask', null);
+  }
+  ReactGA.set({page: location.pathname});
+  ReactGA.pageview(location.pathname);
+}
+history.listen(trackPageView);
+trackPageView(history.location);
 
 const config = {
   apiKey: 'AIzaSyA9dBTF1MZE3jyhjwG37unYMhbQEGurZF4',
@@ -66,7 +85,7 @@ configureStore(initialState, store => {
   ReactDOM.render(
     <Provider store={store}>
       <ThemeProvider theme={Theme}>
-        <Router>
+        <Router history={history}>
           <App store={store} />
         </Router>
       </ThemeProvider>
