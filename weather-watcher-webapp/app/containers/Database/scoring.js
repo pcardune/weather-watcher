@@ -1,6 +1,7 @@
 import SunCalc from 'suncalc';
 import convert from 'convert-units';
 import moment from 'moment-mini';
+import memoize from 'lodash.memoize';
 import {InterpolatedSequence, safeAverage, sum} from 'app/utils/math';
 import {SCORE_MULTIPLIERS} from 'app/constants';
 
@@ -149,24 +150,27 @@ export class InterpolatedScoreFunction {
     return scores;
   }
 
-  getAverageScoreForDate(date) {
-    if (!this.grid.noaaGridForecast) {
-      return {score: 0, scoreComponents: {}};
-    }
-    const [
-      longitude,
-      latitude,
-    ] = this.grid.noaaGridForecast.geometry.coordinates[0][0];
-    const times = SunCalc.getTimes(
-      moment(date).startOf('date').valueOf(),
-      latitude,
-      longitude
-    );
-    return this.getAverageScoreForInterval(
-      moment(date).set('hour', times.sunrise.getHours()).valueOf(),
-      moment(date).set('hour', times.sunset.getHours()).valueOf()
-    );
-  }
+  getAverageScoreForDate = memoize(
+    date => {
+      if (!this.grid.noaaGridForecast) {
+        return {score: 0, scoreComponents: {}};
+      }
+      const [
+        longitude,
+        latitude,
+      ] = this.grid.noaaGridForecast.geometry.coordinates[0][0];
+      const times = SunCalc.getTimes(
+        moment(date).startOf('date').valueOf(),
+        latitude,
+        longitude
+      );
+      return this.getAverageScoreForInterval(
+        moment(date).set('hour', times.sunrise.getHours()).valueOf(),
+        moment(date).set('hour', times.sunset.getHours()).valueOf()
+      );
+    },
+    date => moment(date).startOf('date').valueOf()
+  );
 
   getBadnessForDate(date) {
     const scores = this.getScoresForDate(date);
