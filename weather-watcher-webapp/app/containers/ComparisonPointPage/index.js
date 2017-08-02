@@ -1,11 +1,10 @@
 import {compose} from 'redux';
 import {connect} from 'react-redux';
-import convert from 'convert-units';
-import {createStructuredSelector} from 'reselect';
-import moment from 'moment';
+import moment from 'moment-mini';
 import React, {PureComponent} from 'react';
 import styled from 'styled-components';
 import {subscribeProps} from 'redux-firebase-mirror';
+import {withRouter} from 'react-router';
 
 import {ComparisonPointShape, ScoreConfigShape} from 'app/propTypes';
 import {augmentedComparisonPointById} from 'app/containers/Database/subscriptions';
@@ -16,14 +15,13 @@ import {
 } from 'app/containers/Database/scoring';
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import Number from 'app/components/Number';
-import {selectScoreConfig} from 'app/containers/Database/selectors';
 import {getForecastDates} from 'app/utils/dates';
 import {
   DesktopForecastRow,
   PhoneForecastRow,
   LoadingRow,
-  PointLink,
 } from 'app/components/ForecastRow';
+import {getScoreConfigFromLocation} from 'app/utils/url';
 
 const DescriptionList = styled.dl`
   margin: 0;
@@ -115,12 +113,12 @@ export class ComparisonPointPage extends PureComponent {
             </div>
             <div className="row">
               <div className="col s12">
-                <PointLink
+                <a
                   target="_blank"
                   href={`http://forecast.weather.gov/MapClick.php?lon=${comparisonPoint.longitude}&lat=${comparisonPoint.latitude}`}
                 >
                   Forecast information from NOAA
-                </PointLink>
+                </a>
               </div>
             </div>
           </CardBody>
@@ -131,7 +129,10 @@ export class ComparisonPointPage extends PureComponent {
 }
 
 export default compose(
-  connect(createStructuredSelector({scoreConfig: selectScoreConfig})),
+  withRouter,
+  connect((state, {location}) => ({
+    scoreConfig: getScoreConfigFromLocation(location),
+  })),
   subscribeProps({
     comparisonPoint: augmentedComparisonPointById,
   })

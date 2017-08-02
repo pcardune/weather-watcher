@@ -1,7 +1,10 @@
 import {PropTypes} from 'react';
 
 export const ScoreConfigShape = PropTypes.shape({
-  idealTemp: PropTypes.number.isRequired,
+  tempRange: PropTypes.arrayOf(PropTypes.number).isRequired,
+  windRange: PropTypes.arrayOf(PropTypes.number).isRequired,
+  precipRange: PropTypes.arrayOf(PropTypes.number).isRequired,
+  quantityRange: PropTypes.arrayOf(PropTypes.number).isRequired,
 });
 
 export const ComparisonProps = {

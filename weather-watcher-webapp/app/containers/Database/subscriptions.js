@@ -9,7 +9,6 @@ import {List, Map} from 'immutable';
 import {createSelector} from 'reselect';
 
 import {InterpolatedGridForecast, InterpolatedScoreFunction} from './scoring';
-import {selectScoreConfig} from './selectors';
 
 // TODO fix build issue with this being in cloud functions
 export function coordinateArrayToFirebaseKey(coordinates) {
@@ -115,7 +114,7 @@ const getAugmentedComparisonPointGetter = createSelector(
     getNoaaDailyForecast,
     getNoaaGridForecast
   ) =>
-    memoize(comparisonPointId => {
+    memoize((comparisonPointId, scoreConfig) => {
       const comparisonPointFuture = getComparisonPoint(comparisonPointId);
       const {value: comparisonPoint} = comparisonPointFuture;
       if (comparisonPoint) {
@@ -130,13 +129,20 @@ const getAugmentedComparisonPointGetter = createSelector(
             const {value: grid, isLoading: isGridLoading} = getNoaaGridForecast(
               getGridForecastId(noaaPoint)
             );
+            const noaaGridForecast = getLatest(grid);
             return {
               ...comparisonPoint,
               isLoadingForecast: isDailyLoading || isGridLoading,
               isLoading: isDailyLoading || isGridLoading,
               noaaPoint,
               noaaDailyForecast: getLatest(daily),
-              noaaGridForecast: getLatest(grid),
+              noaaGridForecast,
+              interpolatedScore: new InterpolatedScoreFunction({
+                interpolatedGridForecast: new InterpolatedGridForecast(
+                  noaaGridForecast
+                ),
+                scoreConfig,
+              }),
             };
           }
         }
@@ -146,9 +152,9 @@ const getAugmentedComparisonPointGetter = createSelector(
 );
 
 const getAugmentedComparisonGetter = createSelector(
-  [Items.comparisons, getAugmentedComparisonPointGetter, selectScoreConfig],
-  (getComparison, getAugmentedComparisonPoint, scoreConfig) =>
-    memoize(comparisonId => {
+  [Items.comparisons, getAugmentedComparisonPointGetter],
+  (getComparison, getAugmentedComparisonPoint) =>
+    memoize((comparisonId, scoreConfig) => {
       const {value: comparison, isLoading} = getComparison(comparisonId);
       if (comparison) {
         return {
@@ -157,21 +163,10 @@ const getAugmentedComparisonGetter = createSelector(
           comparisonPoints: Object.values(
             comparison.comparisonPointIds
           ).map(comparisonPointId => {
-            let comparisonPoint = getAugmentedComparisonPoint(
-              comparisonPointId
+            const comparisonPoint = getAugmentedComparisonPoint(
+              comparisonPointId,
+              scoreConfig
             );
-            if (comparisonPoint && comparisonPoint.noaaGridForecast) {
-              const {noaaGridForecast} = comparisonPoint;
-              comparisonPoint = {
-                ...comparisonPoint,
-                interpolatedScore: new InterpolatedScoreFunction({
-                  interpolatedGridForecast: new InterpolatedGridForecast(
-                    noaaGridForecast
-                  ),
-                  scoreConfig,
-                }),
-              };
-            }
             return {id: comparisonPointId, ...comparisonPoint};
           }),
         };
@@ -257,6 +252,6 @@ export const augmentedComparisonById = new Subscription({
     }
     return paths;
   },
-  value: (state, {comparisonId}) =>
-    getAugmentedComparisonGetter(state)(comparisonId),
+  value: (state, {comparisonId, scoreConfig}) =>
+    getAugmentedComparisonGetter(state)(comparisonId, scoreConfig),
 });

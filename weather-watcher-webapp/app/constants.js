@@ -23,3 +23,10 @@ export const SCORE_MULTIPLIERS = {
   yellow: 2,
   green: 3,
 };
+
+export const DEFAULT_SCORE_CONFIG = {
+  tempRange: [32, 45, 65, 75, 85],
+  windRange: [0, 0, 0, 5, 20],
+  precipRange: [0, 0, 0, 20, 50],
+  quantityRange: [0, 0, 0, 0.03, 0.1],
+};

@@ -7,11 +7,10 @@ import memoize from 'lodash.memoize';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import {safeAverage} from 'app/utils/math';
 import {getForecastDates} from 'app/utils/dates';
+import {PointLink} from 'app/components/ForecastRow';
 
 import LoadingIndicator from './LoadingIndicator';
-import {PointLink} from 'app/components/ForecastRow';
-import ScoreNumber, {getScoreColor} from './ScoreNumber';
-import Number from './Number';
+import ScoreNumber from './ScoreNumber';
 
 const Wrapper = styled.div``;
 
@@ -47,16 +46,6 @@ const Th = styled.th`
     text-align: left;
     padding-left: 5px;
   }
-`;
-
-const ScoreBox = styled.td`
-  padding: 0;
-  width: 10%;
-  border: 1px solid ${props => props.theme.colors.textOnPrimary};
-  background-color: ${getScoreColor};
-  color: ${props => props.theme.colors.primaryText};
-  text-align: center;
-  font-weight: 300;
 `;
 
 export default class ComparisonChart extends PureComponent {
@@ -107,7 +96,6 @@ export default class ComparisonChart extends PureComponent {
           </thead>
           <tbody>
             {sortedPoints.map(point => {
-              let content;
               if (point.isLoading) {
                 return (
                   <tr key={point.id}>
@@ -131,7 +119,7 @@ export default class ComparisonChart extends PureComponent {
               return (
                 <tr key={point.id}>
                   <PointName className="truncate">
-                    <PointLink href={`/locations/${point.id}`}>
+                    <PointLink to={`/locations/${point.id}`}>
                       {point.name}
                     </PointLink>
                   </PointName>
@@ -140,14 +128,9 @@ export default class ComparisonChart extends PureComponent {
                       date
                     );
                     return (
-                      <td>
+                      <td key={date.getTime()}>
                         <ScoreNumber score={score} />
                       </td>
-                    );
-                    return (
-                      <ScoreBox key={date} score={score}>
-                        <Number value={score.score} />
-                      </ScoreBox>
                     );
                   })}
                 </tr>

@@ -1,7 +1,7 @@
 import React, {PureComponent, PropTypes} from 'react';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import SingleDayForecastComparison from './SingleDayForecastComparison';
-//import ComparisonGraph from './ComparisonGraph';
+// import ComparisonGraph from './ComparisonGraph';
 import DatePager from './DatePager';
 
 export default class MultiDayForecastComparison extends PureComponent {

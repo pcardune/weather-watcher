@@ -10,19 +10,21 @@ import styled from 'styled-components';
 import moment from 'moment-mini';
 import {compose} from 'redux';
 import {subscribeProps} from 'redux-firebase-mirror';
+import {withRouter} from 'react-router';
 
 import LoadingBar from 'app/components/LoadingBar';
-import {ButtonBar} from 'app/components/forms';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import Button from 'app/components/Button';
 import {Card, CardHeader, CardBody} from 'app/components/Card';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
-import InlineInput from 'app/components/InlineInput';
-import {updateScoreConfig} from 'app/containers/Database/actions';
 import {augmentedComparisonById} from 'app/containers/Database/subscriptions';
 import ComparisonChart from 'app/components/ComparisonChart';
+import {
+  getScoreConfigFromLocation,
+  getPathWithScoreConfig,
+} from 'app/utils/url';
 
 import {addComparisonPoint, removeComparisonPoint} from './actions';
 
@@ -40,10 +42,11 @@ const InnerPane = styled.div`
 
 export class HomePage extends Component {
   static propTypes = {
+    location: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
     comparison: AugmentedComparisonShape,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
     onAddComparisonPoint: PropTypes.func.isRequired,
-    onUpdateScoreConfig: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -87,12 +90,10 @@ export class HomePage extends Component {
     this.hideAddForm();
   };
 
-  onChangeComparisonName = name => {
-    this.props.onUpdateComparison({...this.props.comparison, name});
-  };
-
   onChangeScoreConfig = scoreConfig => {
-    this.props.onUpdateScoreConfig(scoreConfig);
+    this.props.history.push(
+      getPathWithScoreConfig(this.props.location, scoreConfig)
+    );
   };
 
   render() {
@@ -116,7 +117,7 @@ export class HomePage extends Component {
                   }
                   onClick={this.toggleCustomize}
                 />
-                {/*<ButtonBar>
+                {/* <ButtonBar>
                     <Button
                     accent
                     disabled={
@@ -178,7 +179,7 @@ export class HomePage extends Component {
                       <ComparisonChart
                         comparison={comparison}
                         date={this.state.currentDate}
-                        onClickDate={this.props.onChangeDate}
+                        onClickDate={this.onChangeDate}
                       />
                     </div>
                   </div>
@@ -192,11 +193,16 @@ export class HomePage extends Component {
 }
 
 export default compose(
-  connect(null, {
-    onAddComparisonPoint: addComparisonPoint,
-    onRemoveComparisonPoint: removeComparisonPoint,
-    onUpdateScoreConfig: updateScoreConfig,
-  }),
+  withRouter,
+  connect(
+    (state, {location}) => ({
+      scoreConfig: getScoreConfigFromLocation(location),
+    }),
+    {
+      onAddComparisonPoint: addComparisonPoint,
+      onRemoveComparisonPoint: removeComparisonPoint,
+    }
+  ),
   subscribeProps({
     comparison: augmentedComparisonById,
   })
