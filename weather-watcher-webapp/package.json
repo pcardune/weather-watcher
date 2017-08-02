@@ -4,7 +4,7 @@
   "scripts": {
     "analyze:clean": "rimraf stats.json",
     "preanalyze": "npm run analyze:clean",
-    "analyze": "node ./internals/scripts/analyze.js",
+    "analyze": "webpack --config internals/webpack/webpack.prod.babel.js --profile --json > stats.json",
     "extract-intl": "babel-node --presets latest,stage-0 -- ./internals/scripts/extract-intl.js",
     "npmcheckversion": "node ./internals/scripts/npmcheckversion.js",
     "preinstall": "npm run npmcheckversion",
@@ -179,7 +179,7 @@
     "react-router-redux": "^4.0.8",
     "react-truncate": "^2.1.4",
     "redux": "3.6.0",
-    "redux-firebase-mirror": "^0.0.7",
+    "redux-firebase-mirror": "^0.0.8",
     "redux-immutable": "3.0.8",
     "redux-persist": "^4.8.0",
     "redux-persist-immutable": "^4.3.0",
@@ -257,7 +257,8 @@
     "sinon": "^2.3.4",
     "style-loader": "0.13.1",
     "url-loader": "0.5.7",
-    "webpack": "2.2.0-rc.3",
+    "webpack": "^3.4.1",
+    "webpack-bundle-analyzer": "^2.8.3",
     "webpack-dev-middleware": "1.9.0",
     "webpack-hot-middleware": "2.15.0"
   }

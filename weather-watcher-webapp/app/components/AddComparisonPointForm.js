@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import React, {Component, PropTypes} from 'react';
-import {Map, Marker, TileLayer} from 'react-leaflet';
 import 'react-geosuggest/module/geosuggest.css';
 
 import {round} from 'app/utils/math';
@@ -17,6 +16,8 @@ const LocationInfo = styled.div`
   margin-bottom: ${props => props.theme.padding.standard};
 `;
 
+let Map, Marker, TileLayer;
+
 export default class AddComparisonPointForm extends Component {
   static propTypes = {
     onAdd: PropTypes.func.isRequired,
@@ -29,10 +30,19 @@ export default class AddComparisonPointForm extends Component {
       lat: 47.8207,
       lng: -121.5551,
     },
+    leafletLoaded: false,
   };
 
   componentDidMount() {
     this.locationInput.focus();
+    import(/* webpackChunkName: "react-leaflet" */ 'react-leaflet').then(
+      ReactLeaflet => {
+        Map = ReactLeaflet.Map;
+        Marker = ReactLeaflet.Marker;
+        TileLayer = ReactLeaflet.TileLayer;
+        this.setState({leafletLoaded: true});
+      }
+    );
   }
 
   onChange = event => {
@@ -95,22 +105,23 @@ export default class AddComparisonPointForm extends Component {
                 onChange={this.onChangeLocation}
               />
             </FormField>
-            <Map
-              center={this.state.position}
-              zoom={11}
-              style={{height: 300}}
-              onClick={this.onMapClick}
-            >
-              <TileLayer
-                url="http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
-                attribution="© <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-              />
-              <Marker
-                position={this.state.position}
-                draggable
-                onDragEnd={this.onMarkerDragEnd}
-              />
-            </Map>
+            {this.state.leafletLoaded &&
+              <Map
+                center={this.state.position}
+                zoom={11}
+                style={{height: 300}}
+                onClick={this.onMapClick}
+              >
+                <TileLayer
+                  url="http://{s}.tile.thunderforest.com/outdoors/{z}/{x}/{y}.png"
+                  attribution="© <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+                />
+                <Marker
+                  position={this.state.position}
+                  draggable
+                  onDragEnd={this.onMarkerDragEnd}
+                />
+              </Map>}
           </div>
         </LocationInfo>
         <ButtonBar>

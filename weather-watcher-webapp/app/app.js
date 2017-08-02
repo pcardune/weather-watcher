@@ -14,7 +14,8 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {BrowserRouter as Router} from 'react-router-dom';
 import FontFaceObserver from 'fontfaceobserver';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/database';
 import {ThemeProvider} from 'styled-components';
 
 // Import root app
