@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment-mini';
 import styled from 'styled-components';
 
+import {Desktop, Phone} from './Responsive';
 import Button from './Button';
 
 const Wrapper = styled.div`margin-bottom: 0px;`;
@@ -47,30 +48,50 @@ export default class DatePager extends PureComponent {
     return (
       <Wrapper className="row valign-wrapper">
         <div className="col m4 s5 center-align">
-          <Button
-            onClick={this.onClickPrevDate}
-            disabled={!this.canClickPrevDate()}
-            iconLeft="chevron_left"
-          >
-            {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
-          </Button>
+          <Desktop>
+            {isDesktop => {
+              const props = {
+                onClick: this.onClickPrevDate,
+                disabled: !this.canClickPrevDate(),
+              };
+              return isDesktop
+                ? <Button {...props} iconLeft="chevron_left">
+                    {moment(this.props.currentDate)
+                      .subtract(1, 'days')
+                      .format('ddd')}
+                  </Button>
+                : <Button {...props} icon="chevron_left" />;
+            }}
+          </Desktop>
         </div>
         <div className="col m4 s2 center-align">
-          <h1 className="hide-on-small-only">
-            {moment(this.props.currentDate).format('dddd')}
-          </h1>
-          <h1 className="hide-on-med-and-up">
-            {moment(this.props.currentDate).format('ddd')}
-          </h1>
+          <Desktop>
+            <h3>
+              {moment(this.props.currentDate).format('dddd')}
+            </h3>
+          </Desktop>
+          <Phone>
+            <h5>
+              {moment(this.props.currentDate).format('ddd')}
+            </h5>
+          </Phone>
         </div>
         <div className="col m4 s5 center-align">
-          <Button
-            onClick={this.onClickNextDate}
-            disabled={!this.canClickNextDate()}
-            iconRight="chevron_right"
-          >
-            {moment(this.props.currentDate).add(1, 'days').format('ddd')}
-          </Button>
+          <Desktop>
+            {isDesktop => {
+              const props = {
+                onClick: this.onClickNextDate,
+                disabled: !this.canClickNextDate(),
+              };
+              return isDesktop
+                ? <Button {...props} iconRight="chevron_right">
+                    {moment(this.props.currentDate)
+                      .add(1, 'days')
+                      .format('ddd')}
+                  </Button>
+                : <Button {...props} icon="chevron_right" />;
+            }}
+          </Desktop>
         </div>
       </Wrapper>
     );

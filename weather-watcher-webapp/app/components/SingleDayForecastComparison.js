@@ -2,11 +2,7 @@ import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
 
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
-import {
-  DesktopForecastRow,
-  PhoneForecastRow,
-  LoadingRow,
-} from 'app/components/ForecastRow';
+import ForecastRow, {LoadingRow} from 'app/components/ForecastRow';
 import {AugmentedComparisonShape} from 'app/propTypes';
 
 const ComparisonTable = styled.table`width: 100%;`;
@@ -53,28 +49,16 @@ export default class SingleDayForecastComparison extends PureComponent {
               point =>
                 point.isLoading || point.isLoadingForecast
                   ? <LoadingRow key={`${point.id}-loading`} />
-                  : [
-                      <DesktopForecastRow
-                        key={`${point.id}-desktop`}
-                        point={point}
-                        date={date}
-                        selected={
-                          this.props.selectedComparisonPointId === point.id
-                        }
-                        onRemove={this.props.onRemoveComparisonPoint}
-                        onClick={this.onClickRow}
-                      />,
-                      <PhoneForecastRow
-                        key={`${point.id}-phone`}
-                        point={point}
-                        date={date}
-                        selected={
-                          this.props.selectedComparisonPointId === point.id
-                        }
-                        onRemove={this.props.onRemoveComparisonPoint}
-                        onClick={this.onClickRow}
-                      />,
-                    ]
+                  : <ForecastRow
+                      key={`${point.id}-desktop`}
+                      point={point}
+                      date={date}
+                      selected={
+                        this.props.selectedComparisonPointId === point.id
+                      }
+                      onRemove={this.props.onRemoveComparisonPoint}
+                      onClick={this.onClickRow}
+                    />
             )
           )}
         </tbody>

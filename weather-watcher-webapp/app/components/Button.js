@@ -41,7 +41,7 @@ export default class Button extends PureComponent {
       : this.props.floating ? 'btn-floating' : 'btn';
     const accentClass = this.props.accent
       ? [Theme.colorClass.accent, Theme.colorClass.textOnAccent].join(' ')
-      : Theme.colorClass.primary;
+      : this.props.disabled ? '' : Theme.colorClass.primary;
     const sizeClass = this.props.large ? 'btn-large' : '';
     return (
       <a
@@ -66,7 +66,7 @@ export default class Button extends PureComponent {
             {this.props.icon}
           </i>}
         {this.props.iconRight &&
-          <i className="material-icons right">
+          <i className={`material-icons right`}>
             {this.props.iconRight}
           </i>}
       </a>

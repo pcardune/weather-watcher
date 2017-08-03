@@ -12,6 +12,7 @@ import {compose} from 'redux';
 import {subscribeProps} from 'redux-firebase-mirror';
 import {withRouter} from 'react-router';
 
+import {Desktop} from 'app/components/Responsive';
 import LoadingBar from 'app/components/LoadingBar';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
@@ -107,7 +108,6 @@ export class HomePage extends Component {
             <Card>
               <CardHeader title="Daily Forecast Comparison">
                 <Button
-                  large
                   floating
                   accent
                   icon="settings"
