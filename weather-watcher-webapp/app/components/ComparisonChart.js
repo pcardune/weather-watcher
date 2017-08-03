@@ -213,7 +213,7 @@ export default class ComparisonChart extends PureComponent {
                           date
                         );
                         return (
-                          <td>
+                          <td key={date.getTime()}>
                             <ScoreNumber score={score} />
                           </td>
                         );
