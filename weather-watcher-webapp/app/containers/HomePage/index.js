@@ -171,22 +171,20 @@ export class HomePage extends Component {
               </CardBody>
             </Card>
             {hasPoints &&
-              <Desktop>
-                <Card>
-                  <CardHeader title="Weekly Score Comparison" />
-                  <CardBody>
-                    <div className="row">
-                      <div className="col s12">
-                        <ComparisonChart
-                          comparison={comparison}
-                          date={this.state.currentDate}
-                          onClickDate={this.onChangeDate}
-                        />
-                      </div>
+              <Card>
+                <CardHeader title="Weekly Score Comparison" />
+                <CardBody>
+                  <div className="row">
+                    <div className="col s12">
+                      <ComparisonChart
+                        comparison={comparison}
+                        date={this.state.currentDate}
+                        onClickDate={this.onChangeDate}
+                      />
                     </div>
-                  </CardBody>
-                </Card>
-              </Desktop>}
+                  </div>
+                </CardBody>
+              </Card>}
           </div>
         </div>
       </div>
