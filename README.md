@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/pcardune/weather-watcher.svg?style=svg&circle-token=d9f403879cecac090c18e04bb9602d41aace1d7b)](https://circleci.com/gh/pcardune/weather-watcher)
+
 # weather-watcher
 
 ## Structure
