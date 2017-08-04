@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import Range from 'rc-slider/lib/Range';
 import Handle from 'rc-slider/lib/Handle';
 import Tooltip from 'rc-tooltip';
-import 'rc-slider/assets/index.css';
 import styled from 'styled-components';
 import Color from 'color';
 

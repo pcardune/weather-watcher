@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import React, {PureComponent, PropTypes} from 'react';
 import moment from 'moment-mini';
 import Tooltip from 'rc-tooltip';
-import 'rc-tooltip/assets/bootstrap.css';
 
 import {Desktop} from 'app/components/Responsive';
 import SmartLink from 'app/components/SmartLink';

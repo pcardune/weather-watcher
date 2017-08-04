@@ -20,9 +20,12 @@ import {ThemeProvider} from 'styled-components';
 import ReactGA from 'react-ga';
 import createHistory from 'history/createBrowserHistory';
 import Raven from 'raven-js';
+import 'rc-slider/assets/index.css';
+import 'rc-tooltip/assets/bootstrap.css';
+import 'react-geosuggest/module/geosuggest.css';
 
 // Import root app
-import App from 'containers/App';
+import App from 'app/containers/App';
 
 // Load the favicon, the manifest.json file and the .htaccess file
 /* eslint-disable import/no-webpack-loader-syntax */
