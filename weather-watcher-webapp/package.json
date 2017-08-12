@@ -45,51 +45,6 @@
       "git add"
     ]
   },
-  "babel": {
-    "ignore": [
-      "node_modules/firebase/*.js",
-      "node_modules/firebase/**/*.js",
-      "node_modules/react-leaflet/*.js",
-      "node_modules/react-leaflet/**/*.js"
-    ],
-    "presets": [
-      [
-        "env",
-        {
-          "targets": {
-            "browsers": "last 2 versions, > 5%"
-          },
-          "es2015": {
-            "modules": false
-          }
-        }
-      ],
-      "react",
-      "stage-0"
-    ],
-    "env": {
-      "production": {
-        "only": [
-          "app"
-        ],
-        "plugins": [
-          "transform-react-remove-prop-types",
-          "transform-react-constant-elements",
-          "transform-react-inline-elements"
-        ]
-      },
-      "test": {
-        "plugins": [
-          "transform-es2015-modules-commonjs",
-          "dynamic-import-node"
-        ]
-      }
-    },
-    "plugins": [
-      "styled-components",
-      "transform-decorators-legacy"
-    ]
-  },
   "dllPlugin": {
     "path": "node_modules/react-boilerplate-dlls",
     "exclude": [
@@ -211,6 +166,7 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-dev-expression": "^0.2.1",
     "babel-plugin-dynamic-import-node": "^1.0.2",
+    "babel-plugin-module-alias": "^1.6.0",
     "babel-plugin-react-intl": "^2.3.1",
     "babel-plugin-react-transform": "2.0.2",
     "babel-plugin-styled-components": "^1.1.7",
