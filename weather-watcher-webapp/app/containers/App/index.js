@@ -73,19 +73,16 @@ export class App extends Component {
   };
 
   renderFAQ = () => {
-    const loadFAQ = require('bundle-loader?lazy!app/containers/FAQPage/load');
-
     return (
-      <Bundle load={loadFAQ}>
+      <Bundle load={import('app/containers/FAQPage/load')}>
         {FAQPage => FAQPage && <FAQPage />}
       </Bundle>
     );
   };
 
   renderComparisonPointPage = ({match: {params: {comparisonPointId}}}) => {
-    const loadComparisonPointPage = require('bundle-loader?lazy!app/containers/ComparisonPointPage/load');
     return (
-      <Bundle load={loadComparisonPointPage}>
+      <Bundle load={import('app/containers/ComparisonPointPage/load')}>
         {ComparisonPointPage =>
           ComparisonPointPage &&
           <ComparisonPointPage comparisonPointId={comparisonPointId} />}
