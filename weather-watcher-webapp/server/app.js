@@ -34,7 +34,10 @@ function getAssetPath(name) {
       fs.readFileSync(path.resolve(process.cwd(), 'build/asset-manifest.json'))
     );
   }
-  return `/${manifest[name]}`;
+  if (process.env.NODE_ENV === 'production') {
+    name = manifest[name];
+  }
+  return `/${name}`;
 }
 
 module.exports = (req, res) => {

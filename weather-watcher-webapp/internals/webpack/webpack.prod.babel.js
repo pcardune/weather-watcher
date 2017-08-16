@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 
 module.exports = require('./webpack.base.babel')({
   // In production, we skip all hot-reloading stuff
@@ -36,6 +37,11 @@ module.exports = require('./webpack.base.babel')({
       children: true,
       minChunks: 2,
       async: true,
+    }),
+
+    new ManifestPlugin({
+      fileName: 'asset-manifest.json',
+      writeToFileEmit: true,
     }),
   ],
 
