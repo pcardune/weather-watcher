@@ -1,13 +1,15 @@
 import {combineReducers} from 'redux-immutable';
 import reduxFirebaseMirror from 'redux-firebase-mirror';
 
-import globalReducer from 'containers/App/reducer';
+import globalReducer from 'app/containers/App/reducer';
 const firebaseMirror = reduxFirebaseMirror({
   getFirebaseState: state => state.get('firebaseMirror'),
-  persistToLocalStorage: {
-    storage: localStorage,
-    storagePrefix: 'weather:',
-  },
+  persistToLocalStorage: process.env.IS_SERVER
+    ? null
+    : {
+        storage: localStorage,
+        storagePrefix: 'weather:',
+      },
 });
 
 /**

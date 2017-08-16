@@ -1,8 +1,13 @@
 /* eslint consistent-return:0 */
 
+process.env.IS_SERVER = true;
+try {
+  require('babel-polyfill');
+} catch (e) {
+  // meh.... it must have already been imported.
+}
 const express = require('express');
 const logger = require('./logger');
-
 const argv = require('minimist')(process.argv.slice(2));
 const setup = require('./middlewares/frontendMiddleware');
 const isDev = process.env.NODE_ENV !== 'production';

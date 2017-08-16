@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const compression = require('compression');
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
+const theApp = require('../app');
 
 // Dev middleware
 const addDevMiddlewares = (app, webpackConfig) => {
@@ -31,19 +32,14 @@ const addDevMiddlewares = (app, webpackConfig) => {
     });
   }
 
-  app.get('*', (req, res) => {
-    fs.readFile(path.join(compiler.outputPath, 'index.html'), (err, file) => {
-      if (err) {
-        res.sendStatus(404);
-      } else {
-        res.send(file.toString());
-      }
-    });
+  app.get(/.*/, (req, res) => {
+    return theApp(req, res);
   });
 };
 
 // Production middlewares
 const addProdMiddlewares = (app, options) => {
+  console.log('adding prod middleware');
   const publicPath = options.publicPath || '/';
   const outputPath = options.outputPath || path.resolve(process.cwd(), 'build');
 
@@ -53,9 +49,9 @@ const addProdMiddlewares = (app, options) => {
   app.use(compression());
   app.use(publicPath, express.static(outputPath));
 
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(outputPath, 'index.html'))
-  );
+  app.get('*', (req, res) => {
+    return theApp(req, res);
+  });
 };
 
 /**

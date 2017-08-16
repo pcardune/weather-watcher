@@ -40,7 +40,8 @@
   },
   "plugins": [
     "transform-decorators-legacy",
-    "dynamic-import-node",
+    "transform-import-to-require",
+    ["styled-components", {"ssr": true}],
     ["module-alias", [
       { "src": "./app", "expose": "app" }
     ]]

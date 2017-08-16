@@ -13,10 +13,9 @@
     "build": "cross-env NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p",
     "build:clean": "npm run test:clean && rimraf ./build",
     "build:dll": "node ./internals/scripts/dependencies.js",
-    "start": "cross-env NODE_ENV=development node server",
-    "start:tunnel": "cross-env NODE_ENV=development ENABLE_TUNNEL=true node server",
-    "start:production": "npm run test && npm run build && npm run start:prod",
-    "start:prod": "cross-env NODE_ENV=production node server",
+    "start": "cross-env NODE_ENV=development babel-node server",
+    "start:tunnel": "cross-env NODE_ENV=development ENABLE_TUNNEL=true babel-node server",
+    "start:prod": "babel app -d ./es5/app && babel server -d ./es5/server && NODE_ENV=production node es5/server",
     "presetup": "npm i chalk shelljs",
     "setup": "node ./internals/scripts/setup.js",
     "postsetup": "npm run build:dll",
@@ -172,6 +171,7 @@
     "babel-plugin-styled-components": "^1.1.7",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-plugin-transform-import-to-require": "^1.0.0",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-plugin-transform-proto-to-assign": "^6.23.0",
     "babel-plugin-transform-react-constant-elements": "^6.23.0",
@@ -224,6 +224,7 @@
     "webpack": "^3.4.1",
     "webpack-bundle-analyzer": "^2.8.3",
     "webpack-dev-middleware": "1.9.0",
-    "webpack-hot-middleware": "2.15.0"
+    "webpack-hot-middleware": "2.15.0",
+    "webpack-manifest-plugin": "^1.3.1"
   }
 }

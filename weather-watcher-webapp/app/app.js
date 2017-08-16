@@ -65,10 +65,6 @@ ReactGA.initialize('UA-73170823-3', {
   debug: DEBUG,
 });
 
-if (DEBUG) {
-  window.Perf = require('react-addons-perf');
-}
-
 const history = createHistory();
 function trackPageView(location) {
   if (DEBUG) {
@@ -92,8 +88,6 @@ firebase.initializeApp(config);
 const initialState = {};
 configureStore(initialState, store => {
   loadDatabase({store});
-  const landingScreen = document.getElementById('landing-screen');
-  landingScreen.parentNode.removeChild(landingScreen);
   ReactDOM.render(
     <Provider store={store}>
       <ThemeProvider theme={Theme}>

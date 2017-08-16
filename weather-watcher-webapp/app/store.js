@@ -41,16 +41,16 @@ export default function configureStore(initialState = {}, callback) {
 
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */
-  if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      import('./reducers').then(reducerModule => {
-        const createReducers = reducerModule.default;
-        const nextReducers = createReducers(store.asyncReducers);
-
-        store.replaceReducer(nextReducers);
-      });
-    });
-  }
+  //if (module.hot && !process.env.IS_SERVER) {
+  //  module.hot.accept('./reducers', () => {
+  //    import('./reducers').then(reducerModule => {
+  //      const createReducers = reducerModule.default;
+  //      const nextReducers = createReducers(store.asyncReducers);
+  //
+  //      store.replaceReducer(nextReducers);
+  //    });
+  //  });
+  //}
 
   return store;
 }

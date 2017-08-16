@@ -12,9 +12,7 @@ import {createComparison} from 'app/containers/Database/actions';
 import Header from 'app/components/Header';
 import LoadingBar from 'app/components/LoadingBar';
 import Bundle from 'app/components/Bundle';
-import loadComparisonPointPage from 'bundle-loader?lazy!app/containers/ComparisonPointPage/load';
-import loadHomePage from 'bundle-loader?lazy!app/containers/HomePage/load';
-import loadFAQ from 'bundle-loader?lazy!app/containers/FAQPage/load';
+
 import Theme from 'app/Theme';
 
 const Body = styled.div`
@@ -60,25 +58,40 @@ export class App extends Component {
     this.props.history.push(`/compare/${comparison.id}`);
   };
 
-  renderHomePage = ({match: {params: {comparisonId}}}) =>
-    <Bundle load={loadHomePage} store={this.props.store}>
-      {HomePage =>
-        HomePage
-          ? <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />
-          : <LoadingBar />}
-    </Bundle>;
+  renderHomePage = ({match: {params: {comparisonId}}}) => {
+    return (
+      <Bundle
+        load={import('app/containers/HomePage/load')}
+        store={this.props.store}
+      >
+        {HomePage =>
+          HomePage
+            ? <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />
+            : <LoadingBar />}
+      </Bundle>
+    );
+  };
 
-  renderFAQ = () =>
-    <Bundle load={loadFAQ}>
-      {FAQPage => FAQPage && <FAQPage />}
-    </Bundle>;
+  renderFAQ = () => {
+    const loadFAQ = require('bundle-loader?lazy!app/containers/FAQPage/load');
 
-  renderComparisonPointPage = ({match: {params: {comparisonPointId}}}) =>
-    <Bundle load={loadComparisonPointPage}>
-      {ComparisonPointPage =>
-        ComparisonPointPage &&
-        <ComparisonPointPage comparisonPointId={comparisonPointId} />}
-    </Bundle>;
+    return (
+      <Bundle load={loadFAQ}>
+        {FAQPage => FAQPage && <FAQPage />}
+      </Bundle>
+    );
+  };
+
+  renderComparisonPointPage = ({match: {params: {comparisonPointId}}}) => {
+    const loadComparisonPointPage = require('bundle-loader?lazy!app/containers/ComparisonPointPage/load');
+    return (
+      <Bundle load={loadComparisonPointPage}>
+        {ComparisonPointPage =>
+          ComparisonPointPage &&
+          <ComparisonPointPage comparisonPointId={comparisonPointId} />}
+      </Bundle>
+    );
+  };
 
   render() {
     return (
@@ -101,10 +114,10 @@ export class App extends Component {
           <Switch>
             <Route exact path="/" render={this.renderHomePage} />
             <Route path="/compare/:comparisonId" render={this.renderHomePage} />
-          <Route
-            path="/locations/:comparisonPointId"
-            render={this.renderComparisonPointPage}
-          />
+            <Route
+              path="/locations/:comparisonPointId"
+              render={this.renderComparisonPointPage}
+            />
             <Route path="/faq" render={this.renderFAQ} />
             <Route component={NotFound} />
           </Switch>
