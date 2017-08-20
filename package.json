@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "cd weather-watcher-webapp && yarn install --production=false && yarn run build",
-    "start": "cd weather-watcher-webapp && yarn start"
+    "start": "cd weather-watcher-webapp && yarn run start:prod"
   },
   "engines": {
     "node": "8.2.1"
