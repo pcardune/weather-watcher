@@ -44,17 +44,14 @@ module.exports = async (req, res) => {
   const store = await getSharedStore();
   const context = {};
   const style = `html,
-          body {
-            height: 100%;
-            width: 100%;
-            line-height: 1.5;
-          }
-
     body {
+      height: 100%;
+      width: 100%;
+      line-height: 1.5;
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
-    Body.fontLoaded {
+    body.fontLoaded {
       font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
@@ -62,32 +59,6 @@ module.exports = async (req, res) => {
       background-color: #fff;
       min-height: 100%;
       min-width: 100%;
-    }
-    #landing-screen {
-      font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      text-align: center;
-      position: absolute;
-      left: 0;
-      top: 0;
-      right: 0;
-    }
-    #landing-screen h1 {
-      font-family: 'Clicker Script', cursive;
-      font-weight: bold;
-      margin-bottom: 0;
-      font-size: 5em;
-    }
-    #landing-screen h5 {
-      margin-bottom: 1em;
-      font-weight: 300;
-    }
-
-    #landing-screen-loading {
-      color: #FFFFFF;
-      text-align: center;
-      padding: 10px;
-      font-weight: initial;
-      font-size: 24px;
     }`;
   const sheet = new ServerStyleSheet();
   const main = renderToString(
