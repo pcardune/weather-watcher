@@ -6,7 +6,7 @@
   "author": "Paul Carduner <paul@carduner.net>",
   "license": "MIT",
   "scripts": {
-    "postinstall": "NODE_ENV=development cd weather-watcher-webapp && yarn && yarn run build",
+    "postinstall": "cd weather-watcher-webapp && yarn install --production=false && yarn run build",
     "start": "cd weather-watcher-webapp && yarn start"
   },
   "engines": {
