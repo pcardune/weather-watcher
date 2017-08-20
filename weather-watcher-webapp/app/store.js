@@ -3,14 +3,14 @@
  */
 
 import {createStore, applyMiddleware, compose} from 'redux';
-import {fromJS} from 'immutable';
+import {Map, fromJS} from 'immutable';
 import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
 import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
 
-export default function configureStore(initialState = {}, callback) {
+export default async function configureStore(initialState = {}) {
   // Create the store with two middlewares
   // 1. sagaMiddleware: Makes redux-sagas work
   const middlewares = [sagaMiddleware, thunkMiddleware];
@@ -29,15 +29,20 @@ export default function configureStore(initialState = {}, callback) {
 
   const store = createStore(
     createReducer(),
-    fromJS(initialState),
+    Map(
+      process.env.IS_SERVER
+        ? initialState
+        : {
+            firebaseMirror: fromJS(window.REDUX_INITIAL_STATE.firebaseMirror),
+            global: window.REDUX_INITIAL_STATE.global,
+          }
+    ),
     composeEnhancers(...enhancers)
   );
 
   // Extensions
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
-
-  callback(store);
 
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */

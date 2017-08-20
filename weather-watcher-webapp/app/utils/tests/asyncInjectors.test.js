@@ -37,8 +37,8 @@ xdescribe('asyncInjectors', () => {
   let store;
 
   describe('getAsyncInjectors', () => {
-    beforeAll(() => {
-      store = configureStore({}, jest.fn());
+    beforeAll(async () => {
+      store = await configureStore({}, jest.fn());
     });
 
     it('given a store, should return all async injectors', () => {
@@ -69,8 +69,8 @@ xdescribe('asyncInjectors', () => {
   });
 
   describe('helpers', () => {
-    beforeAll(() => {
-      store = configureStore({}, jest.fn());
+    beforeAll(async () => {
+      store = await configureStore({}, jest.fn());
     });
 
     describe('injectAsyncReducer', () => {
