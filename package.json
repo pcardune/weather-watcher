@@ -8,5 +8,8 @@
   "scripts": {
     "postinstall": "cd weather-watcher-webapp && yarn && yarn run build",
     "start": "cd weather-watcher-webapp && yarn start"
+  },
+  "engines": {
+    "node": "8.2.1"
   }
 }
