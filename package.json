@@ -11,5 +11,8 @@
   },
   "engines": {
     "node": "8.2.1"
+  },
+  "devDependencies": {
+    "chalk": "^2.1.0"
   }
 }
