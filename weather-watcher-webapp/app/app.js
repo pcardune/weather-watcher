@@ -14,8 +14,6 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {Router} from 'react-router';
 import FontFaceObserver from 'fontfaceobserver';
-import firebase from 'firebase/app';
-import 'firebase/database';
 import {ThemeProvider} from 'styled-components';
 import ReactGA from 'react-ga';
 import createHistory from 'history/createBrowserHistory';
@@ -76,17 +74,8 @@ function trackPageView(location) {
 history.listen(trackPageView);
 trackPageView(history.location);
 
-const config = {
-  apiKey: 'AIzaSyA9dBTF1MZE3jyhjwG37unYMhbQEGurZF4',
-  authDomain: 'weather-watcher-170701.firebaseapp.com',
-  databaseURL: 'https://weather-watcher-170701.firebaseio.com',
-  projectId: 'weather-watcher-170701',
-  storageBucket: 'weather-watcher-170701.appspot.com',
-  messagingSenderId: '936791071551',
-};
-firebase.initializeApp(config);
 const initialState = {};
-configureStore(initialState, store => {
+configureStore(initialState).then(store => {
   loadDatabase({store});
   ReactDOM.render(
     <Provider store={store}>
