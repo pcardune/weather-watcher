@@ -75,7 +75,15 @@ history.listen(trackPageView);
 trackPageView(history.location);
 
 const initialState = {};
-configureStore(initialState).then(store => {
+Promise.all([
+  configureStore(initialState),
+  // TODO: stop prefetching all of these as it defeats the whole purpose
+  // of having separate chunks... :(
+  // See https://medium.com/faceyspacey/code-cracked-for-code-splitting-ssr-in-reactlandia-react-loadable-webpack-flush-chunks-and-1a6b0112a8b8
+  import('app/containers/HomePage/load'),
+  import('app/containers/FAQPage/load'),
+  import('app/containers/ComparisonPointPage/load'),
+]).then(([store]) => {
   loadDatabase({store});
   ReactDOM.render(
     <Provider store={store}>

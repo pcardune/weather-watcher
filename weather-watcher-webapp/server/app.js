@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
-import {renderToString} from 'react-dom/server';
+import {renderToString, renderToStaticMarkup} from 'react-dom/server';
 import {Provider} from 'react-redux';
 import {StaticRouter} from 'react-router';
 import {ThemeProvider, ServerStyleSheet} from 'styled-components';
@@ -77,7 +77,7 @@ module.exports = async (req, res) => {
     firebaseMirror: getDehydratedState(store.getState()),
   }).replace(/</g, '\\u003c');
   const serializedStateJS = `window.REDUX_INITIAL_STATE = ${state}`;
-  const html = renderToString(
+  const html = renderToStaticMarkup(
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
