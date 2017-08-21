@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default class Bundle extends Component {
   static propTypes = {
-    load: PropTypes.func.isRequired,
+    load: PropTypes.object.isRequired,
     children: PropTypes.func.isRequired,
   };
 
@@ -23,17 +23,19 @@ export default class Bundle extends Component {
   }
 
   load(props) {
-    this.setState({
-      mod: null,
-    });
     const {load, ...rest} = props;
-    load(mod => {
+    const setMod = mod => {
       const theModule = mod.default ? mod.default : mod;
       this.setState({
         // handle both es imports and cjs
         mod: theModule(rest),
       });
-    });
+    };
+    if (load instanceof Promise) {
+      load.then(setMod);
+    } else {
+      setMod(load);
+    }
   }
 
   render() {

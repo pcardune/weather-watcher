@@ -3,14 +3,16 @@
  */
 
 import {createStore, applyMiddleware, compose} from 'redux';
-import {fromJS} from 'immutable';
+import {Map} from 'immutable';
 import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
+import {rehydrate} from 'redux-firebase-mirror';
+
 import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
 
-export default function configureStore(initialState = {}, callback) {
+export default async function configureStore(initialState = {}) {
   // Create the store with two middlewares
   // 1. sagaMiddleware: Makes redux-sagas work
   const middlewares = [sagaMiddleware, thunkMiddleware];
@@ -29,28 +31,31 @@ export default function configureStore(initialState = {}, callback) {
 
   const store = createStore(
     createReducer(),
-    fromJS(initialState),
+    Map(initialState),
     composeEnhancers(...enhancers)
   );
+
+  if (!process.env.IS_SERVER) {
+    store.dispatch(rehydrate(window.REDUX_INITIAL_STATE.firebaseMirror));
+    await Promise.resolve();
+  }
 
   // Extensions
   store.runSaga = sagaMiddleware.run;
   store.asyncReducers = {}; // Async reducer registry
 
-  callback(store);
-
   // Make reducers hot reloadable, see http://mxs.is/googmo
   /* istanbul ignore next */
-  if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      import('./reducers').then(reducerModule => {
-        const createReducers = reducerModule.default;
-        const nextReducers = createReducers(store.asyncReducers);
-
-        store.replaceReducer(nextReducers);
-      });
-    });
-  }
+  //if (module.hot && !process.env.IS_SERVER) {
+  //  module.hot.accept('./reducers', () => {
+  //    import('./reducers').then(reducerModule => {
+  //      const createReducers = reducerModule.default;
+  //      const nextReducers = createReducers(store.asyncReducers);
+  //
+  //      store.replaceReducer(nextReducers);
+  //    });
+  //  });
+  //}
 
   return store;
 }

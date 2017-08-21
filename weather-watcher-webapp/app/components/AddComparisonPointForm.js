@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import React, {Component, PropTypes} from 'react';
-import 'react-geosuggest/module/geosuggest.css';
 
 import {round} from 'app/utils/math';
 import Button from './Button';

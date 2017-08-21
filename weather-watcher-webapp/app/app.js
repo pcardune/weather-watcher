@@ -14,15 +14,16 @@ import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {Router} from 'react-router';
 import FontFaceObserver from 'fontfaceobserver';
-import firebase from 'firebase/app';
-import 'firebase/database';
 import {ThemeProvider} from 'styled-components';
 import ReactGA from 'react-ga';
 import createHistory from 'history/createBrowserHistory';
 import Raven from 'raven-js';
+import 'rc-slider/assets/index.css';
+import 'rc-tooltip/assets/bootstrap.css';
+import 'react-geosuggest/module/geosuggest.css';
 
 // Import root app
-import App from 'containers/App';
+import App from 'app/containers/App';
 
 // Load the favicon, the manifest.json file and the .htaccess file
 /* eslint-disable import/no-webpack-loader-syntax */
@@ -62,10 +63,6 @@ ReactGA.initialize('UA-73170823-3', {
   debug: DEBUG,
 });
 
-if (DEBUG) {
-  window.Perf = require('react-addons-perf');
-}
-
 const history = createHistory();
 function trackPageView(location) {
   if (DEBUG) {
@@ -77,20 +74,17 @@ function trackPageView(location) {
 history.listen(trackPageView);
 trackPageView(history.location);
 
-const config = {
-  apiKey: 'AIzaSyA9dBTF1MZE3jyhjwG37unYMhbQEGurZF4',
-  authDomain: 'weather-watcher-170701.firebaseapp.com',
-  databaseURL: 'https://weather-watcher-170701.firebaseio.com',
-  projectId: 'weather-watcher-170701',
-  storageBucket: 'weather-watcher-170701.appspot.com',
-  messagingSenderId: '936791071551',
-};
-firebase.initializeApp(config);
 const initialState = {};
-configureStore(initialState, store => {
+Promise.all([
+  configureStore(initialState),
+  // TODO: stop prefetching all of these as it defeats the whole purpose
+  // of having separate chunks... :(
+  // See https://medium.com/faceyspacey/code-cracked-for-code-splitting-ssr-in-reactlandia-react-loadable-webpack-flush-chunks-and-1a6b0112a8b8
+  import('app/containers/HomePage/load'),
+  import('app/containers/FAQPage/load'),
+  import('app/containers/ComparisonPointPage/load'),
+]).then(([store]) => {
   loadDatabase({store});
-  const landingScreen = document.getElementById('landing-screen');
-  landingScreen.parentNode.removeChild(landingScreen);
   ReactDOM.render(
     <Provider store={store}>
       <ThemeProvider theme={Theme}>

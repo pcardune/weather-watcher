@@ -1,0 +1,21 @@
+{
+  "name": "weather-watcher",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:pcardune/weather-watcher.git",
+  "author": "Paul Carduner <paul@carduner.net>",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "cd weather-watcher-webapp && yarn install --production=false && yarn run build",
+    "start": "cd weather-watcher-webapp && yarn run start:prod"
+  },
+  "engines": {
+    "node": "8.2.1"
+  },
+  "devDependencies": {
+    "chalk": "^2.1.0"
+  },
+  "cacheDirectories": [
+    "weather-watcher-webapp/node_modules"
+  ]
+}

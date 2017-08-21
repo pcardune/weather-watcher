@@ -1,7 +1,9 @@
 import {takeEvery} from 'redux-saga/effects';
-import database from 'firebase/database';
+import firebase from 'app/firebaseApp';
 
 import {ADD_COMPARISON_POINT, REMOVE_COMPARISON_POINT} from './constants';
+
+const {database} = firebase;
 
 export function* watchAddComparisonPoint() {
   yield takeEvery(ADD_COMPARISON_POINT, function* createAndShowComparisonPoint({

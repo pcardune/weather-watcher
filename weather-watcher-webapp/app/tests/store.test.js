@@ -8,8 +8,8 @@ import configureStore from '../store';
 describe('configureStore', () => {
   let store;
 
-  beforeAll(() => {
-    store = configureStore({}, jest.fn());
+  beforeAll(async () => {
+    store = await configureStore({}, jest.fn());
   });
 
   describe('asyncReducers', () => {
