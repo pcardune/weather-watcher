@@ -46,17 +46,3 @@ jobs:
 
       - store_test_results:
           path: ~/repo/weather-watcher-webapp/reports
-
-      - run:
-          working_directory: ~/repo/weather-watcher-webapp
-          command: yarn run build
-
-      - store_artifacts:
-          path: ~/repo/weather-watcher-webapp/build
-
-      - deploy:
-          working_directory: ~/repo/weather-watcher-webapp
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-              yarn run deploy:prod-ci
-            fi

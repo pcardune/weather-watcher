@@ -35,8 +35,6 @@
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "deploy:prod": "npm run build && firebase use weather-watcher-170701 && firebase deploy",
-    "deploy:prod-ci": "firebase use weather-watcher-170701 && firebase deploy --token=$FIREBASE_TOKEN --non-interactive",
     "precommit": "lint-staged"
   },
   "lint-staged": {
