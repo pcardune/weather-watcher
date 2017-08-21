@@ -5,26 +5,26 @@ import {renderToString} from 'react-dom/server';
 import {Provider} from 'react-redux';
 import {StaticRouter} from 'react-router';
 import {ThemeProvider, ServerStyleSheet} from 'styled-components';
+import {getDehydratedState} from 'redux-firebase-mirror';
 
-// Import root app
 import App from 'app/containers/App';
-
 import loadDatabase from 'app/containers/Database/load';
 import configureStore from 'app/store';
 
-// Import CSS reset and Global Styles
 import Theme from 'app/Theme';
 
 const initialState = {};
 
 let manifest;
 function getAssetPath(name) {
-  if (!manifest) {
-    manifest = JSON.parse(
-      fs.readFileSync(path.resolve(process.cwd(), 'build/asset-manifest.json'))
-    );
-  }
   if (process.env.NODE_ENV === 'production') {
+    if (!manifest) {
+      manifest = JSON.parse(
+        fs.readFileSync(
+          path.resolve(process.cwd(), 'build/asset-manifest.json')
+        )
+      );
+    }
     name = manifest[name];
   }
   return `/${name}`;
@@ -73,11 +73,10 @@ module.exports = async (req, res) => {
     )
   );
   const styleTags = sheet.getStyleElement();
-  const state = store.getState().toJS();
-  delete state.firebaseMirror.subscriptions;
-  const serializedStateJS = `window.REDUX_INITIAL_STATE = ${JSON.stringify(
-    state
-  ).replace(/</g, '\\u003c')}`;
+  const state = JSON.stringify({
+    firebaseMirror: getDehydratedState(store.getState()),
+  }).replace(/</g, '\\u003c');
+  const serializedStateJS = `window.REDUX_INITIAL_STATE = ${state}`;
   const html = renderToString(
     <html lang="en">
       <head>

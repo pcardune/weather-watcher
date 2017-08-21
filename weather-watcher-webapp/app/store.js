@@ -3,9 +3,11 @@
  */
 
 import {createStore, applyMiddleware, compose} from 'redux';
-import {Map, fromJS} from 'immutable';
+import {Map} from 'immutable';
 import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
+import {rehydrate} from 'redux-firebase-mirror';
+
 import createReducer from './reducers';
 
 const sagaMiddleware = createSagaMiddleware();
@@ -29,16 +31,13 @@ export default async function configureStore(initialState = {}) {
 
   const store = createStore(
     createReducer(),
-    Map(
-      process.env.IS_SERVER
-        ? initialState
-        : {
-            firebaseMirror: fromJS(window.REDUX_INITIAL_STATE.firebaseMirror),
-            global: window.REDUX_INITIAL_STATE.global,
-          }
-    ),
+    Map(initialState),
     composeEnhancers(...enhancers)
   );
+
+  if (!process.env.IS_SERVER) {
+    store.dispatch(rehydrate(window.REDUX_INITIAL_STATE.firebaseMirror));
+  }
 
   // Extensions
   store.runSaga = sagaMiddleware.run;
