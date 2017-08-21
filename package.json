@@ -14,5 +14,8 @@
   },
   "devDependencies": {
     "chalk": "^2.1.0"
-  }
+  },
+  "cacheDirectories": [
+    "weather-watcher-webapp/node_modules"
+  ]
 }
