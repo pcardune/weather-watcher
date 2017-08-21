@@ -12,7 +12,7 @@
     "prebuild": "npm run build:clean",
     "build": "npm run build:client && npm run build:server",
     "build:client": "NODE_ENV=production webpack --config internals/webpack/webpack.prod.babel.js --color -p",
-    "build:server": "BABEL_ENV=server babel app -d ./es5/app && babel server -d ./es5/server",
+    "build:server": "BABEL_ENV=server babel app -d ./es5/app && BABEL_ENV=server babel server -d ./es5/server",
     "build:clean": "npm run test:clean && rm -rf ./build",
     "build:dll": "node ./internals/scripts/dependencies.js",
     "start": "BABEL_ENV=server NODE_ENV=development babel-node server",
