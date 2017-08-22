@@ -1,5 +1,7 @@
 import queryString from 'query-string';
 import isEqual from 'lodash.isequal';
+import atob from 'atob';
+import btoa from 'btoa';
 import {DEFAULT_SCORE_CONFIG} from 'app/constants';
 
 /**
@@ -17,6 +19,7 @@ export function getJSONFromQueryParam({search}, paramName, defaultValue) {
       try {
         value = JSON.parse(atob(query[paramName]));
       } catch (e) {
+        console.warn('failed to parse json from query param', query[paramName]);
         // failed to parse json from query string, leave as default value
       }
     }
