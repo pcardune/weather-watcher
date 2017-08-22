@@ -5,8 +5,9 @@ import {Link as RouterLink, NavLink} from 'react-router-dom';
 import isEqual from 'lodash.isequal';
 
 import {
-  getPathWithScoreConfig,
+  getPathWithScoreConfigAndDate,
   getScoreConfigFromLocation,
+  getDateFromLocation,
 } from 'app/utils/url';
 
 @withRouter
@@ -30,6 +31,7 @@ export default class SmartLink extends PureComponent {
 
   state = {
     scoreConfig: getScoreConfigFromLocation(this.props.location),
+    date: getDateFromLocation(this.props.location),
   };
 
   componentDidMount() {
@@ -50,7 +52,7 @@ export default class SmartLink extends PureComponent {
     const [pathname, search] = to.split('?');
     const props = {
       className,
-      to: getPathWithScoreConfig({pathname, search}, this.state.scoreConfig),
+      to: getPathWithScoreConfigAndDate({pathname, search}, this.state),
       children,
     };
 

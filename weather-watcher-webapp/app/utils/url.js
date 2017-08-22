@@ -2,29 +2,74 @@ import queryString from 'query-string';
 import isEqual from 'lodash.isequal';
 import atob from 'atob';
 import btoa from 'btoa';
+import moment from 'moment-mini';
 import {DEFAULT_SCORE_CONFIG} from 'app/constants';
 
-/**
- * Returns a json object that has been encoded as a bade64 string in a query string param
- *
- * @param {Object} location - A location object from react router
- * @param {string} paramName - The name of the parameter in the query string
- * @param defaultValue - The value to return if the parameter is not present or is malformed
- */
-export function getJSONFromQueryParam({search}, paramName, defaultValue) {
-  let value = defaultValue;
+const PARAMS_CONFIG = {
+  scoreConfig: {
+    convertToString: s => btoa(JSON.stringify(s)),
+    convertFromString: s => JSON.parse(atob(s)),
+    getDefaultValue: () => DEFAULT_SCORE_CONFIG,
+  },
+  date: {
+    convertToString: d => moment(d).format('YYYY-MM-DD'),
+    convertFromString: s => {
+      const [year, month, day] = s.split('-');
+      return new Date(year, month - 1, day);
+    },
+    getDefaultValue: () => moment(new Date()).startOf('date').toDate(),
+  },
+};
+
+export function getQueryParam({search}, paramName, config) {
+  config = config || PARAMS_CONFIG[paramName];
+  let value = config.getDefaultValue ? config.getDefaultValue() : undefined;
   if (search) {
     const query = queryString.parse(search);
     if (query[paramName]) {
-      try {
-        value = JSON.parse(atob(query[paramName]));
-      } catch (e) {
-        console.warn('failed to parse json from query param', query[paramName]);
-        // failed to parse json from query string, leave as default value
+      if (config.convertFromString) {
+        try {
+          value = config.convertFromString(query[paramName]);
+        } catch (e) {
+          console.warn('failed to convert from query param', query[paramName]);
+        }
+      } else {
+        value = query[paramName];
       }
     }
   }
   return value;
+}
+
+export function getPathWithQueryParams(
+  location,
+  params = {},
+  configs = PARAMS_CONFIG
+) {
+  let query = {};
+  if (location.search) {
+    query = queryString.parse(location.search);
+  }
+
+  Object.keys(params).forEach(key => {
+    const value = params[key];
+    const config = configs[key] || {};
+    if (config.getDefaultValue && isEqual(value, config.getDefaultValue())) {
+      delete query[key];
+    } else if (value) {
+      query[key] = config.convertToString
+        ? config.convertToString(value)
+        : value;
+      if (query[key] !== undefined && typeof query[key] !== 'string') {
+        throw new Error('params must be converted to strings');
+      }
+    }
+  });
+  const search = queryString.stringify(query);
+  if (search) {
+    return `${location.pathname}?${queryString.stringify(query)}`;
+  }
+  return location.pathname;
 }
 
 /**
@@ -34,7 +79,17 @@ export function getJSONFromQueryParam({search}, paramName, defaultValue) {
  * @returns {Object} the scoreConfig object
  */
 export function getScoreConfigFromLocation(location) {
-  return getJSONFromQueryParam(location, 'scoreConfig', DEFAULT_SCORE_CONFIG);
+  return getQueryParam(location, 'scoreConfig');
+}
+
+/**
+ * returns the date that is embedded in a url location
+ *
+ * @param {Object} location - a location object from react router
+ * @returns {Date} a date object
+ */
+export function getDateFromLocation(location) {
+  return getQueryParam(location, 'date');
 }
 
 /**
@@ -44,19 +99,6 @@ export function getScoreConfigFromLocation(location) {
  * @param {Object} scoreConfig - the score config object to embed
  * @returns {string} the location's path with the given score config embedded in it.
  */
-export function getPathWithScoreConfig(location, scoreConfig) {
-  let query = {};
-  if (location.search) {
-    query = queryString.parse(location.search);
-  }
-  if (isEqual(scoreConfig, DEFAULT_SCORE_CONFIG)) {
-    delete query.scoreConfig;
-  } else {
-    query.scoreConfig = btoa(JSON.stringify(scoreConfig));
-  }
-  const search = queryString.stringify(query);
-  if (search) {
-    return `${location.pathname}?${queryString.stringify(query)}`;
-  }
-  return location.pathname;
+export function getPathWithScoreConfigAndDate(location, {scoreConfig, date}) {
+  return getPathWithQueryParams(location, {scoreConfig, date});
 }
