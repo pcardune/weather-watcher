@@ -148,7 +148,7 @@ const getAugmentedComparisonPointGetter = createSelector(
         }
       }
       return {...comparisonPoint, isLoading: true};
-    })
+    }, (comparisonId, scoreConfig) => comparisonId + JSON.stringify(scoreConfig))
 );
 
 const getAugmentedComparisonGetter = createSelector(
@@ -172,7 +172,7 @@ const getAugmentedComparisonGetter = createSelector(
         };
       }
       return {id: comparisonId, isLoading};
-    })
+    }, (comparisonId, scoreConfig) => comparisonId + JSON.stringify(scoreConfig))
 );
 
 export const comparisonById = new Subscription({
