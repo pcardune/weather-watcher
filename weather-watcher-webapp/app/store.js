@@ -35,7 +35,7 @@ export default async function configureStore(initialState = {}) {
     composeEnhancers(...enhancers)
   );
 
-  if (!process.env.IS_SERVER) {
+  if (!process.env.IS_SERVER && window.REDUX_INITIAL_STATE) {
     store.dispatch(rehydrate(window.REDUX_INITIAL_STATE.firebaseMirror));
     await Promise.resolve();
   }

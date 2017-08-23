@@ -7,12 +7,10 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import styled from 'styled-components';
-import moment from 'moment-mini';
 import {compose} from 'redux';
 import {subscribeProps} from 'redux-firebase-mirror';
 import {withRouter} from 'react-router';
 
-import {Desktop} from 'app/components/Responsive';
 import LoadingBar from 'app/components/LoadingBar';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
@@ -24,7 +22,8 @@ import {augmentedComparisonById} from 'app/containers/Database/subscriptions';
 import ComparisonChart from 'app/components/ComparisonChart';
 import {
   getScoreConfigFromLocation,
-  getPathWithScoreConfig,
+  getDateFromLocation,
+  getPathWithScoreConfigAndDate,
 } from 'app/utils/url';
 
 import {addComparisonPoint, removeComparisonPoint} from './actions';
@@ -55,13 +54,8 @@ export class HomePage extends Component {
   };
 
   state = {
-    currentDate: moment(new Date()).startOf('date').toDate(),
     showAddForm: false,
     showCustomizeForm: false,
-  };
-
-  onChangeDate = currentDate => {
-    this.setState({currentDate});
   };
 
   onRemoveComparisonPoint = comparisonPointId => {
@@ -91,9 +85,16 @@ export class HomePage extends Component {
     this.hideAddForm();
   };
 
+  onChangeDate = date => {
+    console.log('changing date to', date);
+    this.props.history.push(
+      getPathWithScoreConfigAndDate(this.props.location, {date})
+    );
+  };
+
   onChangeScoreConfig = scoreConfig => {
     this.props.history.push(
-      getPathWithScoreConfig(this.props.location, scoreConfig)
+      getPathWithScoreConfigAndDate(this.props.location, {scoreConfig})
     );
   };
 
@@ -157,7 +158,7 @@ export class HomePage extends Component {
                     {hasPoints
                       ? <MultiDayForecastComparison
                           onChangeDate={this.onChangeDate}
-                          date={this.state.currentDate}
+                          date={this.props.date}
                           comparison={comparison}
                           onRemoveComparisonPoint={this.onRemoveComparisonPoint}
                         />
@@ -178,7 +179,7 @@ export class HomePage extends Component {
                     <div className="col s12">
                       <ComparisonChart
                         comparison={comparison}
-                        date={this.state.currentDate}
+                        date={this.props.date}
                         onClickDate={this.onChangeDate}
                       />
                     </div>
@@ -197,6 +198,7 @@ export default compose(
   connect(
     (state, {location}) => ({
       scoreConfig: getScoreConfigFromLocation(location),
+      date: getDateFromLocation(location),
     }),
     {
       onAddComparisonPoint: addComparisonPoint,

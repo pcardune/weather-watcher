@@ -9,7 +9,7 @@ describe('configureStore', () => {
   let store;
 
   beforeAll(async () => {
-    store = await configureStore({}, jest.fn());
+    store = await configureStore();
   });
 
   describe('asyncReducers', () => {
