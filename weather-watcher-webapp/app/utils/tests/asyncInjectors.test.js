@@ -36,7 +36,7 @@ const sagas = [testSaga];
 xdescribe('asyncInjectors', () => {
   let store;
 
-  describe('getAsyncInjectors', () => {
+  xdescribe('getAsyncInjectors', () => {
     beforeAll(async () => {
       store = await configureStore({}, jest.fn());
     });
@@ -68,7 +68,7 @@ xdescribe('asyncInjectors', () => {
     });
   });
 
-  describe('helpers', () => {
+  xdescribe('helpers', () => {
     beforeAll(async () => {
       store = await configureStore({}, jest.fn());
     });
