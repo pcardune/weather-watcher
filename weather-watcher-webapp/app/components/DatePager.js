@@ -48,50 +48,32 @@ export default class DatePager extends PureComponent {
     return (
       <Wrapper className="row valign-wrapper">
         <div className="col m4 s5 center-align">
-          <Desktop>
-            {isDesktop => {
-              const props = {
-                onClick: this.onClickPrevDate,
-                disabled: !this.canClickPrevDate(),
-              };
-              return isDesktop
-                ? <Button {...props} iconLeft="chevron_left">
-                    {moment(this.props.currentDate)
-                      .subtract(1, 'days')
-                      .format('ddd')}
-                  </Button>
-                : <Button {...props} icon="chevron_left" />;
-            }}
-          </Desktop>
+          <Button
+            onClick={this.onClickPrevDate}
+            disabled={!this.canClickPrevDate()}
+            iconLeft="chevron_left"
+            hideLabelOnMobile
+          >
+            {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
+          </Button>
         </div>
         <div className="col m4 s2 center-align">
-          <Desktop>
-            <h3>
-              {moment(this.props.currentDate).format('dddd')}
-            </h3>
-          </Desktop>
-          <Phone>
-            <h5>
-              {moment(this.props.currentDate).format('ddd')}
-            </h5>
-          </Phone>
+          <h3 className="hide-on-med-and-down">
+            {moment(this.props.currentDate).format('dddd')}
+          </h3>
+          <h5 className="hide-on-large-only">
+            {moment(this.props.currentDate).format('ddd')}
+          </h5>
         </div>
         <div className="col m4 s5 center-align">
-          <Desktop>
-            {isDesktop => {
-              const props = {
-                onClick: this.onClickNextDate,
-                disabled: !this.canClickNextDate(),
-              };
-              return isDesktop
-                ? <Button {...props} iconRight="chevron_right">
-                    {moment(this.props.currentDate)
-                      .add(1, 'days')
-                      .format('ddd')}
-                  </Button>
-                : <Button {...props} icon="chevron_right" />;
-            }}
-          </Desktop>
+          <Button
+            onClick={this.onClickNextDate}
+            disabled={!this.canClickNextDate()}
+            iconRight="chevron_right"
+            hideLabelOnMobile
+          >
+            {moment(this.props.currentDate).add(1, 'days').format('ddd')}
+          </Button>
         </div>
       </Wrapper>
     );
