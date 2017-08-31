@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import moment from 'moment-mini';
 import memoize from 'lodash.memoize';
 
-import {Desktop, Phone} from 'app/components/Responsive';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import {safeAverage} from 'app/utils/math';
 import {getForecastDates} from 'app/utils/dates';
@@ -54,7 +53,12 @@ const PhoneTable = styled.table`
   }
 `;
 
-const PointName = styled.td`
+const PointNameCell = styled.td`
+  padding: 0 0 0 ${props => props.theme.padding.standard};
+  ${props => props.theme.media.phone`padding: 0 5px;`};
+`;
+
+const PointNameBlock = styled.div`
   padding: 0 0 0 ${props => props.theme.padding.standard};
   ${props => props.theme.media.phone`padding: 0 5px;`};
 `;
@@ -102,7 +106,7 @@ export default class ComparisonChart extends PureComponent {
     });
     return (
       <Wrapper>
-        <Desktop>
+        <div className="hide-on-med-and-down">
           <Table>
             <thead>
               <tr>
@@ -123,17 +127,17 @@ export default class ComparisonChart extends PureComponent {
                 if (point.isLoading) {
                   return (
                     <tr key={point.id}>
-                      <PointName colSpan={dates.length + 1}>
+                      <PointNameCell colSpan={dates.length + 1}>
                         <LoadingIndicator /> Loading...
-                      </PointName>
+                      </PointNameCell>
                     </tr>
                   );
                 } else if (point.isLoadingForecast) {
                   return (
                     <tr key={point.id}>
-                      <PointName className="truncate">
+                      <PointNameCell className="truncate">
                         {point.name}
-                      </PointName>
+                      </PointNameCell>
                       <td colSpan={dates.length}>
                         <LoadingIndicator /> Loading...
                       </td>
@@ -142,11 +146,11 @@ export default class ComparisonChart extends PureComponent {
                 }
                 return (
                   <tr key={point.id}>
-                    <PointName className="truncate">
+                    <PointNameCell className="truncate">
                       <PointLink to={`/locations/${point.id}`}>
                         {point.name}
                       </PointLink>
-                    </PointName>
+                    </PointNameCell>
                     {dates.map(date => {
                       const score = point.interpolatedScore.getAverageScoreForDate(
                         date
@@ -162,23 +166,23 @@ export default class ComparisonChart extends PureComponent {
               })}
             </tbody>
           </Table>
-        </Desktop>
-        <Phone>
+        </div>
+        <div className="hide-on-large-only">
           {sortedPoints.map(point => {
             if (point.isLoading) {
               return (
                 <PhonePointRow key={point.id}>
-                  <PointName colSpan={dates.length + 1}>
+                  <PointNameBlock colSpan={dates.length + 1}>
                     <LoadingIndicator /> Loading...
-                  </PointName>
+                  </PointNameBlock>
                 </PhonePointRow>
               );
             } else if (point.isLoadingForecast) {
               return (
                 <PhonePointRow key={point.id}>
-                  <PointName className="truncate">
+                  <PointNameBlock className="truncate">
                     {point.name}
-                  </PointName>
+                  </PointNameBlock>
                   <div colSpan={dates.length}>
                     <LoadingIndicator /> Loading...
                   </div>
@@ -187,11 +191,11 @@ export default class ComparisonChart extends PureComponent {
             }
             return (
               <PhonePointRow key={point.id}>
-                <PointName className="truncate">
+                <PointNameBlock className="truncate">
                   <PointLink to={`/locations/${point.id}`}>
                     {point.name}
                   </PointLink>
-                </PointName>
+                </PointNameBlock>
                 <PhoneTable>
                   <thead>
                     <tr>
@@ -224,7 +228,7 @@ export default class ComparisonChart extends PureComponent {
               </PhonePointRow>
             );
           })}
-        </Phone>
+        </div>
       </Wrapper>
     );
   }
