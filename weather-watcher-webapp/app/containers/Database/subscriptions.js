@@ -76,7 +76,7 @@ const getMyComparisons = createSelector([Items.comparisons], getComparison =>
   )
 );
 
-function getGridForecastId(noaaPoint) {
+export function getGridForecastId(noaaPoint) {
   return [
     noaaPoint.properties.cwa,
     noaaPoint.properties.gridX,
@@ -84,7 +84,7 @@ function getGridForecastId(noaaPoint) {
   ].join('|');
 }
 
-function getForecastId(noaaPoint) {
+export function getForecastId(noaaPoint) {
   return coordinateArrayToFirebaseKey(noaaPoint.geometry.coordinates);
 }
 

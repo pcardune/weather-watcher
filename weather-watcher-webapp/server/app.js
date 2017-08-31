@@ -5,10 +5,15 @@ import {renderToString, renderToStaticMarkup} from 'react-dom/server';
 import {Provider} from 'react-redux';
 import {StaticRouter} from 'react-router';
 import {ThemeProvider, ServerStyleSheet} from 'styled-components';
-import {getDehydratedState} from 'redux-firebase-mirror';
+import {getDehydratedState, receiveSnapshots} from 'redux-firebase-mirror';
 
+import firebase from 'app/firebaseApp';
 import App from 'app/containers/App';
 import loadDatabase from 'app/containers/Database/load';
+import {
+  getForecastId,
+  getGridForecastId,
+} from 'app/containers/Database/subscriptions';
 import configureStore from 'app/store';
 
 import Theme from 'app/Theme';
@@ -30,6 +35,28 @@ function getAssetPath(name) {
   return `/${name}`;
 }
 
+function prefetchDataForStore(store) {
+  const db = firebase.database();
+  const dispatchSnapshot = snapshot => {
+    store.dispatch(receiveSnapshots([snapshot]));
+  };
+  ['comparisons', 'comparisonPoints'].forEach(rootPath => {
+    db.ref(rootPath).on('child_added', dispatchSnapshot);
+    db.ref(rootPath).on('child_changed', dispatchSnapshot);
+  });
+  db.ref('noaaPoints').on('child_added', snapshot => {
+    dispatchSnapshot(snapshot);
+    const noaaPoint = snapshot.val();
+    [
+      `/noaaDailyForecasts/${getForecastId(noaaPoint)}`,
+      `/noaaGridForecasts/${getGridForecastId(noaaPoint)}`,
+      `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
+    ].forEach(p => {
+      db.ref(p).limitToLast(1).on('value', dispatchSnapshot);
+    });
+  });
+}
+
 let sharedStore;
 async function getSharedStore() {
   if (!sharedStore) {
@@ -38,7 +65,8 @@ async function getSharedStore() {
   }
   return sharedStore;
 }
-getSharedStore();
+
+prefetchDataForStore(getSharedStore());
 
 module.exports = async (req, res) => {
   const store = await getSharedStore();
