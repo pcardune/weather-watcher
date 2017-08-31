@@ -69,9 +69,64 @@ async function getSharedStore() {
 getSharedStore().then(prefetchDataForStore);
 
 module.exports = async (req, res) => {
+  let lastWrite = new Date().getTime();
+  const write = (description, content) => {
+    res.write(content);
+    const time = new Date().getTime();
+    console.log(
+      `rendered ${description}: ${content.length} bytes, ${time - lastWrite} ms`
+    );
+    lastWrite = time;
+  };
   const store = await getSharedStore();
+  if (req.path === '/initialState.js') {
+    const state = JSON.stringify({
+      firebaseMirror: getDehydratedState(store.getState()),
+    }).replace(/</g, '\\u003c');
+    write('state', `window.REDUX_INITIAL_STATE = (${state});`);
+    res.end();
+    res.send();
+    return;
+  }
+
   const context = {};
-  const style = `html,
+  write(
+    'head',
+    `<!doctype html>
+<html lang="en">
+<head>
+  <meta charSet="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
+  <link
+    href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet"
+  />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css"
+  />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Clicker+Script"
+    rel="stylesheet"
+  />
+  <title>Goldilocks Weather</title>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
+    integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
+    crossOrigin=""
+  />
+  <style>
+    html,
     body {
       height: 100%;
       width: 100%;
@@ -87,7 +142,10 @@ module.exports = async (req, res) => {
       background-color: #fff;
       min-height: 100%;
       min-width: 100%;
-    }`;
+    }
+  </style>
+`
+  );
   const sheet = new ServerStyleSheet();
   const main = renderToString(
     sheet.collectStyles(
@@ -100,82 +158,46 @@ module.exports = async (req, res) => {
       </Provider>
     )
   );
-  const styleTags = sheet.getStyleElement();
-  const state = JSON.stringify({
-    firebaseMirror: getDehydratedState(store.getState()),
-  }).replace(/</g, '\\u003c');
-  const serializedStateJS = `window.REDUX_INITIAL_STATE = ${state}`;
-  const html = renderToStaticMarkup(
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="manifest" href="manifest.json" />
-        <link
-          href="https://fonts.googleapis.com/icon?family=Material+Icons"
-          rel="stylesheet"
-        />
-        <link
-          href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
-          rel="stylesheet"
-        />
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css"
-        />
-        <link rel="icon" type="image/png" href="/favicon.png" />
-
-        <meta name="mobile-web-app-capable" content="yes" />
-        <link
-          href="https://fonts.googleapis.com/css?family=Clicker+Script"
-          rel="stylesheet"
-        />
-        <title>Goldilocks Weather</title>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places" />
-        <link
-          rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
-          integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
-          crossOrigin=""
-        />
-        <style>
-          {style}
-        </style>
-        {styleTags}
-      </head>
-      <body>
-        <noscript>
-          If you{"'"}re seeing this message, that means{' '}
-          <strong>JavaScript has been disabled on your browser</strong>, please{' '}
-          <strong>enable JS</strong> to make this app work.
-        </noscript>
-
-        <div
-          id="app"
-          className="grey lighten-3"
-          dangerouslySetInnerHTML={{__html: main}}
-        />
-        <link
-          href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700"
-          rel="stylesheet"
-        />
-        {process.env.NODE_ENV === 'development' &&
-          <script src="/reactBoilerplateDeps.dll.js" />}
-        <script dangerouslySetInnerHTML={{__html: serializedStateJS}} />
-        <script src={getAssetPath('main.js')} />
-      </body>
-    </html>
-  );
   if (context.url) {
     res.writeHead(301, {
       Location: context.url,
     });
     res.end();
   } else {
-    res.write(`
-      <!doctype html>
-      ${html}
-    `);
+    write(
+      'body',
+      `
+  ${sheet.getStyleTags()}
+  </head>
+  <body>
+    <noscript>
+      If you're seeing this message, that means
+      <strong>JavaScript has been disabled on your browser</strong>, please
+      <strong>enable JS</strong> to make this app work.
+    </noscript>
+    <div
+      id="app"
+      className="grey lighten-3"
+    >${main}</div>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700"
+      rel="stylesheet"
+    />
+    ${process.env.NODE_ENV === 'development'
+      ? '<script src="/reactBoilerplateDeps.dll.js"></script>'
+      : ''}
+  `
+    );
+
+    write(
+      'tail',
+      `
+    <script src="/initialState.js"></script>
+    <script src="${getAssetPath('main.js')}"></script>
+  </body>
+</html>
+`
+    );
     res.end();
   }
   res.send();
