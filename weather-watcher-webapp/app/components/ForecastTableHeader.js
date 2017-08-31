@@ -13,12 +13,6 @@ const PrecipitationColumnHeader = ColumnHeader.extend(`
   text-align: center;
 `);
 
-const HeaderRow = styled.tr`
-  ${props => props.theme.media.phone`
-    display: none;
-  `};
-`;
-
 const UnitCell = styled.th`
   text-align: left;
   color: #aaa;
@@ -31,14 +25,14 @@ export default class ForecastTableHeader extends PureComponent {
   render() {
     return (
       <thead>
-        <HeaderRow>
+        <tr className="hide-on-med-and-down">
           <ColumnHeader colSpan={5} />
           <PrecipitationColumnHeader colSpan={2}>
             Precipitation
           </PrecipitationColumnHeader>
-          <ColumnHeader colSpan={2} />
-        </HeaderRow>
-        <HeaderRow>
+          <ColumnHeader />
+        </tr>
+        <tr className="hide-on-med-and-down">
           <ColumnHeader>Score</ColumnHeader>
           <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
           <ColumnHeader>Low</ColumnHeader>
@@ -47,9 +41,8 @@ export default class ForecastTableHeader extends PureComponent {
           <ColumnHeader>Chance</ColumnHeader>
           <ColumnHeader>Quantity</ColumnHeader>
           <ColumnHeader width={150}>Forecast</ColumnHeader>
-          <ColumnHeader />
-        </HeaderRow>
-        <HeaderRow>
+        </tr>
+        <tr className="hide-on-med-and-down">
           <UnitCell />
           <UnitCell />
           <UnitCell>ºF</UnitCell>
@@ -58,8 +51,7 @@ export default class ForecastTableHeader extends PureComponent {
           <UnitCell>%</UnitCell>
           <UnitCell>in</UnitCell>
           <UnitCell />
-          <UnitCell />
-        </HeaderRow>
+        </tr>
       </thead>
     );
   }

@@ -1,22 +1,15 @@
 import Truncate from 'react-truncate';
 import styled from 'styled-components';
-import React, {PureComponent, PropTypes} from 'react';
+import React, {PureComponent, Component, PropTypes} from 'react';
 import moment from 'moment-mini';
-import Tooltip from 'rc-tooltip';
 
-import {Desktop} from 'app/components/Responsive';
 import SmartLink from 'app/components/SmartLink';
 import LoadingIndicator from 'app/components/LoadingIndicator';
-import Button from 'app/components/Button';
-import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import RollupNumber from 'app/components/RollupNumber';
 import ScoreNumber from 'app/components/ScoreNumber';
 import ScoreComponentsDescription from 'app/components/ScoreComponentsDescription';
 
-import {
-  AugmentedComparisonShape,
-  AugmentedComparisonPointShape,
-} from 'app/propTypes';
+import {AugmentedComparisonPointShape} from 'app/propTypes';
 
 const Cell = styled.td`
   padding: 5px;
@@ -72,7 +65,7 @@ const HideOnPhone = props => props.theme.media.phone`
   display: none;
 `;
 
-export function LoadingRow(date) {
+export function LoadingRow() {
   return (
     <Row>
       <Cell colSpan={9}>
@@ -128,7 +121,7 @@ export function getDailyForecastForPoint(point, date) {
   return dailyForecast;
 }
 
-export class DesktopForecastRow extends PureComponent {
+export default class ForecastRow extends Component {
   static propTypes = {
     point: AugmentedComparisonPointShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
@@ -149,194 +142,156 @@ export class DesktopForecastRow extends PureComponent {
     this.props.onClick(this.props.point);
   };
 
-  render() {
-    const {point, date} = this.props;
-    const dailyForecast = getDailyForecastForPoint(point, date);
-    const scoreTooltip = (
-      <span>
-        <ScoreComponentsDescription
-          badness={point.interpolatedScore.getBadnessForDate(this.props.date)}
-        />
-      </span>
-    );
+  renderScoreCellContent() {
+    return this.props.point.isRefreshing
+      ? <LoadingIndicator />
+      : <ScoreNumber
+          score={this.props.point.interpolatedScore.getAverageScoreForDate(
+            this.props.date
+          )}
+        />;
+  }
 
+  renderPointLink() {
     return (
-      <Row desktopOnly key={point.id} selected={this.props.selected}>
-        <Cell style={{position: 'relative'}}>
-          {point.isRefreshing
-            ? <LoadingIndicator />
-            : <ScoreNumber
-                score={point.interpolatedScore.getAverageScoreForDate(
-                  this.props.date
-                )}
-              />}
-        </Cell>
-        <Cell>
-          <PointLink to={`/locations/${point.id}`}>
-            {this.props.getName(this.props)}
-          </PointLink>
-        </Cell>
-        <Cell>
+      <PointLink to={`/locations/${this.props.point.id}`}>
+        {this.props.getName(this.props)}
+      </PointLink>
+    );
+  }
+
+  renderShortForecast() {
+    const dailyForecast = getDailyForecastForPoint(
+      this.props.point,
+      this.props.date
+    );
+    return (
+      <Truncate>
+        {ScoreComponentsDescription({
+          badness: this.props.point.interpolatedScore.getBadnessForDate(
+            this.props.date
+          ),
+          dailyForecast,
+        })}
+      </Truncate>
+    );
+  }
+
+  renderPhoneCells() {
+    const {date} = this.props;
+    return (
+      <Cell className="hide-on-large-only" colSpan="8">
+        {this.renderPointLink()}
+        <div>
+          <RowLabel>Temp: </RowLabel>
           <PointForecastRollup
             date={date}
             property="temperature"
-            point={point}
+            point={this.props.point}
             type="min"
           />
-        </Cell>
-        <Cell>
+          ºF /{' '}
           <PointForecastRollup
             date={date}
             property="temperature"
-            point={point}
+            point={this.props.point}
             type="max"
           />
-        </Cell>
-        <Cell>
+          ºF
+        </div>
+        <div>
+          <RowLabel>Wind: </RowLabel>
           <PointForecastRollup
             date={date}
             property="windSpeed"
-            point={point}
-            type="max"
+            point={this.props.point}
           />
-        </Cell>
-        <Cell>
+          mph
+        </div>
+        <div>
+          <RowLabel>Rain: </RowLabel>
           <PointForecastRollup
             date={date}
             property="probabilityOfPrecipitation"
-            point={point}
-            type="max"
+            point={this.props.point}
           />
-        </Cell>
-        <Cell>
+          % /{' '}
           <PointForecastRollup
             date={date}
             property="quantitativePrecipitation"
-            point={point}
-            type="sum"
+            point={this.props.point}
           />
-        </Cell>
-        <ShortForecastCell>
-          <Truncate>
-            {ScoreComponentsDescription({
-              badness: point.interpolatedScore.getBadnessForDate(
-                this.props.date
-              ),
-              dailyForecast: dailyForecast,
-            })}
-          </Truncate>
-        </ShortForecastCell>
-        <Cell>
-          {/*<Button
-              type="button"
-              value={point.id}
-              flat
-              style={{fontWeight: '500'}}
-              onClick={() => this.props.onRemove(point.id)}
-              >
-              X
-              </Button>*/}
-        </Cell>
-      </Row>
+          {'"'}
+        </div>
+        <div>
+          <RowLabel />
+          {this.renderShortForecast()}
+        </div>
+      </Cell>
     );
   }
-}
 
-export class PhoneForecastRow extends PureComponent {
-  static propTypes = {
-    point: AugmentedComparisonPointShape.isRequired,
-    date: PropTypes.instanceOf(Date).isRequired,
-    selected: PropTypes.bool,
-    onClick: PropTypes.func,
-    getName: PropTypes.func,
-  };
-
-  static defaultProps = {
-    selected: false,
-    onClick: () => {},
-    getName: props => props.point.name,
-  };
-
-  onClick = () => {
-    this.props.onClick(this.props.point);
-  };
+  renderDesktopCells() {
+    const {date} = this.props;
+    return [
+      <Cell key="point-link" className="hide-on-med-and-down">
+        {this.renderPointLink()}
+      </Cell>,
+      <Cell key="temp-min" className="hide-on-med-and-down">
+        <PointForecastRollup
+          date={date}
+          property="temperature"
+          point={this.props.point}
+          type="min"
+        />
+      </Cell>,
+      <Cell key="temp-max" className="hide-on-med-and-down">
+        <PointForecastRollup
+          date={date}
+          property="temperature"
+          point={this.props.point}
+          type="max"
+        />
+      </Cell>,
+      <Cell key="wind-speed" className="hide-on-med-and-down">
+        <PointForecastRollup
+          date={date}
+          property="windSpeed"
+          point={this.props.point}
+          type="max"
+        />
+      </Cell>,
+      <Cell key="probPrecip" className="hide-on-med-and-down">
+        <PointForecastRollup
+          date={date}
+          property="probabilityOfPrecipitation"
+          point={this.props.point}
+          type="max"
+        />
+      </Cell>,
+      <Cell key="quantPrecip" className="hide-on-med-and-down">
+        <PointForecastRollup
+          date={date}
+          property="quantitativePrecipitation"
+          point={this.props.point}
+          type="sum"
+        />
+      </Cell>,
+      <ShortForecastCell key="short-forecast" className="hide-on-med-and-down">
+        {this.renderShortForecast()}
+      </ShortForecastCell>,
+    ];
+  }
 
   render() {
-    const {point, date} = this.props;
-    const dailyForecast = getDailyForecastForPoint(point, date);
     return (
-      <Row phoneOnly key={point.id} selected={this.props.selected}>
+      <Row key={this.props.point.id} selected={this.props.selected}>
         <Cell style={{position: 'relative'}}>
-          {point.isLoading
-            ? <LoadingIndicator />
-            : <ScoreNumber
-                score={point.interpolatedScore.getAverageScoreForDate(
-                  this.props.date
-                )}
-              />}
+          {this.renderScoreCellContent()}
         </Cell>
-        <Cell colSpan="8">
-          <PointLink to={`/locations/${point.id}`}>
-            {this.props.getName(this.props)}
-          </PointLink>
-          <div>
-            <RowLabel>Temp: </RowLabel>
-            <PointForecastRollup
-              date={date}
-              property="temperature"
-              point={point}
-              type="min"
-            />
-            ºF /{' '}
-            <PointForecastRollup
-              date={date}
-              property="temperature"
-              point={point}
-              type="max"
-            />
-            ºF
-          </div>
-          <div>
-            <RowLabel>Wind: </RowLabel>
-            <PointForecastRollup
-              date={date}
-              property="windSpeed"
-              point={point}
-            />
-            mph
-          </div>
-          <div>
-            <RowLabel>Rain: </RowLabel>
-            <PointForecastRollup
-              date={date}
-              property="probabilityOfPrecipitation"
-              point={point}
-            />
-            % /{' '}
-            <PointForecastRollup
-              date={date}
-              property="quantitativePrecipitation"
-              point={point}
-            />
-            {'"'}
-          </div>
-          <div>
-            <RowLabel />
-            {dailyForecast.day.shortForecast}
-          </div>
-        </Cell>
+        {this.renderDesktopCells()}
+        {this.renderPhoneCells()}
       </Row>
     );
   }
 }
-
-export default props => {
-  return (
-    <Desktop>
-      {isDesktop =>
-        isDesktop
-          ? <DesktopForecastRow {...props} />
-          : <PhoneForecastRow {...props} />}
-    </Desktop>
-  );
-};
