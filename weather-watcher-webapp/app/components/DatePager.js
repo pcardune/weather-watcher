@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import moment from 'moment-mini';
 import styled from 'styled-components';
 
-import {Desktop, Phone} from './Responsive';
 import Button from './Button';
 
 const Wrapper = styled.div`margin-bottom: 0px;`;
