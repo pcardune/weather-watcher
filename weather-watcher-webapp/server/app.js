@@ -66,7 +66,7 @@ async function getSharedStore() {
   return sharedStore;
 }
 
-prefetchDataForStore(getSharedStore());
+getSharedStore().then(prefetchDataForStore);
 
 module.exports = async (req, res) => {
   const store = await getSharedStore();
