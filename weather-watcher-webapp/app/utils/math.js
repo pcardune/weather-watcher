@@ -95,6 +95,20 @@ export function sum(nums) {
   return nums.reduce((a, b) => a + b, 0);
 }
 
+export function mode(elements) {
+  const counts = {};
+  let max = 0;
+  let mode;
+  elements.forEach(element => {
+    counts[element] = (counts[element] || 0) + 1;
+    if (counts[element] > max) {
+      max = counts[element];
+      mode = element;
+    }
+  });
+  return mode;
+}
+
 /**
  * Return the value within the given time series at the given time. If no data point
  * exists at that exact time, one will be interpolated between the two nearest values.

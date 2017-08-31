@@ -1,33 +1,40 @@
-import React from 'react';
-
 import {SCORE_MULTIPLIERS, SCORE_COMPONENTS} from 'app/constants';
+import * as strings from 'app/utils/strings';
 
-export default ({scoreComponents}) => {
+export default function getScoreComponentsDescription({
+  badness,
+  dailyForecast,
+}) {
   const componentsByScore = {
     red: [],
     yellow: [],
     green: [],
   };
-  for (const key in SCORE_COMPONENTS) {
-    if (scoreComponents[key] <= SCORE_MULTIPLIERS.red) {
-      componentsByScore.red.push(SCORE_COMPONENTS[key].name);
-    } else if (scoreComponents[key] <= SCORE_MULTIPLIERS.yellow) {
-      componentsByScore.yellow.push(SCORE_COMPONENTS[key].name);
+  Object.keys(SCORE_COMPONENTS).forEach(key => {
+    const {score, descriptor} = badness[key];
+    if (score <= SCORE_MULTIPLIERS.red) {
+      componentsByScore.red.push({
+        name: SCORE_COMPONENTS[key].name,
+        descriptor: `${SCORE_COMPONENTS[key][descriptor]}`,
+      });
+    } else if (score <= SCORE_MULTIPLIERS.yellow) {
+      componentsByScore.yellow.push({
+        name: SCORE_COMPONENTS[key].name,
+        descriptor: `${SCORE_COMPONENTS[key][descriptor]}`,
+      });
     } else {
-      componentsByScore.green.push(SCORE_COMPONENTS[key].name);
+      componentsByScore.green.push({name: SCORE_COMPONENTS[key].name});
     }
-  }
-  return (
-    <ul>
-      <li>
-        Green: {componentsByScore.green.join(', ')}
-      </li>
-      <li>
-        Yellow: {componentsByScore.yellow.join(', ')}
-      </li>
-      <li>
-        Red: {componentsByScore.red.join(', ')}
-      </li>
-    </ul>
+  });
+  return strings.list(
+    [
+      dailyForecast.day.shortForecast,
+      componentsByScore.yellow.length > 0 &&
+        `somewhat ${strings.list(
+          componentsByScore.yellow.map(a => a.descriptor)
+        )}`,
+      componentsByScore.red.length > 0 &&
+        `too ${strings.list(componentsByScore.red.map(a => a.descriptor))}`,
+    ].filter(s => !!s)
   );
-};
+}

@@ -155,9 +155,7 @@ export class DesktopForecastRow extends PureComponent {
     const scoreTooltip = (
       <span>
         <ScoreComponentsDescription
-          scoreComponents={point.interpolatedScore.getBadnessForDate(
-            this.props.date
-          )}
+          badness={point.interpolatedScore.getBadnessForDate(this.props.date)}
         />
       </span>
     );
@@ -167,15 +165,11 @@ export class DesktopForecastRow extends PureComponent {
         <Cell style={{position: 'relative'}}>
           {point.isRefreshing
             ? <LoadingIndicator />
-            : <Tooltip placement="left" overlay={scoreTooltip}>
-                <span>
-                  <ScoreNumber
-                    score={point.interpolatedScore.getAverageScoreForDate(
-                      this.props.date
-                    )}
-                  />
-                </span>
-              </Tooltip>}
+            : <ScoreNumber
+                score={point.interpolatedScore.getAverageScoreForDate(
+                  this.props.date
+                )}
+              />}
         </Cell>
         <Cell>
           <PointLink to={`/locations/${point.id}`}>
@@ -224,7 +218,12 @@ export class DesktopForecastRow extends PureComponent {
         </Cell>
         <ShortForecastCell>
           <Truncate>
-            {dailyForecast.day.shortForecast}
+            {ScoreComponentsDescription({
+              badness: point.interpolatedScore.getBadnessForDate(
+                this.props.date
+              ),
+              dailyForecast: dailyForecast,
+            })}
           </Truncate>
         </ShortForecastCell>
         <Cell>

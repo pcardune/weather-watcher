@@ -6,15 +6,23 @@ export const OUR_URL = 'goldilocksweather.com';
 export const SCORE_COMPONENTS = {
   temp: {
     name: 'Temperature',
+    high: 'hot',
+    low: 'cold',
   },
   wind: {
     name: 'Wind Speed',
+    high: 'windy',
+    low: 'calm',
   },
   precip: {
     name: 'Chance of Rain',
+    high: 'rainy',
+    low: 'dry',
   },
   precipQuantity: {
     name: 'Amount of Rain',
+    high: 'rainy',
+    low: 'dry',
   },
 };
 

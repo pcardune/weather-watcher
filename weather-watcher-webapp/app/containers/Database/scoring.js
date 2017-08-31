@@ -2,7 +2,7 @@ import SunCalc from 'suncalc';
 import convert from 'convert-units';
 import moment from 'moment-mini';
 import memoize from 'lodash.memoize';
-import {InterpolatedSequence, safeAverage, sum} from 'app/utils/math';
+import {InterpolatedSequence, safeAverage, sum, mode} from 'app/utils/math';
 import {SCORE_MULTIPLIERS} from 'app/constants';
 
 export class InterpolatedGridForecast {
@@ -54,39 +54,47 @@ export class InterpolatedGridForecast {
   }
 }
 
+const HIGH = 'high';
+const LOW = 'low';
+
 function scoreForRange(range, value) {
   if (value < range[0]) {
-    return SCORE_MULTIPLIERS.red;
+    return [SCORE_MULTIPLIERS.red, LOW];
   } else if (value < range[1]) {
-    return (
+    return [
       SCORE_MULTIPLIERS.yellow -
-      (range[1] - value) /
-        (range[1] - range[0]) *
-        (SCORE_MULTIPLIERS.yellow - SCORE_MULTIPLIERS.red)
-    );
+        (range[1] - value) /
+          (range[1] - range[0]) *
+          (SCORE_MULTIPLIERS.yellow - SCORE_MULTIPLIERS.red),
+      LOW,
+    ];
   } else if (value < range[2]) {
-    return (
+    return [
       SCORE_MULTIPLIERS.green -
-      (range[2] - value) /
-        (range[2] - range[1]) *
-        (SCORE_MULTIPLIERS.green - SCORE_MULTIPLIERS.yellow)
-    );
+        (range[2] - value) /
+          (range[2] - range[1]) *
+          (SCORE_MULTIPLIERS.green - SCORE_MULTIPLIERS.yellow),
+      LOW,
+    ];
   } else if (value < range[3]) {
-    return (
+    return [
       SCORE_MULTIPLIERS.green -
-      (value - range[2]) /
-        (range[3] - range[2]) *
-        (SCORE_MULTIPLIERS.green - SCORE_MULTIPLIERS.yellow)
-    );
+        (value - range[2]) /
+          (range[3] - range[2]) *
+          (SCORE_MULTIPLIERS.green - SCORE_MULTIPLIERS.yellow),
+      ,
+      HIGH,
+    ];
   } else if (value < range[4]) {
-    return (
+    return [
       SCORE_MULTIPLIERS.yellow -
-      (value - range[3]) /
-        (range[4] - range[3]) *
-        (SCORE_MULTIPLIERS.yellow - SCORE_MULTIPLIERS.red)
-    );
+        (value - range[3]) /
+          (range[4] - range[3]) *
+          (SCORE_MULTIPLIERS.yellow - SCORE_MULTIPLIERS.red),
+      HIGH,
+    ];
   }
-  return SCORE_MULTIPLIERS.red;
+  return [SCORE_MULTIPLIERS.red, HIGH];
 }
 
 function getScoreForTime(grid, time, scoreConfig) {
@@ -101,17 +109,46 @@ function getScoreForTime(grid, time, scoreConfig) {
     .to('in');
   const temp = convert(grid.getValue('temperature', time)).from('C').to('F');
 
+  const [tempScore, tempDescriptor] = scoreForRange(
+    scoreConfig.tempRange,
+    temp
+  );
+  const [windScore, windDescriptor] = scoreForRange(
+    scoreConfig.windRange,
+    windSpeed
+  );
+  const [precipScore, precipDescriptor] = scoreForRange(
+    scoreConfig.precipRange,
+    precip
+  );
+  const [precipQuantityScore, precipQuantityDescriptor] = scoreForRange(
+    scoreConfig.quantityRange,
+    precipQuantity
+  );
+
   const scoreComponents = {
-    temp: scoreForRange(scoreConfig.tempRange, temp),
-    wind: scoreForRange(scoreConfig.windRange, windSpeed),
-    precip: scoreForRange(scoreConfig.precipRange, precip),
-    precipQuantity: scoreForRange(scoreConfig.quantityRange, precipQuantity),
+    temp: tempScore,
+    wind: windScore,
+    precip: precipScore,
+    precipQuantity: precipQuantityScore,
+  };
+
+  const descriptorComponents = {
+    temp: tempDescriptor,
+    wind: windDescriptor,
+    precip: precipDescriptor,
+    precipQuantity: precipQuantityDescriptor,
   };
 
   const components = Object.values(scoreComponents);
   const score =
     sum(components) / components.length / SCORE_MULTIPLIERS.green * 100;
-  return {score, scoreComponents, time};
+  return {
+    score,
+    scoreComponents,
+    descriptorComponents,
+    time,
+  };
 }
 
 export class InterpolatedScoreFunction {
@@ -153,7 +190,7 @@ export class InterpolatedScoreFunction {
   getAverageScoreForDate = memoize(
     date => {
       if (!this.grid.noaaGridForecast) {
-        return {score: 0, scoreComponents: {}};
+        return {score: 0, scoreComponents: {}, scoreDescriptors: {}};
       }
       const [
         longitude,
@@ -177,10 +214,16 @@ export class InterpolatedScoreFunction {
     const badness = {};
     scores.forEach(score => {
       for (const key in score.scoreComponents) {
-        if (!badness[key]) {
-          badness[key] = score.scoreComponents[key];
+        if (badness[key] && score.scoreComponents[key] < badness[key]) {
+          badness[key] = {
+            score: score.scoreComponents[key],
+            descriptor: score.descriptorComponents[key],
+          };
         } else {
-          badness[key] = Math.min(badness[key], score.scoreComponents[key]);
+          badness[key] = {
+            score: score.scoreComponents[key],
+            descriptor: score.descriptorComponents[key],
+          };
         }
       }
     });
@@ -197,6 +240,14 @@ export class InterpolatedScoreFunction {
         precip: safeAverage(scores.map(s => s.scoreComponents.precip)),
         precipQuantity: safeAverage(
           scores.map(s => s.scoreComponents.precipQuantity)
+        ),
+      },
+      scoreDescriptors: {
+        wind: mode(scores.map(s => s.descriptorComponents.wind)),
+        temp: mode(scores.map(s => s.descriptorComponents.temp)),
+        precip: mode(scores.map(s => s.descriptorComponents.precip)),
+        precipQuantity: mode(
+          scores.map(s => s.descriptorComponents.precipQuantity)
         ),
       },
     };
