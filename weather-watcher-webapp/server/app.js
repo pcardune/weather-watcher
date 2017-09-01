@@ -85,13 +85,30 @@ module.exports = async (req, res) => {
     }).replace(/</g, '\\u003c');
     write('state', `window.REDUX_INITIAL_STATE = (${state});`);
     res.end();
-    res.send();
     return;
   }
-
   const context = {};
+  const sheet = new ServerStyleSheet();
+  const main = renderToString(
+    sheet.collectStyles(
+      <Provider store={store}>
+        <ThemeProvider theme={Theme}>
+          <StaticRouter location={req.url} context={context}>
+            <App store={store} />
+          </StaticRouter>
+        </ThemeProvider>
+      </Provider>
+    )
+  );
+  if (context.url) {
+    res.writeHead(301, {
+      Location: context.url,
+    });
+    res.end();
+    return;
+  }
   write(
-    'head',
+    'body',
     `<!doctype html>
 <html lang="en">
 <head>
@@ -144,29 +161,6 @@ module.exports = async (req, res) => {
       min-width: 100%;
     }
   </style>
-`
-  );
-  const sheet = new ServerStyleSheet();
-  const main = renderToString(
-    sheet.collectStyles(
-      <Provider store={store}>
-        <ThemeProvider theme={Theme}>
-          <StaticRouter location={req.url} context={context}>
-            <App store={store} />
-          </StaticRouter>
-        </ThemeProvider>
-      </Provider>
-    )
-  );
-  if (context.url) {
-    res.writeHead(301, {
-      Location: context.url,
-    });
-    res.end();
-  } else {
-    write(
-      'body',
-      `
   ${sheet.getStyleTags()}
   </head>
   <body>
@@ -186,19 +180,12 @@ module.exports = async (req, res) => {
     ${process.env.NODE_ENV === 'development'
       ? '<script src="/reactBoilerplateDeps.dll.js"></script>'
       : ''}
-  `
-    );
 
-    write(
-      'tail',
-      `
     <script src="/initialState.js"></script>
     <script src="${getAssetPath('main.js')}"></script>
   </body>
 </html>
-`
-    );
-    res.end();
-  }
-  res.send();
+  `
+  );
+  res.end();
 };

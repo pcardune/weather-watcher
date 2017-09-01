@@ -32,7 +32,13 @@ const addDevMiddlewares = (app, webpackConfig) => {
     });
   }
 
-  app.get(/.*/, theApp);
+  app.get(/.*/, (req, res) => {
+    theApp(req, res).catch(e => {
+      console.error(e);
+      res.status(500).send('There was an error :(');
+      res.end();
+    });
+  });
 };
 
 // Production middlewares
@@ -47,7 +53,13 @@ const addProdMiddlewares = (app, options) => {
   app.use(compression());
   app.use(publicPath, express.static(outputPath));
 
-  app.get('*', theApp);
+  app.get(/.*/, (req, res) => {
+    theApp(req, res).catch(e => {
+      console.error(e);
+      res.status(500).send('There was an error :(');
+      res.end();
+    });
+  });
 };
 
 /**
