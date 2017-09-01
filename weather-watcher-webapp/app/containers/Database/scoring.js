@@ -3,7 +3,7 @@ import convert from 'convert-units';
 import moment from 'moment-mini';
 import memoize from 'lodash.memoize';
 import {InterpolatedSequence, safeAverage, sum, mode} from 'app/utils/math';
-import {SCORE_MULTIPLIERS} from 'app/constants';
+import {SCORE_MULTIPLIERS, SCORE_COMPONENTS} from 'app/constants';
 
 export class InterpolatedGridForecast {
   constructor(noaaGridForecast) {
@@ -212,9 +212,12 @@ export class InterpolatedScoreFunction {
   getBadnessForDate(date) {
     const scores = this.getScoresForDate(date);
     const badness = {};
+    Object.keys(SCORE_COMPONENTS).forEach(key => {
+      badness[key] = {score: Infinity};
+    });
     scores.forEach(score => {
       for (const key in score.scoreComponents) {
-        if (badness[key] && score.scoreComponents[key] < badness[key]) {
+        if (badness[key] && score.scoreComponents[key] < badness[key].score) {
           badness[key] = {
             score: score.scoreComponents[key],
             descriptor: score.descriptorComponents[key],
