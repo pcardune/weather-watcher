@@ -15,6 +15,7 @@ import {
   getGridForecastId,
 } from 'app/containers/Database/subscriptions';
 import configureStore from 'app/store';
+import {FB_APP_ID} from 'app/constants';
 
 import Theme from 'app/Theme';
 
@@ -147,6 +148,29 @@ module.exports = async (req, res) => {
     integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
     crossOrigin=""
   />
+
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '${FB_APP_ID}',
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v2.10'
+      });
+      FB.AppEvents.logPageView();
+      if (window.afterFBLoaded) {
+        window.afterFBLoaded(FB);
+      }
+    };
+
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+  </script>
   <style>
     html,
     body {

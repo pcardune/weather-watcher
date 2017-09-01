@@ -24,7 +24,7 @@ import 'react-geosuggest/module/geosuggest.css';
 
 // Import root app
 import App from 'app/containers/App';
-
+import FB from 'app/utils/fb';
 // Load the favicon, the manifest.json file and the .htaccess file
 /* eslint-disable import/no-webpack-loader-syntax */
 import '!file-loader?name=[name].[ext]!./favicon.png';
@@ -73,6 +73,11 @@ function trackPageView(location) {
 }
 history.listen(trackPageView);
 trackPageView(history.location);
+
+function trackFBPageView() {
+  FB.AppEvents.logPageView();
+}
+history.listen(trackFBPageView);
 
 const initialState = {};
 Promise.all([

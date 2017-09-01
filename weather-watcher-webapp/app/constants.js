@@ -40,3 +40,5 @@ export const DEFAULT_SCORE_CONFIG = {
 };
 
 export const DEFAULT_COMPARISON_ID = 'wa-climb-crags';
+
+export const FB_APP_ID = '270286390143694';
