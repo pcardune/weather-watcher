@@ -38,3 +38,5 @@ export const DEFAULT_SCORE_CONFIG = {
   precipRange: [0, 0, 0, 20, 50],
   quantityRange: [0, 0, 0, 0.03, 0.1],
 };
+
+export const DEFAULT_COMPARISON_ID = 'wa-climb-crags';

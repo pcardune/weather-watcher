@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
-import {renderToString, renderToStaticMarkup} from 'react-dom/server';
+import {renderToString} from 'react-dom/server';
 import {Provider} from 'react-redux';
 import {StaticRouter} from 'react-router';
 import {ThemeProvider, ServerStyleSheet} from 'styled-components';
@@ -114,6 +114,11 @@ module.exports = async (req, res) => {
 <head>
   <meta charSet="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta property="og:url" content="https://www.goldilocksweather.com${req.originalUrl}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="${context.title || ''}" />
+  <meta property="og:description" content="${context.description || ''}" />
+  <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/weather-watcher-170701.appspot.com/o/_DSC7469.jpg?alt=media&token=6262451d-3e8c-498e-958b-79f0fa5be9fd" />
   <link rel="manifest" href="manifest.json" />
   <link
     href="https://fonts.googleapis.com/icon?family=Material+Icons"

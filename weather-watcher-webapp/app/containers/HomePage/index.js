@@ -20,6 +20,7 @@ import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
 import {augmentedComparisonById} from 'app/containers/Database/subscriptions';
 import ComparisonChart from 'app/components/ComparisonChart';
+import AssignToRouterContext from 'app/components/AssignToRouterContext';
 import {
   getScoreConfigFromLocation,
   getDateFromLocation,
@@ -133,6 +134,15 @@ export class HomePage extends Component {
                     </ButtonBar>*/}
               </CardHeader>
               {comparison.isLoading && <LoadingBar />}
+              <AssignToRouterContext
+                contextKey="title"
+                value={comparison.name}
+              />
+              <AssignToRouterContext
+                contextKey="description"
+                value={`Find out what the weather is at ${comparison.name}`}
+              />
+
               <CardBody>
                 {(this.state.showAddForm || this.state.showCustomizeForm) &&
                   <div className="row">

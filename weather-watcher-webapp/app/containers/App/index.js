@@ -12,6 +12,7 @@ import {createComparison} from 'app/containers/Database/actions';
 import Header from 'app/components/Header';
 import LoadingBar from 'app/components/LoadingBar';
 import Bundle from 'app/components/Bundle';
+import {DEFAULT_COMPARISON_ID} from 'app/constants';
 
 import Theme from 'app/Theme';
 
@@ -66,7 +67,7 @@ export class App extends Component {
       >
         {HomePage =>
           HomePage
-            ? <HomePage comparisonId={comparisonId || 'wa-climb-crags'} />
+            ? <HomePage comparisonId={comparisonId || DEFAULT_COMPARISON_ID} />
             : <LoadingBar />}
       </Bundle>
     );
@@ -86,6 +87,14 @@ export class App extends Component {
         {ComparisonPointPage =>
           ComparisonPointPage &&
           <ComparisonPointPage comparisonPointId={comparisonPointId} />}
+      </Bundle>
+    );
+  };
+
+  renderClimbCalculator = () => {
+    return (
+      <Bundle load={import('app/containers/ClimbCalculator/load')}>
+        {ClimbCalculator => ClimbCalculator && <ClimbCalculator />}
       </Bundle>
     );
   };
@@ -114,6 +123,10 @@ export class App extends Component {
             <Route
               path="/locations/:comparisonPointId"
               render={this.renderComparisonPointPage}
+            />
+            <Route
+              path="/climb-calculator"
+              render={this.renderClimbCalculator}
             />
             <Route path="/faq" render={this.renderFAQ} />
             <Route component={NotFound} />

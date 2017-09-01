@@ -18,6 +18,7 @@ import Number from 'app/components/Number';
 import {getForecastDates} from 'app/utils/dates';
 import ForecastRow, {LoadingRow} from 'app/components/ForecastRow';
 import {getScoreConfigFromLocation} from 'app/utils/url';
+import AssignToRouterContext from 'app/components/AssignToRouterContext';
 
 const DescriptionList = styled.dl`
   margin: 0;
@@ -63,6 +64,14 @@ export class ComparisonPointPage extends PureComponent {
 
     return (
       <div className="container">
+        <AssignToRouterContext
+          contextKey="title"
+          value={comparisonPoint.name}
+        />
+        <AssignToRouterContext
+          contextKey="description"
+          value={`Find out what the weather is at ${comparisonPoint.name}`}
+        />
         <Card>
           <CardHeader title={comparisonPoint.name} />
           <CardBody>
