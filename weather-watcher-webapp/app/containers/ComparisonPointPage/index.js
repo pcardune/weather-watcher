@@ -16,11 +16,7 @@ import {
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import Number from 'app/components/Number';
 import {getForecastDates} from 'app/utils/dates';
-import {
-  DesktopForecastRow,
-  PhoneForecastRow,
-  LoadingRow,
-} from 'app/components/ForecastRow';
+import ForecastRow, {LoadingRow} from 'app/components/ForecastRow';
 import {getScoreConfigFromLocation} from 'app/utils/url';
 
 const DescriptionList = styled.dl`
@@ -93,20 +89,14 @@ export class ComparisonPointPage extends PureComponent {
                 <table>
                   <ForecastTableHeader />
                   <tbody>
-                    {getForecastDates().map(date => [
-                      <DesktopForecastRow
-                        key={`${comparisonPoint.id}-desktop`}
+                    {getForecastDates().map(date =>
+                      <ForecastRow
+                        key={`${comparisonPoint.id}-${date.getTime()}`}
                         point={comparisonPoint}
                         date={date}
                         getName={() => moment(date).format('dddd')}
-                      />,
-                      <PhoneForecastRow
-                        key={`${comparisonPoint.id}-phone`}
-                        point={comparisonPoint}
-                        date={date}
-                        getName={() => moment(date).format('dddd')}
-                      />,
-                    ])}
+                      />
+                    )}
                   </tbody>
                 </table>
               </div>

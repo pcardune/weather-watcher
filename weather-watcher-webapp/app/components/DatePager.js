@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import moment from 'moment-mini';
 import styled from 'styled-components';
 
+import {getForecastDates} from 'app/utils/dates';
 import Button from './Button';
 
 const Wrapper = styled.div`margin-bottom: 0px;`;
@@ -11,14 +12,15 @@ export default class DatePager extends PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
     currentDate: PropTypes.instanceOf(Date).isRequired,
-    minDate: PropTypes.instanceOf(Date),
-    maxDate: PropTypes.instanceOf(Date),
   };
 
-  static defaultProps = {
-    minDate: moment(new Date()).startOf('day').toDate(),
-    maxDate: moment(new Date()).add(6, 'days').startOf('day').toDate(),
-  };
+  get minDate() {
+    return getForecastDates()[0];
+  }
+
+  get maxDate() {
+    return getForecastDates().slice(-1)[0];
+  }
 
   getPrevDate = () =>
     moment(this.props.currentDate).subtract(1, 'days').toDate();
@@ -26,10 +28,10 @@ export default class DatePager extends PureComponent {
   getNextDate = () => moment(this.props.currentDate).add(1, 'days').toDate();
 
   canClickPrevDate = () =>
-    moment(this.getPrevDate()).isSameOrAfter(this.props.minDate);
+    moment(this.getPrevDate()).isSameOrAfter(this.minDate);
 
   canClickNextDate = () =>
-    moment(this.getNextDate()).isSameOrBefore(this.props.maxDate);
+    moment(this.getNextDate()).isSameOrBefore(this.maxDate);
 
   onClickPrevDate = () => {
     if (this.canClickPrevDate()) {

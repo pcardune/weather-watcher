@@ -25,6 +25,7 @@ import {
   getDateFromLocation,
   getPathWithScoreConfigAndDate,
 } from 'app/utils/url';
+import {clampDateToForecastDates} from 'app/utils/dates';
 
 import {addComparisonPoint, removeComparisonPoint} from './actions';
 
@@ -47,6 +48,7 @@ export class HomePage extends Component {
     comparison: AugmentedComparisonShape,
     onRemoveComparisonPoint: PropTypes.func.isRequired,
     onAddComparisonPoint: PropTypes.func.isRequired,
+    date: PropTypes.instanceOf(Date).isRequired,
   };
 
   static defaultProps = {
@@ -86,7 +88,6 @@ export class HomePage extends Component {
   };
 
   onChangeDate = date => {
-    console.log('changing date to', date);
     this.props.history.push(
       getPathWithScoreConfigAndDate(this.props.location, {date})
     );
@@ -198,7 +199,7 @@ export default compose(
   connect(
     (state, {location}) => ({
       scoreConfig: getScoreConfigFromLocation(location),
-      date: getDateFromLocation(location),
+      date: clampDateToForecastDates(getDateFromLocation(location)),
     }),
     {
       onAddComparisonPoint: addComparisonPoint,
