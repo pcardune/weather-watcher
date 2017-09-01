@@ -91,13 +91,13 @@ export class App extends Component {
     );
   };
 
-  renderClimbCalculator = () => {
-    return (
-      <Bundle load={import('app/containers/ClimbCalculator/load')}>
-        {ClimbCalculator => ClimbCalculator && <ClimbCalculator />}
-      </Bundle>
-    );
-  };
+  //renderClimbCalculator = () => {
+  //  return (
+  //    <Bundle load={import('app/containers/ClimbCalculator/load')}>
+  //      {ClimbCalculator => ClimbCalculator && <ClimbCalculator />}
+  //    </Bundle>
+  //  );
+  //};
 
   render() {
     return (
@@ -124,10 +124,10 @@ export class App extends Component {
               path="/locations/:comparisonPointId"
               render={this.renderComparisonPointPage}
             />
-            <Route
+            {/*<Route
               path="/climb-calculator"
               render={this.renderClimbCalculator}
-            />
+            />*/}
             <Route path="/faq" render={this.renderFAQ} />
             <Route component={NotFound} />
           </Switch>
