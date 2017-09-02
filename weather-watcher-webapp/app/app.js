@@ -75,7 +75,11 @@ history.listen(trackPageView);
 trackPageView(history.location);
 
 function trackFBPageView() {
-  FB.AppEvents.logPageView();
+  if (DEBUG) {
+    console.log('skipping FB AppEvents logging');
+  } else {
+    FB.AppEvents.logPageView();
+  }
 }
 history.listen(trackFBPageView);
 
