@@ -5,7 +5,11 @@ import {renderToString} from 'react-dom/server';
 import {Provider} from 'react-redux';
 import {StaticRouter} from 'react-router';
 import {ThemeProvider, ServerStyleSheet} from 'styled-components';
-import {getDehydratedState, receiveSnapshots} from 'redux-firebase-mirror';
+import {
+  getDehydratedState,
+  receiveSnapshots,
+  getFirebaseMirror,
+} from 'redux-firebase-mirror';
 import Helmet from 'react-helmet';
 
 import firebase from 'app/firebaseApp';
@@ -17,6 +21,7 @@ import {
 } from 'app/containers/Database/subscriptions';
 import configureStore from 'app/store';
 import {FB_APP_ID} from 'app/constants';
+import firebaseStorageAPI from 'app/firebaseStorageAPI';
 
 import Theme from 'app/Theme';
 
@@ -81,16 +86,17 @@ module.exports = async (req, res) => {
     lastWrite = time;
   };
   const store = await getSharedStore();
-  if (req.path === '/initialState.js') {
-    const state = JSON.stringify({
-      firebaseMirror: getDehydratedState(store.getState()),
-    }).replace(/</g, '\\u003c');
-    write('state', `window.REDUX_INITIAL_STATE = (${state});`);
-    res.end();
-    return;
-  }
+  //if (req.path === '/initialState.js') {
+  //  const state = JSON.stringify({
+  //    firebaseMirror: getDehydratedState(store.getState()),
+  //  }).replace(/</g, '\\u003c');
+  //  write('state', `window.REDUX_INITIAL_STATE = (${state});`);
+  //  res.end();
+  //  return;
+  //}
   const context = {};
   const sheet = new ServerStyleSheet();
+  firebaseStorageAPI.startRecording();
   const main = renderToString(
     sheet.collectStyles(
       <Provider store={store}>
@@ -102,6 +108,22 @@ module.exports = async (req, res) => {
       </Provider>
     )
   );
+  const paths = firebaseStorageAPI.stopRecording();
+  const dataToInject = {};
+  paths.forEach(p => {
+    dataToInject[p] = firebaseStorageAPI.getValueAtPath(
+      getFirebaseMirror(store.getState()),
+      p
+    );
+  });
+  const mirror = firebaseStorageAPI.setValues(
+    firebaseStorageAPI.getInitialMirror(),
+    dataToInject
+  );
+  let dehydrated = getDehydratedState(store.getState());
+  // TODO: a little hacky, relying on an implementation detail in redux-firebase-mirror
+  dehydrated = {...dehydrated, mirror: mirror.toJS()};
+
   const helmet = Helmet.renderStatic();
   if (context.url) {
     res.writeHead(301, {
@@ -215,7 +237,9 @@ module.exports = async (req, res) => {
       ? '<script src="/reactBoilerplateDeps.dll.js"></script>'
       : ''}
 
-    <script src="/initialState.js"></script>
+    <script>window.REDUX_INITIAL_STATE = (${JSON.stringify({
+      firebaseMirror: dehydrated,
+    }).replace(/</g, '\\u003c')});</script>
     <script src="${getAssetPath('main.js')}"></script>
   </body>
 </html>

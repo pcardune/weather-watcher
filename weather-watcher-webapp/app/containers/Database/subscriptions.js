@@ -4,9 +4,12 @@ import {
   Subscription,
   getFirebaseMirror,
   hasReceivedValueSelector,
+  getValueAtPath,
 } from 'redux-firebase-mirror';
 import {List, Map} from 'immutable';
 import {createSelector} from 'reselect';
+
+import firebaseStorageAPI from 'app/firebaseStorageAPI';
 
 import {InterpolatedGridForecast, InterpolatedScoreFunction} from './scoring';
 
@@ -42,17 +45,33 @@ function createRootSelector(key, defaultValue = Map()) {
 }
 
 function createItemSelector(parentSelector) {
-  return createSelector(
-    [parentSelector, hasReceivedValueSelector],
-    (parent, hasReceivedValue) =>
-      memoize(id => {
-        const item = parent.get(id);
-        return {
-          value: item && item.toJS(),
-          isLoading: !hasReceivedValue([parentSelector.path, id].join('/')),
-        };
-      })
-  );
+  if (process.env.IS_SERVER) {
+    return createSelector(
+      [parentSelector, hasReceivedValueSelector, getFirebaseMirror],
+      (parent, hasReceivedValue, mirror) =>
+        memoize(id => {
+          const path = [parentSelector.path, id].join('/');
+          const item = firebaseStorageAPI.getValueAtPath(mirror, path);
+          return {
+            value: item && item.toJS(),
+            isLoading: !hasReceivedValue(path),
+          };
+        })
+    );
+  } else {
+    return createSelector(
+      [parentSelector, hasReceivedValueSelector],
+      (parent, hasReceivedValue) =>
+        memoize(id => {
+          const path = [parentSelector.path, id].join('/');
+          const item = parent.get(id);
+          return {
+            value: item && item.toJS(),
+            isLoading: !hasReceivedValue(path),
+          };
+        })
+    );
+  }
 }
 
 const Root = fromPairs(

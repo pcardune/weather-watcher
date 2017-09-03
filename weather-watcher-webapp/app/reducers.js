@@ -3,6 +3,8 @@ import reduxFirebaseMirror from 'redux-firebase-mirror';
 
 import firebaseApp from 'app/firebaseApp';
 import globalReducer from 'app/containers/App/reducer';
+import firebaseStorageAPI from 'app/firebaseStorageAPI';
+
 const firebaseMirror = reduxFirebaseMirror({
   getFirebase: () => firebaseApp,
   getFirebaseState: state => state.get('firebaseMirror'),
@@ -12,6 +14,7 @@ const firebaseMirror = reduxFirebaseMirror({
         storage: localStorage,
         storagePrefix: 'weather:',
       },
+  storageAPI: firebaseStorageAPI,
 });
 
 /**
