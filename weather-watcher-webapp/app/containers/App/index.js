@@ -102,16 +102,13 @@ export class App extends Component {
   render() {
     return (
       <AppWrapper>
-        <Helmet
-          titleTemplate="%s - Goldilocks Weather"
-          defaultTitle="Goldilocks Weather"
-          meta={[
-            {
-              name: 'description',
-              content: "Find the weather that's just right",
-            },
-          ]}
-        />
+        <Helmet>
+          <title>Goldilocks Weather</title>
+          <meta
+            name="description"
+            content="Find the weather that's just right"
+          />
+        </Helmet>
         <Header
           onNewComparison={this.onNewComparison}
           comparisons={this.props.comparisons}

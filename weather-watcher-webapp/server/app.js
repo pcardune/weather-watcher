@@ -6,6 +6,7 @@ import {Provider} from 'react-redux';
 import {StaticRouter} from 'react-router';
 import {ThemeProvider, ServerStyleSheet} from 'styled-components';
 import {getDehydratedState, receiveSnapshots} from 'redux-firebase-mirror';
+import Helmet from 'react-helmet';
 
 import firebase from 'app/firebaseApp';
 import App from 'app/containers/App';
@@ -101,6 +102,7 @@ module.exports = async (req, res) => {
       </Provider>
     )
   );
+  const helmet = Helmet.renderStatic();
   if (context.url) {
     res.writeHead(301, {
       Location: context.url,
@@ -111,7 +113,7 @@ module.exports = async (req, res) => {
   write(
     'body',
     `<!doctype html>
-<html lang="en">
+<html lang="en" ${helmet.htmlAttributes.toString()}>
 <head>
   <meta charSet="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -141,6 +143,9 @@ module.exports = async (req, res) => {
     rel="stylesheet"
   />
   <title>Goldilocks Weather</title>
+  ${helmet.title.toString()}
+  ${helmet.meta.toString()}
+  ${helmet.link.toString()}
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
   <link
     rel="stylesheet"
@@ -192,7 +197,7 @@ module.exports = async (req, res) => {
   </style>
   ${sheet.getStyleTags()}
   </head>
-  <body>
+  <body ${helmet.bodyAttributes.toString()}>
     <noscript>
       If you're seeing this message, that means
       <strong>JavaScript has been disabled on your browser</strong>, please
