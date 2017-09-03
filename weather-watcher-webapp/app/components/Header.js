@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-import {addComparisonPoint} from 'app/containers/HomePage/actions';
+import {addComparisonPoint} from 'app/containers/Database/actions';
 import Theme from 'app/Theme';
 import {round} from 'app/utils/math';
 
@@ -77,11 +77,11 @@ export default class Header extends Component {
       .replace(/\./g, ',')
       .replace(/\s/g, '')
       .toLowerCase();
-    await this.props.onAddComparisonPoint({
+    this.props.onAddComparisonPoint({
       id,
       name,
       position,
-    }).promise;
+    });
     this.props.history.push(`/locations/${id}`);
     typeahead.clear();
   };

@@ -8,7 +8,3 @@
  * Follow this format:
  * export const YOUR_ACTION_CONSTANT = 'yourproject/YourContainer/YOUR_ACTION_CONSTANT';
  */
-
-export const ADD_COMPARISON_POINT = 'weather-watcher/Home/ADD_COMPARISON_POINT';
-export const REMOVE_COMPARISON_POINT =
-  'weather-watcher/Home/REMOVE_COMPARISON_POINT';

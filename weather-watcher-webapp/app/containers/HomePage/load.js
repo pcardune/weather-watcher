@@ -12,7 +12,7 @@ export default function load({store}) {
     loadDatabase({store});
     const {injectReducer, injectSagas} = getAsyncInjectors(store);
     injectReducer('home', reducer);
-    injectSagas(sagas);
+    //injectSagas(sagas);
   }
   return HomePage;
 }
