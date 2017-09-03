@@ -3,22 +3,28 @@ import firebase from 'app/firebaseApp';
 
 import {ADD_COMPARISON_POINT, REMOVE_COMPARISON_POINT} from './constants';
 
-const {database} = firebase;
-
 export function* watchAddComparisonPoint() {
   yield takeEvery(ADD_COMPARISON_POINT, function* createAndShowComparisonPoint({
+    id,
     name,
     latitude,
     longitude,
     comparisonId,
+    promise,
   }) {
-    const id = database().ref('comparisonPoints').push().key;
-    database()
+    id = id || firebase.database().ref('comparisonPoints').push().key;
+    firebase
+      .database()
       .ref(`comparisonPoints/${id}`)
-      .set({id, name, latitude, longitude});
-    database()
-      .ref(`comparisons/${comparisonId}/comparisonPointIds/${id}`)
-      .set(id);
+      .update({id, name, latitude, longitude})
+      .then(promise.resolve)
+      .catch(promise.reject);
+    if (comparisonId) {
+      firebase
+        .database()
+        .ref(`comparisons/${comparisonId}/comparisonPointIds/${id}`)
+        .set(id);
+    }
   });
 }
 
@@ -27,7 +33,8 @@ export function* watchRemoveComparisonPoint() {
     comparison,
     comparisonPointId,
   }) {
-    database()
+    firebase
+      .database()
       .ref(
         `comparisons/${comparison.id}/comparisonPointIds/${comparisonPointId}`
       )

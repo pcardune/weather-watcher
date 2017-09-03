@@ -4,16 +4,16 @@ import Geosuggest from 'react-geosuggest';
 import styled, {withTheme} from 'styled-components';
 import {inputStyle} from './forms';
 
-const StyledGeosuggest = styled(Geosuggest)`
-  &.geosuggest {
+export const LocationTypeaheadWrapper = styled.div`
+  .geosuggest {
     width: 100%;
     margin: 0;
     padding: 0;
   }
 
   .geosuggest__input {
-    ${inputStyle}
-    border: 1px solid ${props => props.theme.colors.divider} !important;
+    ${inputStyle} border: 1px solid ${props =>
+        props.theme.colors.divider} !important;
   }
   .geosuggest__suggests {
     border: 1px solid ${props => props.theme.colors.divider};
@@ -27,20 +27,33 @@ const StyledGeosuggest = styled(Geosuggest)`
 export default class LocationTypeahead extends PureComponent {
   static propTypes = {
     onChange: PropTypes.func.isRequired,
+    className: PropTypes.string,
   };
 
   focus = () => {
     this.geosuggest.focus();
   };
 
+  clear = () => {
+    this.geosuggest.clear();
+  };
+
+  onChange = suggestion => {
+    this.props.onChange(suggestion, this);
+  };
+
   render() {
     return (
-      <StyledGeosuggest
-        country="us"
-        onSuggestSelect={this.props.onChange}
-        placeholder="Search for a location..."
-        innerRef={el => (this.geosuggest = el)}
-      />
+      <LocationTypeaheadWrapper className={this.props.className}>
+        <Geosuggest
+          country="us"
+          onSuggestSelect={this.onChange}
+          placeholder="Search for a location..."
+          ref={el => {
+            this.geosuggest = el;
+          }}
+        />
+      </LocationTypeaheadWrapper>
     );
   }
 }

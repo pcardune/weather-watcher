@@ -1,77 +1,96 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import styled, {css} from 'styled-components';
+import styled from 'styled-components';
+import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
+
+import {addComparisonPoint} from 'app/containers/HomePage/actions';
 import Theme from 'app/Theme';
+import {round} from 'app/utils/math';
+
 import SmartLink from './SmartLink';
+import LocationTypeahead, {LocationTypeaheadWrapper} from './LocationTypeahead';
 
-const HeaderLogo = styled(SmartLink)`
-  display: inline-block;
-  text-decoration: none;
+const NavBar = styled.div`
+  text-align: center;
+  position: relative;
+  ${SmartLink} {
+    color: ${props => props.theme.colors.textOnPrimary};
+    display: inline-block;
+    text-decoration: none;
 
-  h1 {
-    font-family: 'Clicker Script', cursive;
-    font-weight: bold;
-    margin-bottom: 0;
-    font-size: 5em;
-  }
-  h5 {
-    margin-bottom: 1em;
-    font-weight: 300;
-  }
-
-  ${props => props.theme.media.phone`
-h1 {
-      font-size: 3em;
+    h1 {
+      font-family: 'Clicker Script', cursive;
+      font-weight: bold;
+      margin-bottom: 0;
+      font-size: 5em;
     }
     h5 {
-      font-size: 1.5em;
+      margin-bottom: 1em;
+      font-weight: 300;
     }
-  `}
+  }
 `;
 
 const QuickLinks = styled.div`
   background: ${props => props.theme.colors.primaryDark};
   text-align: center;
-`;
-
-const QuickLinkCSS = css`
-  display: inline-block;
-  padding: 10px;
-  color: ${props => props.theme.colors.textOnPrimary};
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 24px;
-  font-weight: 300;
-`;
-
-// const QuickButton = styled.a`${QuickLinkCSS};`;
-
-const QuickLink = styled(SmartLink)`
-  ${QuickLinkCSS}
-  &.selected {
-    text-decoration: underline;
+  ${LocationTypeaheadWrapper}, ${SmartLink} {
+    display: inline-block;
+    padding: 10px;
   }
-`;
-
-const NavBar = styled.div`
-  text-align: center;
-  position: relative;
-  ${HeaderLogo} {
+  ${SmartLink} {
     color: ${props => props.theme.colors.textOnPrimary};
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 24px;
+    font-weight: 300;
+    &.selected {
+      text-decoration: underline;
+    }
+  }
+  ${LocationTypeaheadWrapper} {
+    input {
+      height: inherit;
+      margin: 0px;
+      padding: 10px;
+      border-radius: 5px;
+      color: white;
+    }
   }
 `;
 
-class Header extends Component {
+@withRouter
+@connect(null, {onAddComparisonPoint: addComparisonPoint})
+export default class Header extends Component {
   static propTypes = {
     //    onNewComparison: PropTypes.func.isRequired,
     comparisons: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired,
+    onAddComparisonPoint: PropTypes.func.isRequired,
+  };
+
+  onChangeLocation = async (suggestion, typeahead) => {
+    const name = suggestion.gmaps.address_components[0].long_name;
+    const position = suggestion.location;
+    const id = `${name}|${round(position.lat, 4)}|${round(position.lng, 4)}`
+      .replace(/\./g, ',')
+      .replace(/\s/g, '')
+      .toLowerCase();
+    await this.props.onAddComparisonPoint({
+      id,
+      name,
+      position,
+    }).promise;
+    this.props.history.push(`/locations/${id}`);
+    typeahead.clear();
   };
 
   render() {
     return (
       <div>
         <NavBar className={Theme.colorClass.primary}>
-          <HeaderLogo to="/">
+          <SmartLink to="/">
             <h1 className="amber-text text-lighten-2">Goldilocks Weather</h1>
             <h5 className="amber-text text-lighten-5">
               weather that{"'"}s{' '}
@@ -80,25 +99,24 @@ class Header extends Component {
               </em>{' '}
               right
             </h5>
-          </HeaderLogo>
+          </SmartLink>
         </NavBar>
         <QuickLinks className={Theme.colorClass.primaryDark}>
           {this.props.comparisons.valueSeq().map(comparison =>
-            <QuickLink
+            <SmartLink
               key={comparison.id}
               activeClassName="selected"
               to={`/compare/${comparison.id}`}
             >
               {comparison.name}
-            </QuickLink>
+            </SmartLink>
           )}
+          <LocationTypeahead onChange={this.onChangeLocation} />
           {/* <QuickButton onClick={this.props.onNewComparison}>
                   + New Comparison
-                  </QuickButton>*/}
+              </QuickButton>*/}
         </QuickLinks>
       </div>
     );
   }
 }
-
-export default Header;

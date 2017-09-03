@@ -1,12 +1,20 @@
 import {ADD_COMPARISON_POINT, REMOVE_COMPARISON_POINT} from './constants';
+import {PromiseCallback} from 'app/utils/promise';
 
-export function addComparisonPoint({name, position: {lat, lng}, comparisonId}) {
+export function addComparisonPoint({
+  id,
+  name,
+  position: {lat, lng},
+  comparisonId,
+}) {
   return {
     type: ADD_COMPARISON_POINT,
+    id,
     name,
     latitude: lat,
     longitude: lng,
     comparisonId,
+    promise: new PromiseCallback(),
   };
 }
 

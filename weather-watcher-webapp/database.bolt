@@ -1,0 +1,26 @@
+path / {
+  read() { true }
+  write() { false }
+}
+
+path /comparisonPoints/{comparisonPointId} is ComparisonPoint {
+  write() {
+    createOnly(this) || (
+      writeOnce(this.id) &&
+      writeOnce(this.name) &&
+      writeOnce(this.latitude) &&
+      writeOnce(this.longitude)
+    )
+  }
+}
+
+type ComparisonPoint {
+ id: String,
+ name: String,
+ latitude: Number,
+ longitude: Number,
+ noaaPointId: String | Null,
+}
+
+createOnly(value) { prior(value) == null && value != null }
+writeOnce(value) { prior(value) == null || value == prior(value) }
