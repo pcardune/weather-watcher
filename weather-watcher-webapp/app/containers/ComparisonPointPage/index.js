@@ -16,9 +16,10 @@ import {
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import Number from 'app/components/Number';
 import {getForecastDates} from 'app/utils/dates';
-import ForecastRow, {LoadingRow} from 'app/components/ForecastRow';
+import ForecastRow from 'app/components/ForecastRow';
 import {getScoreConfigFromLocation} from 'app/utils/url';
 import AssignToRouterContext from 'app/components/AssignToRouterContext';
+import LoadingBar from 'app/components/LoadingBar';
 
 const DescriptionList = styled.dl`
   margin: 0;
@@ -46,7 +47,7 @@ export class ComparisonPointPage extends PureComponent {
     let {comparisonPoint} = this.props;
 
     if (comparisonPoint.isLoading || comparisonPoint.isLoadingForecast) {
-      return <LoadingRow key={`${comparisonPoint.id}-loading`} />;
+      return <LoadingBar />;
     }
 
     const scoreConfig = this.props.scoreConfig;
@@ -82,6 +83,7 @@ export class ComparisonPointPage extends PureComponent {
                   <dd>
                     <Number
                       value={
+                        comparisonPoint.noaaGridForecast &&
                         comparisonPoint.noaaGridForecast.properties.elevation
                           .value
                       }

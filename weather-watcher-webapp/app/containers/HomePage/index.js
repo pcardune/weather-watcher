@@ -27,8 +27,10 @@ import {
   getPathWithScoreConfigAndDate,
 } from 'app/utils/url';
 import {clampDateToForecastDates} from 'app/utils/dates';
-
-import {addComparisonPoint, removeComparisonPoint} from './actions';
+import {
+  addComparisonPoint,
+  removeComparisonPoint,
+} from 'app/containers/Database/actions';
 
 const HelpText = styled.p`
   text-align: center;

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {withRouter} from 'react-router';
 import {Link as RouterLink, NavLink} from 'react-router-dom';
 import isEqual from 'lodash.isequal';
+import styled from 'styled-components';
 
 import {
   getPathWithScoreConfigAndDate,
@@ -11,7 +12,7 @@ import {
 } from 'app/utils/url';
 
 @withRouter
-export default class SmartLink extends PureComponent {
+class SmartLink extends PureComponent {
   static propTypes = {
     history: PropTypes.object.isRequired,
     className: PropTypes.string,
@@ -68,3 +69,5 @@ export default class SmartLink extends PureComponent {
     return <RouterLink {...props} />;
   }
 }
+
+export default styled(SmartLink)``;

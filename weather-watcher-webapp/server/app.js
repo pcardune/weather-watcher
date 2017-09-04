@@ -184,7 +184,9 @@ module.exports = async (req, res) => {
         xfbml      : true,
         version    : 'v2.10'
       });
-      FB.AppEvents.logPageView();
+      ${process.env.NODE_ENV === 'production'
+        ? 'FB.AppEvents.logPageView();'
+        : ''}
       if (window.afterFBLoaded) {
         window.afterFBLoaded(FB);
       }
