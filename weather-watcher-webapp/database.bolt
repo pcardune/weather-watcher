@@ -9,7 +9,8 @@ path /comparisonPoints/{comparisonPointId} is ComparisonPoint {
       writeOnce(this.id) &&
       writeOnce(this.name) &&
       writeOnce(this.latitude) &&
-      writeOnce(this.longitude)
+      writeOnce(this.longitude) &&
+      writeOnce(this.placeId)
     )
   }
 }
@@ -19,6 +20,7 @@ type ComparisonPoint {
  name: String,
  latitude: Number,
  longitude: Number,
+ placeId: String | Null,
  noaaPointId: String | Null,
 }
 

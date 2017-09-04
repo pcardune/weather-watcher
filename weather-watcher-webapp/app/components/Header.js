@@ -73,6 +73,7 @@ export default class Header extends Component {
   onChangeLocation = async (suggestion, typeahead) => {
     const name = suggestion.gmaps.address_components[0].long_name;
     const position = suggestion.location;
+    const placeId = suggestion.gmaps.place_id;
     const id = `${name}|${round(position.lat, 4)}|${round(position.lng, 4)}`
       .replace(/\./g, ',')
       .replace(/\s/g, '')
@@ -81,6 +82,7 @@ export default class Header extends Component {
       id,
       name,
       position,
+      placeId,
     });
     this.props.history.push(`/locations/${id}`);
     typeahead.clear();

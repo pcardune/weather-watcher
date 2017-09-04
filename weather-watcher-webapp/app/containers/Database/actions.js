@@ -19,6 +19,7 @@ export function addComparisonPoint({
   id,
   name,
   position: {lat, lng},
+  placeId,
   comparisonId,
 }) {
   return {
@@ -27,6 +28,7 @@ export function addComparisonPoint({
     name,
     latitude: lat,
     longitude: lng,
+    placeId,
     comparisonId,
     promise: new PromiseCallback(),
   };

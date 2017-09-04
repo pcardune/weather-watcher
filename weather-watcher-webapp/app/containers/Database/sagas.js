@@ -18,6 +18,7 @@ export function* watchAddComparisonPoint() {
     name,
     latitude,
     longitude,
+    placeId,
     comparisonId,
     promise,
   }) {
@@ -25,7 +26,7 @@ export function* watchAddComparisonPoint() {
     firebase
       .database()
       .ref(`comparisonPoints/${id}`)
-      .update({id, name, latitude, longitude})
+      .update({id, name, latitude, longitude, placeId})
       .then(promise.resolve)
       .catch(promise.reject);
     if (comparisonId) {
