@@ -206,10 +206,6 @@ module.exports = async (req, res) => {
       height: 100%;
       width: 100%;
       line-height: 1.5;
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-
-    body.fontLoaded {
       font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 

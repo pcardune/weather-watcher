@@ -13,7 +13,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {Router} from 'react-router';
-import FontFaceObserver from 'fontfaceobserver';
 import {ThemeProvider} from 'styled-components';
 import ReactGA from 'react-ga';
 import createHistory from 'history/createBrowserHistory';
@@ -36,7 +35,6 @@ import loadDatabase from './containers/Database/load';
 import configureStore from './store';
 
 // Import CSS reset and Global Styles
-import './global-styles';
 import Theme from './Theme';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
@@ -44,20 +42,6 @@ const DEBUG = process.env.NODE_ENV !== 'production';
 Raven.config('https://9a78c231e6354e14b6c54f21b3883aa9@sentry.io/199365', {
   environment: process.env.NODE_ENV || 'development',
 }).install();
-
-// Observe loading of Open Sans (to remove open sans, remove the <link> tag in
-// the index.html file and this observer)
-const openSansObserver = new FontFaceObserver('Roboto', {});
-
-// When Open Sans is loaded, add a font-family using Open Sans to the body
-openSansObserver.load().then(
-  () => {
-    document.body.classList.add('fontLoaded');
-  },
-  () => {
-    document.body.classList.remove('fontLoaded');
-  }
-);
 
 ReactGA.initialize('UA-73170823-3', {
   debug: DEBUG,
