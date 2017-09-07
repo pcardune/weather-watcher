@@ -1,7 +1,7 @@
 // TODO: only import firebase/app and firebase/database
 import firebase from 'firebase';
 
-export default firebase.initializeApp({
+const firebaseApp = firebase.initializeApp({
   apiKey: 'AIzaSyA9dBTF1MZE3jyhjwG37unYMhbQEGurZF4',
   authDomain: 'weather-watcher-170701.firebaseapp.com',
   databaseURL: 'https://weather-watcher-170701.firebaseio.com',
@@ -9,3 +9,9 @@ export default firebase.initializeApp({
   storageBucket: 'weather-watcher-170701.appspot.com',
   messagingSenderId: '936791071551',
 });
+
+if (!process.env.IS_SERVER && process.env.NODE_ENV !== 'production') {
+  window.firebase = firebaseApp;
+}
+
+export default firebaseApp;
