@@ -65,6 +65,14 @@ async function updateComparisonPointForecasts(comparisonPoint) {
   const gridForecast = await noaaPoint.fetchGridDataForecast();
   await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
   console.log('Updated grid forecast', gridForecast.getFirebasePath());
+
+  const alertsForecast = await noaaPoint.fetchAlertsForecast();
+  await db.ref(alertsForecast.getFirebasePath()).set(alertsForecast.alertIds);
+  const alerts = alertsForecast.getAlerts();
+  for (const alert of alerts) {
+    await db.ref(alert.getFirebasePath()).set(alert.data);
+  }
+  console.log('Updated alerts forecast', alertsForecast.getFirebasePath());
 }
 
 export const updateComparisonPoint = functions.pubsub

@@ -60,6 +60,51 @@ class NOAADailyForecast {
   }
 }
 
+class NOAAAlert {
+  constructor({data}) {
+    this.data = data;
+  }
+
+  getFirebasePath() {
+    return ['nooaAlerts', this.data.properties.id].join('/');
+  }
+}
+
+class NOAAAlertsForecast {
+  constructor({data, forecastZoneId}) {
+    this.data = data;
+    this.forecastZoneId = forecastZoneId;
+  }
+
+  getFirebaseId() {
+    return this.forecastZoneId;
+  }
+
+  get alertIds() {
+    return this.data.features.map(feature => feature.properties.id);
+  }
+
+  getAlerts() {
+    return this.data.features.map(data => new NOAAAlert({data}));
+  }
+
+  static getFirebasePath(id) {
+    return ['noaaAlertsForecasts', id].join('/');
+  }
+
+  getFirebasePath() {
+    return [NOAAAlertsForecast.getFirebasePath(this.getFirebaseId())].join('/');
+  }
+
+  static async fetchForPoint(noaaPoint) {
+    const data = await NOAAClient.fetch(noaaPoint.alertsForecastUrl);
+    return new NOAAAlertsForecast({
+      forecastZoneId: noaaPoint.forecastZoneId,
+      data,
+    });
+  }
+}
+
 class NOAAHourlyForecast {
   constructor({data}) {
     this.data = data;
@@ -87,11 +132,18 @@ class NOAAHourlyForecast {
 }
 
 export class NOAAPoint {
-  constructor({data, dailyForecast, hourlyForecast, gridDataForecast}) {
+  constructor({
+    data,
+    dailyForecast,
+    hourlyForecast,
+    gridDataForecast,
+    alertsForecast,
+  }) {
     this.data = data;
     this.dailyForecast = dailyForecast;
     this.hourlyForecast = hourlyForecast;
     this.gridDataForecast = gridDataForecast;
+    this.alertsForecast = alertsForecast;
   }
 
   toJSON() {
@@ -99,6 +151,7 @@ export class NOAAPoint {
       data: this.data,
       dailyForecast: this.dailyForecast ? this.dailyForecast.data : null,
       hourlyForecast: this.hourlyForecast ? this.hourlyForecast.data : null,
+      alertsForecast: this.alertsForecast ? this.alertsForecast.data : null,
       gridDataForecast: this.gridDataForecast
         ? this.gridDataForecast.data
         : null,
@@ -129,6 +182,12 @@ export class NOAAPoint {
       gridDataForecast: data.gridDataForecast
         ? new NOAAGridDataForecast({data: data.gridDataForecast})
         : null,
+      alertsForecast: data.alertsForecast
+        ? new NOAAAlertsForecast({
+            data: data.alertsForecast,
+            forecastZoneId: NOAAPoint.getForecastZoneId(data.data),
+          })
+        : null,
     });
   }
 
@@ -144,6 +203,18 @@ export class NOAAPoint {
     return this.data.properties.forecastHourly;
   }
 
+  static getForecastZoneId(data) {
+    return data.properties.forecastZone.split('/').slice(-1)[0];
+  }
+
+  get forecastZoneId() {
+    return NOAAPoint.getForecastZoneId(this.data);
+  }
+
+  get alertsForecastUrl() {
+    return `https://api.weather.gov/alerts?zone=${this.forecastZoneId}`;
+  }
+
   static async fetch({latitude, longitude}) {
     const data = await NOAAClient.fetchPath(`points/${latitude},${longitude}`);
     return new NOAAPoint({data});
@@ -154,7 +225,15 @@ export class NOAAPoint {
       this.fetchDailyForecast(),
       this.fetchHourlyForecast(),
       this.fetchGridDataForecast(),
+      this.fetchAlertsForecast(),
     ]);
+  }
+
+  async fetchAlertsForecast() {
+    if (!this.alertsForecast) {
+      this.alertsForecast = await NOAAAlertsForecast.fetchForPoint(this);
+    }
+    return this.alertsForecast;
   }
 
   async fetchDailyForecast() {
