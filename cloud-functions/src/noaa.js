@@ -66,7 +66,7 @@ class NOAAAlert {
   }
 
   getFirebasePath() {
-    return ['nooaAlerts', this.data.properties.id].join('/');
+    return ['noaaAlerts', this.data.properties.id].join('/');
   }
 }
 
