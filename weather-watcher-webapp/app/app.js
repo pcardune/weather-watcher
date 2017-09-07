@@ -39,9 +39,11 @@ import Theme from './Theme';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 
-Raven.config('https://9a78c231e6354e14b6c54f21b3883aa9@sentry.io/199365', {
-  environment: process.env.NODE_ENV || 'development',
-}).install();
+if (!DEBUG) {
+  Raven.config('https://9a78c231e6354e14b6c54f21b3883aa9@sentry.io/199365', {
+    environment: process.env.NODE_ENV || 'development',
+  }).install();
+}
 
 ReactGA.initialize('UA-73170823-3', {
   debug: DEBUG,
