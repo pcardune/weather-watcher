@@ -21,6 +21,7 @@ import {getScoreConfigFromLocation} from 'app/utils/url';
 import AssignToRouterContext from 'app/components/AssignToRouterContext';
 import LoadingBar from 'app/components/LoadingBar';
 import WeatherAlertList from 'app/components/WeatherAlertList';
+import trackEvent from 'app/trackEvent';
 
 const DescriptionList = styled.dl`
   margin: 0;
@@ -43,6 +44,13 @@ export class ComparisonPointPage extends PureComponent {
     comparisonPoint: null,
     scoreConfig: null,
   };
+
+  componentDidMount() {
+    trackEvent('ViewContent', {
+      content_type: 'comparisonPoint',
+      content_ids: [this.props.comparisonPoint.id],
+    });
+  }
 
   render() {
     let {comparisonPoint} = this.props;

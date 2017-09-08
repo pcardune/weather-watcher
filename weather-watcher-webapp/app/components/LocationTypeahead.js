@@ -38,6 +38,10 @@ export default class LocationTypeahead extends PureComponent {
     this.geosuggest.clear();
   };
 
+  blur = () => {
+    this.geosuggest.blur();
+  };
+
   onChange = suggestion => {
     this.props.onChange(suggestion, this);
   };

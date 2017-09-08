@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 
 import {OUR_URL, OUR_EMAIL} from 'app/constants';
+import trackEvent from 'app/trackEvent';
 
 const FAQWrapper = styled.div`
   padding-top: ${props => props.theme.padding.standard};
@@ -17,6 +18,13 @@ const ListQuestion = styled.li`font-weight: bold;`;
 const ListAnswer = styled.li`padding-bottom: 15px;`;
 
 export default class FAQPage extends Component {
+  componentDidMount() {
+    trackEvent('ViewContent', {
+      content_type: 'info',
+      content_ids: ['faq'],
+    });
+  }
+
   render() {
     return (
       <FAQWrapper>

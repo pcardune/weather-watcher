@@ -31,6 +31,7 @@ import {
   addComparisonPoint,
   removeComparisonPoint,
 } from 'app/containers/Database/actions';
+import trackEvent from 'app/trackEvent';
 
 const HelpText = styled.p`
   text-align: center;
@@ -62,6 +63,13 @@ export class HomePage extends Component {
     showAddForm: false,
     showCustomizeForm: false,
   };
+
+  componentDidMount() {
+    trackEvent('ViewContent', {
+      content_type: 'comparison',
+      content_ids: [this.props.comparison.id],
+    });
+  }
 
   onRemoveComparisonPoint = comparisonPointId => {
     this.props.onRemoveComparisonPoint(

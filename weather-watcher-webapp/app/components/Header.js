@@ -7,6 +7,7 @@ import {connect} from 'react-redux';
 import {addComparisonPoint} from 'app/containers/Database/actions';
 import Theme from 'app/Theme';
 import {round} from 'app/utils/math';
+import trackEvent from 'app/trackEvent';
 
 import SmartLink from './SmartLink';
 import LocationTypeahead, {LocationTypeaheadWrapper} from './LocationTypeahead';
@@ -71,9 +72,9 @@ export default class Header extends Component {
   };
 
   onChangeLocation = async (suggestion, typeahead) => {
-    const name = suggestion.gmaps.address_components[0].long_name;
-    const position = suggestion.location;
-    const placeId = suggestion.gmaps.place_id;
+    const {gmaps, location: position, label, matchedSubstrings} = suggestion;
+    const name = gmaps.address_components[0].long_name;
+    const placeId = gmaps.place_id;
     const id = `${name}|${round(position.lat, 4)}|${round(position.lng, 4)}`
       .replace(/\./g, ',')
       .replace(/\s/g, '')
@@ -85,7 +86,23 @@ export default class Header extends Component {
       placeId,
     });
     this.props.history.push(`/locations/${id}`);
+    console.log(suggestion);
+    try {
+      trackEvent('Search', {
+        search_string: suggestion.label.slice(
+          matchedSubstrings.offset,
+          matchedSubstrings.length
+        ),
+        content_ids: [id],
+        content_type: 'comparisonPoint',
+      });
+    } catch (e) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(e);
+      }
+    }
     typeahead.clear();
+    typeahead.blur();
   };
 
   render() {
