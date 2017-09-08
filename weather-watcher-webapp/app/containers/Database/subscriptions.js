@@ -36,6 +36,19 @@ function flatten(a) {
   return b;
 }
 
+const SelectorConfig = {
+  comparisons: {},
+  comparisonPoints: {},
+  noaaPoints: {},
+  noaaGridForecasts: {},
+  noaaDailyForecasts: {},
+  noaaHourlyForecasts: {},
+  noaaAlerts: {},
+  noaaAlertsForecasts: {
+    transformValue: Object.values,
+  },
+};
+
 function createRootSelector(key, defaultValue = Map()) {
   const selector = createSelector([getFirebaseMirror], mirror =>
     mirror.get(key, defaultValue)
@@ -44,49 +57,40 @@ function createRootSelector(key, defaultValue = Map()) {
   return selector;
 }
 
-function createItemSelector(parentSelector) {
+function createItemSelector(key, parentSelector) {
+  const config = SelectorConfig[key];
+  const dependencies = [parentSelector, hasReceivedValueSelector];
   if (process.env.IS_SERVER) {
-    return createSelector(
-      [parentSelector, hasReceivedValueSelector, getFirebaseMirror],
-      (parent, hasReceivedValue, mirror) =>
-        memoize(id => {
-          const path = [parentSelector.path, id].join('/');
-          const item = firebaseStorageAPI.getValueAtPath(mirror, path);
-          return {
-            value: item && item.toJS(),
-            isLoading: !hasReceivedValue(path),
-          };
-        })
-    );
-  } else {
-    return createSelector(
-      [parentSelector, hasReceivedValueSelector],
-      (parent, hasReceivedValue) =>
-        memoize(id => {
-          const path = [parentSelector.path, id].join('/');
-          const item = parent.get(id);
-          return {
-            value: item && item.toJS(),
-            isLoading: !hasReceivedValue(path),
-          };
-        })
-    );
+    dependencies.push(getFirebaseMirror);
   }
+  return createSelector(dependencies, (parent, hasReceivedValue, mirror) =>
+    memoize(id => {
+      const path = [parentSelector.path, id].join('/');
+      const item = process.env.IS_SERVER
+        ? firebaseStorageAPI.getValueAtPath(mirror, path)
+        : parent.get(id);
+      const isLoading = !hasReceivedValue(path);
+      let value = item;
+      if (item) {
+        value = item.toJS();
+        if (config.transformValue) {
+          value = config.transformValue(value);
+        }
+      }
+      return {
+        value,
+        isLoading,
+      };
+    })
+  );
 }
 
 const Root = fromPairs(
-  [
-    'comparisons',
-    'comparisonPoints',
-    'noaaPoints',
-    'noaaGridForecasts',
-    'noaaDailyForecasts',
-    'noaaHourlyForecasts',
-  ].map(key => [key, createRootSelector(key)])
+  Object.keys(SelectorConfig).map(key => [key, createRootSelector(key)])
 );
 
 const Items = fromPairs(
-  Object.keys(Root).map(key => [key, createItemSelector(Root[key])])
+  Object.keys(Root).map(key => [key, createItemSelector(key, Root[key])])
 );
 
 const getMyComparisons = createSelector([Items.comparisons], getComparison =>
@@ -105,6 +109,10 @@ export function getGridForecastId(noaaPoint) {
 
 export function getForecastId(noaaPoint) {
   return coordinateArrayToFirebaseKey(noaaPoint.geometry.coordinates);
+}
+
+export function getForecastZoneId(noaaPoint) {
+  return noaaPoint.properties.forecastZone.split('/').slice(-1)[0];
 }
 
 function getLatest(dateKeyedObject) {
@@ -126,12 +134,16 @@ const getAugmentedComparisonPointGetter = createSelector(
     Items.noaaPoints,
     Items.noaaDailyForecasts,
     Items.noaaGridForecasts,
+    Items.noaaAlertsForecasts,
+    Items.noaaAlerts,
   ],
   (
     getComparisonPoint,
     getNoaaPoint,
     getNoaaDailyForecast,
-    getNoaaGridForecast
+    getNoaaGridForecast,
+    getNoaaAlertsForecast,
+    getNoaaAlert
   ) =>
     memoize((comparisonPointId, scoreConfig) => {
       const comparisonPointFuture = getComparisonPoint(comparisonPointId);
@@ -149,6 +161,10 @@ const getAugmentedComparisonPointGetter = createSelector(
               getGridForecastId(noaaPoint)
             );
             const noaaGridForecast = getLatest(grid);
+            const {value: alertIds} = getNoaaAlertsForecast(
+              getForecastZoneId(noaaPoint)
+            );
+            const alerts = (alertIds || []).map(id => getNoaaAlert(id).value);
             return {
               ...comparisonPoint,
               isLoadingForecast: isDailyLoading || isGridLoading,
@@ -156,6 +172,7 @@ const getAugmentedComparisonPointGetter = createSelector(
               noaaPoint,
               noaaDailyForecast: getLatest(daily),
               noaaGridForecast,
+              alerts,
               interpolatedScore: new InterpolatedScoreFunction({
                 interpolatedGridForecast: new InterpolatedGridForecast(
                   noaaGridForecast
@@ -246,7 +263,21 @@ export const augmentedComparisonPointById = new Subscription({
               path: `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
               filter,
             },
+            `/noaaAlertsForecasts/${getForecastZoneId(noaaPoint)}`,
           ]);
+
+          const {value: alertIds} = Items.noaaAlertsForecasts(state)(
+            getForecastZoneId(noaaPoint)
+          );
+          if (alertIds) {
+            if (!alertIds.map) {
+              console.log('got alerts ids', alertIds);
+              debugger;
+            }
+            paths = paths.concat(
+              alertIds.map(alertId => `/noaaAlerts/${alertId}`)
+            );
+          }
         }
       }
     }

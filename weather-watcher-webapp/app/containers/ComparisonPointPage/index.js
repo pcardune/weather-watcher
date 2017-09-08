@@ -20,6 +20,7 @@ import ForecastRow from 'app/components/ForecastRow';
 import {getScoreConfigFromLocation} from 'app/utils/url';
 import AssignToRouterContext from 'app/components/AssignToRouterContext';
 import LoadingBar from 'app/components/LoadingBar';
+import WeatherAlertList from 'app/components/WeatherAlertList';
 
 const DescriptionList = styled.dl`
   margin: 0;
@@ -63,6 +64,14 @@ export class ComparisonPointPage extends PureComponent {
       }),
     };
 
+    const currentAlerts = comparisonPoint.alerts.filter(
+      alert => alert && new Date(alert.properties.expires) >= new Date()
+    );
+
+    const expiredAlerts = comparisonPoint.alerts.filter(
+      alert => alert && new Date(alert.properties.expires) < new Date()
+    );
+
     return (
       <div className="container">
         <AssignToRouterContext
@@ -78,6 +87,7 @@ export class ComparisonPointPage extends PureComponent {
           <CardBody>
             <div className="row">
               <div className="col s12">
+                <WeatherAlertList alerts={currentAlerts} />
                 <DescriptionList>
                   <dt>Elevation:</dt>
                   <dd>

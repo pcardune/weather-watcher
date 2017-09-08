@@ -18,6 +18,7 @@ import loadDatabase from 'app/containers/Database/load';
 import {
   getForecastId,
   getGridForecastId,
+  getForecastZoneId,
 } from 'app/containers/Database/subscriptions';
 import configureStore from 'app/store';
 import {FB_APP_ID} from 'app/constants';
@@ -47,7 +48,7 @@ function prefetchDataForStore(store) {
   const dispatchSnapshot = snapshot => {
     store.dispatch(receiveSnapshots([snapshot]));
   };
-  ['comparisons', 'comparisonPoints'].forEach(rootPath => {
+  ['comparisons', 'comparisonPoints', 'noaaAlerts'].forEach(rootPath => {
     db.ref(rootPath).on('child_added', dispatchSnapshot);
     db.ref(rootPath).on('child_changed', dispatchSnapshot);
   });
@@ -58,6 +59,7 @@ function prefetchDataForStore(store) {
       `/noaaDailyForecasts/${getForecastId(noaaPoint)}`,
       `/noaaGridForecasts/${getGridForecastId(noaaPoint)}`,
       `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
+      `/noaaAlertsForecasts/${getForecastZoneId(noaaPoint)}`,
     ].forEach(p => {
       db.ref(p).limitToLast(1).on('value', dispatchSnapshot);
     });
@@ -72,8 +74,11 @@ async function getSharedStore() {
   }
   return sharedStore;
 }
-
-getSharedStore().then(prefetchDataForStore);
+if (process.env.NODE_ENV === 'production') {
+  getSharedStore().then(prefetchDataForStore);
+} else {
+  getSharedStore();
+}
 
 module.exports = async (req, res) => {
   let lastWrite = new Date().getTime();
