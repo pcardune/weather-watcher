@@ -38,6 +38,19 @@ export function getScoreColor({score, theme}) {
       : theme.colors.forecastGood;
 }
 
+function getScoreGrade(score) {
+  const letter =
+    score < 60
+      ? 'F'
+      : score < 70 ? 'D' : score < 80 ? 'C' : score < 90 ? 'B' : 'A';
+  const remainder = score % 10;
+  if (score >= 60) {
+    const modifier = remainder < 3 / 10 ? '-' : remainder < 6 / 10 ? '' : '+';
+    return letter + modifier;
+  }
+  return letter;
+}
+
 /* eslint-disable react/no-unused-prop-types */
 export default class ScoreNumber extends PureComponent {
   static propTypes = {
@@ -51,9 +64,10 @@ export default class ScoreNumber extends PureComponent {
 
   render() {
     const color = getScoreColor({score: this.props.score, theme: Theme});
+    const grade = getScoreGrade(this.props.score.score);
     return (
       <Circle color={color}>
-        <Number {...this.props} value={this.props.score.score} />
+        {grade}
       </Circle>
     );
   }

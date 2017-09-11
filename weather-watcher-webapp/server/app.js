@@ -252,7 +252,7 @@ module.exports = async (req, res) => {
     </noscript>
     <div
       id="app"
-      className="grey lighten-3"
+      class="grey lighten-3"
     >${main}</div>
     <link
       href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700"

@@ -33,7 +33,7 @@ export default class ForecastTableHeader extends PureComponent {
           <ColumnHeader />
         </tr>
         <tr className="hide-on-med-and-down">
-          <ColumnHeader>Score</ColumnHeader>
+          <ColumnHeader>Grade</ColumnHeader>
           <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
           <ColumnHeader>Low</ColumnHeader>
           <ColumnHeader>High</ColumnHeader>

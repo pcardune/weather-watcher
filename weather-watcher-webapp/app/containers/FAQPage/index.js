@@ -31,17 +31,17 @@ export default class FAQPage extends Component {
         <div className="container">
           <h1>FAQ</h1>
           <ul>
-            <ListQuestion>How are the scores determined?</ListQuestion>
+            <ListQuestion>How are the grades determined?</ListQuestion>
             <ListAnswer>
               <p>
-                Scores are determined by looking at the temperature, wind,
+                Grades are determined by looking at the temperature, wind,
                 chance of precipitation, and amount of precipitation over the
                 course of the day. Each of these weather factors is assigned a
                 color (red, yellow, or green) based on what range they fall
                 into. For example, a temperature of 65ºF would be considered
                 green, while a temperature of 100ºF would be considered red. If
                 one or more of these weather factors are red for most of the
-                day, then the overall score for that day will appear in red.
+                day, then the overall grade for that day will appear in red.
               </p>
               <p>
                 You can adjust the red, yellow, and green ranges for these
