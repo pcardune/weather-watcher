@@ -58,10 +58,6 @@ async function updateComparisonPointForecasts(comparisonPoint) {
   await db.ref(dailyForecast.getFirebasePath()).set(dailyForecast.data);
   console.log('Updated daily forecast', dailyForecast.getFirebasePath());
 
-  const hourlyForecast = await noaaPoint.fetchHourlyForecast();
-  await db.ref(hourlyForecast.getFirebasePath()).set(hourlyForecast.data);
-  console.log('Updated hourly forecast', hourlyForecast.getFirebasePath());
-
   const gridForecast = await noaaPoint.fetchGridDataForecast();
   await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
   console.log('Updated grid forecast', gridForecast.getFirebasePath());

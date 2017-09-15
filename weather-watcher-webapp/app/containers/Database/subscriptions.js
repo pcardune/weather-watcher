@@ -42,7 +42,6 @@ const SelectorConfig = {
   noaaPoints: {},
   noaaGridForecasts: {},
   noaaDailyForecasts: {},
-  noaaHourlyForecasts: {},
   noaaAlerts: {},
   noaaAlertsForecasts: {
     transformValue: Object.values,
@@ -259,10 +258,6 @@ export const augmentedComparisonPointById = new Subscription({
               path: `/noaaGridForecasts/${getGridForecastId(noaaPoint)}`,
               filter,
             },
-            {
-              path: `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
-              filter,
-            },
             `/noaaAlertsForecasts/${getForecastZoneId(noaaPoint)}`,
           ]);
 
@@ -270,10 +265,6 @@ export const augmentedComparisonPointById = new Subscription({
             getForecastZoneId(noaaPoint)
           );
           if (alertIds) {
-            if (!alertIds.map) {
-              console.log('got alerts ids', alertIds);
-              debugger;
-            }
             paths = paths.concat(
               alertIds.map(alertId => `/noaaAlerts/${alertId}`)
             );
