@@ -4,7 +4,7 @@ export function coordinateArrayToFirebaseKey(coordinates) {
   return coordinates.join('|').replace(/\./g, ',');
 }
 
-class NOAAGridDataForecast {
+export class NOAAGridDataForecast {
   constructor({data}) {
     this.data = data;
   }
