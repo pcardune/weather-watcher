@@ -58,7 +58,9 @@
       "weather-watcher-core",
       "redux-firebase-mirror",
       "weather-watcher-cloud-functions",
-      "memwatch-next"
+      "memwatch-next",
+      "weather-watcher-cloud-functions",
+      "firebase-admin"
     ],
     "include": [
       "core-js",
@@ -161,6 +163,7 @@
     "uuid": "^3.0.1",
     "victory": "^0.21.0",
     "warning": "3.0.0",
+    "weather-watcher-cloud-functions": "file:../cloud-functions",
     "whatwg-fetch": "2.0.1"
   },
   "devDependencies": {
