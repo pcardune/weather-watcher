@@ -1,6 +1,7 @@
 import Truncate from 'react-truncate';
 import styled from 'styled-components';
-import React, {PureComponent, Component, PropTypes} from 'react';
+import React, {PureComponent, Component} from 'react';
+import PropTypes from 'prop-types';
 import moment from 'moment-mini';
 
 import SmartLink from 'app/components/SmartLink';
