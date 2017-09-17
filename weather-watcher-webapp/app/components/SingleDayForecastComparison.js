@@ -1,5 +1,6 @@
 import styled from 'styled-components';
-import React, {PureComponent, PropTypes} from 'react';
+import React, {PureComponent} from 'react';
+import PropTypes from 'prop-types';
 
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import ForecastRow, {LoadingRow} from 'app/components/ForecastRow';

@@ -42,3 +42,12 @@ export const DEFAULT_SCORE_CONFIG = {
 export const DEFAULT_COMPARISON_ID = 'wa-climb-crags';
 
 export const FB_APP_ID = '270286390143694';
+
+export const firebaseConfig = {
+  apiKey: 'AIzaSyA9dBTF1MZE3jyhjwG37unYMhbQEGurZF4',
+  authDomain: 'weather-watcher-170701.firebaseapp.com',
+  databaseURL: 'https://weather-watcher-170701.firebaseio.com',
+  projectId: 'weather-watcher-170701',
+  storageBucket: 'weather-watcher-170701.appspot.com',
+  messagingSenderId: '936791071551',
+};

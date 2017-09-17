@@ -3,7 +3,6 @@ const express = require('express');
 const path = require('path');
 const compression = require('compression');
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
-const theApp = require('../app');
 
 // Dev middleware
 const addDevMiddlewares = (app, webpackConfig) => {
@@ -31,14 +30,6 @@ const addDevMiddlewares = (app, webpackConfig) => {
       res.sendFile(path.join(process.cwd(), pkg.dllPlugin.path, filename));
     });
   }
-
-  app.get(/.*/, (req, res) => {
-    theApp(req, res).catch(e => {
-      console.error(e);
-      res.status(500).send('There was an error :(');
-      res.end();
-    });
-  });
 };
 
 // Production middlewares
@@ -52,14 +43,6 @@ const addProdMiddlewares = (app, options) => {
   // and other good practices on official Express.js docs http://mxs.is/googmy
   app.use(compression());
   app.use(publicPath, express.static(outputPath));
-
-  app.get(/.*/, (req, res) => {
-    theApp(req, res).catch(e => {
-      console.error(e);
-      res.status(500).send('There was an error :(');
-      res.end();
-    });
-  });
 };
 
 /**

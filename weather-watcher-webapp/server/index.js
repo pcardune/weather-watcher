@@ -8,8 +8,10 @@ try {
 }
 const express = require('express');
 const logger = require('./logger');
+const rootPage = require('./rootPage');
 const argv = require('minimist')(process.argv.slice(2));
 const setup = require('./middlewares/frontendMiddleware');
+const updateNOAAPointPage = require('./updateNOAAPointPage').default;
 const isDev = process.env.NODE_ENV !== 'production';
 const ngrok =
   (isDev && process.env.ENABLE_TUNNEL) || argv.tunnel
@@ -33,6 +35,18 @@ const host = customHost || null; // Let http.Server use its default IPv6/4 host
 const prettyHost = customHost || 'localhost';
 
 const port = argv.port || process.env.PORT || 3000;
+
+if (process.env.NODE_ENV === 'development') {
+  app.get('/cloud-functions/updateNOAAPoint/:noaaPointId', updateNOAAPointPage);
+}
+
+app.get(/.*/, (req, res) => {
+  rootPage(req, res).catch(e => {
+    console.error(e);
+    res.status(500).send('There was an error :(');
+    res.end();
+  });
+});
 
 // Start your app.
 app.listen(port, host, err => {

@@ -132,6 +132,12 @@ describe('InterpolatedScoreFunction', () => {
       expect(
         score.getScore(new Date('2017-06-16T14:00:00+00:00').getTime())
       ).toEqual({
+        descriptorComponents: {
+          precip: 'high',
+          precipQuantity: undefined,
+          temp: 'low',
+          wind: 'high',
+        },
         score: 58.05449636792378,
         scoreComponents: {
           precip: 0.1777777777777776,
@@ -160,6 +166,12 @@ describe('InterpolatedScoreFunction', () => {
         score.getScoresForDate(new Date('2017-06-16T14:00:00+00:00').getTime())
       ).toEqual([
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 57.8596689399132,
           scoreComponents: {
             precip: 0.2666666666666666,
@@ -170,6 +182,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497614400000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 57.95708265391849,
           scoreComponents: {
             precip: 0.22222222222222232,
@@ -180,6 +198,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497618000000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 58.05449636792378,
           scoreComponents: {
             precip: 0.1777777777777776,
@@ -190,6 +214,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497621600000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 58.42968785970708,
           scoreComponents: {
             precip: 0.1333333333333333,
@@ -200,6 +230,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497625200000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 58.91451108331852,
           scoreComponents: {
             precip: 0.08888888888888902,
@@ -210,6 +246,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497628800000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 59.399334306930704,
           scoreComponents: {
             precip: 0.04444444444444429,
@@ -220,6 +262,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497632400000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 59.88415753054214,
           scoreComponents: {
             precip: 0,
@@ -230,6 +278,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497636000000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: undefined,
+          },
           score: 65.20341048320354,
           scoreComponents: {
             precip: 0.24444444444444424,
@@ -240,6 +294,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497639600000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: undefined,
+          },
           score: 71.2749613372609,
           scoreComponents: {
             precip: 0.48888888888888915,
@@ -250,6 +310,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497643200000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: undefined,
+          },
           score: 77.34651219131754,
           scoreComponents: {
             precip: 0.7333333333333334,
@@ -260,6 +326,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497646800000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: undefined,
+            wind: undefined,
+          },
           score: 77.56353030856133,
           scoreComponents: {
             precip: 0.9777777777777776,
@@ -270,6 +342,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497650400000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: undefined,
+            wind: undefined,
+          },
           score: 77.78054842580437,
           scoreComponents: {
             precip: 1.2222222222222223,
@@ -280,6 +358,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497654000000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: undefined,
+            wind: undefined,
+          },
           score: 79.24756654304839,
           scoreComponents: {
             precip: 1.4666666666666668,
@@ -290,6 +374,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497657600000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: undefined,
+            wind: undefined,
+          },
           score: 79.21384128575318,
           scoreComponents: {
             precip: 1.6333333333333333,
@@ -300,6 +390,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497661200000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 79.25276327823127,
           scoreComponents: {
             precip: 1.8,
@@ -310,6 +406,12 @@ describe('InterpolatedScoreFunction', () => {
           time: 1497664800000,
         },
         {
+          descriptorComponents: {
+            precip: 'high',
+            precipQuantity: undefined,
+            temp: 'low',
+            wind: 'high',
+          },
           score: 78.73646014373804,
           scoreComponents: {
             precip: 1.9666666666666666,

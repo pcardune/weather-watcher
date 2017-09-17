@@ -1,4 +1,4 @@
-import {PropTypes} from 'react';
+import PropTypes from 'prop-types';
 
 export const ScoreConfigShape = PropTypes.shape({
   tempRange: PropTypes.arrayOf(PropTypes.number).isRequired,

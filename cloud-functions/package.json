@@ -1,12 +1,14 @@
 {
   "name": "weather-watcher-cloud-functions",
+  "version": "0.0.1",
   "description": "Cloud Functions for Firebase",
   "dependencies": {
     "@google-cloud/pubsub": "^0.13.2",
     "babel-preset-stage-0": "^6.24.1",
     "firebase-admin": "^4.1.2",
     "firebase-functions": "^0.5",
-    "isomorphic-fetch": "^2.2.1"
+    "isomorphic-fetch": "^2.2.1",
+    "moment-mini": "^2.18.1"
   },
   "private": true,
   "devDependencies": {
@@ -23,7 +25,7 @@
   },
   "main": "build/index.js",
   "scripts": {
-    "build": "babel src -d build",
+    "build": "babel ../weather-watcher-webapp/server/cloud -d build",
     "deploy": "yarn run build && firebase deploy --only functions"
   }
 }

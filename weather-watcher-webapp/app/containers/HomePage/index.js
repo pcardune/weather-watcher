@@ -4,7 +4,8 @@
  * This is the first thing users see of our App, at the '/' route
  */
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import styled from 'styled-components';
 import {compose} from 'redux';
