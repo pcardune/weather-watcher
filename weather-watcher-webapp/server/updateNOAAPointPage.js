@@ -1,24 +1,26 @@
-import {NOAAPoint} from 'weather-watcher-cloud-functions/src/noaa';
-import {
-  updateNOAAPoint,
-  init,
-} from 'weather-watcher-cloud-functions/src/functions';
 import admin from 'firebase-admin';
+import fs from 'fs';
+import {NOAAPoint} from './cloud/noaa';
+import {updateNOAAPoint, init} from './cloud/functions';
 
-const serviceAccount = require('../serviceAccountKey.json');
-const firebase = admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://weather-watcher-170701.firebaseio.com',
-});
+let serviceAccount;
+let firebase;
+if (fs.existsSync('../serviceAccountKey.json')) {
+  serviceAccount = require('../serviceAccountKey.json');
+  firebase = admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: 'https://weather-watcher-170701.firebaseio.com',
+  });
+} else {
+  console.warn("no serviceAccountKey. Cloud functions won't work.");
+}
 
 export default async (req, res) => {
   init(firebase.database());
-  console.log('updating noaaPoint', req.params.noaaPointId);
   const snapshot = await firebase
     .database()
     .ref(NOAAPoint.getFirebasePath(req.params.noaaPointId))
     .once('value');
-  console.log('starting actual update with', snapshot.val());
   await updateNOAAPoint(new NOAAPoint({data: snapshot.val()}));
   res.send('all done...');
 };

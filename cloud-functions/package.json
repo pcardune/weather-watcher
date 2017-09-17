@@ -25,7 +25,7 @@
   },
   "main": "build/index.js",
   "scripts": {
-    "build": "babel src -d build",
+    "build": "babel ../weather-watcher-webapp/server/cloud -d build",
     "deploy": "yarn run build && firebase deploy --only functions"
   }
 }
