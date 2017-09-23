@@ -91,24 +91,17 @@ export class App extends Component {
     );
   };
 
-  //renderClimbCalculator = () => {
-  //  return (
-  //    <Bundle load={import('app/containers/ClimbCalculator/load')}>
-  //      {ClimbCalculator => ClimbCalculator && <ClimbCalculator />}
-  //    </Bundle>
-  //  );
-  //};
-
-  render() {
+  renderClimbCalculator = () => {
     return (
-      <AppWrapper>
-        <Helmet>
-          <title>Goldilocks Weather</title>
-          <meta
-            name="description"
-            content="Find the weather that's just right"
-          />
-        </Helmet>
+      <Bundle load={import('app/containers/ClimbCalculator/load')}>
+        {ClimbCalculator => ClimbCalculator && <ClimbCalculator />}
+      </Bundle>
+    );
+  };
+
+  renderSite = () => {
+    return (
+      <div>
         <Header
           onNewComparison={this.onNewComparison}
           comparisons={this.props.comparisons}
@@ -121,10 +114,6 @@ export class App extends Component {
               path="/locations/:comparisonPointId"
               render={this.renderComparisonPointPage}
             />
-            {/*<Route
-              path="/climb-calculator"
-              render={this.renderClimbCalculator}
-            />*/}
             <Route path="/faq" render={this.renderFAQ} />
             <Route component={NotFound} />
           </Switch>
@@ -156,6 +145,32 @@ export class App extends Component {
             <div className="container">© 2017 goldilocksweather.com</div>
           </div>
         </Footer>
+      </div>
+    );
+  };
+
+  render() {
+    return (
+      <AppWrapper>
+        <Helmet>
+          <title>Goldilocks Weather</title>
+          <meta
+            name="description"
+            content="Find the weather that's just right"
+          />
+          <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css"
+          />
+          <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            rel="stylesheet"
+          />
+        </Helmet>
+        <Switch>
+          <Route path="/climb-calculator" render={this.renderClimbCalculator} />
+          <Route render={this.renderSite} />
+        </Switch>
       </AppWrapper>
     );
   }

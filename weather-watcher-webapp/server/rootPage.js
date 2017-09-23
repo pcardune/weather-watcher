@@ -156,7 +156,6 @@ module.exports = async (req, res) => {
     <!-- DO NOT MODIFY -->
     <!-- End Facebook Pixel Code -->`
       : '';
-
   write(
     'body',
     `<!doctype html>
@@ -171,16 +170,8 @@ module.exports = async (req, res) => {
   <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/weather-watcher-170701.appspot.com/o/_DSC7469.jpg?alt=media&token=22b1912e-f922-41ea-a38c-bd921256ca02" />
   <link rel="manifest" href="manifest.json" />
   <link
-    href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    rel="stylesheet"
-  />
-  <link
     href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
     rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css"
   />
   <link rel="icon" type="image/png" href="/favicon.png" />
 
