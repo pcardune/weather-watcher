@@ -6,6 +6,7 @@ import {Link, Route, Switch, withRouter} from 'react-router-dom';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import {subscribeProps} from 'redux-firebase-mirror';
+import {Grid} from 'material-ui';
 
 import {myComparisons} from 'app/containers/Database/subscriptions';
 import {createComparison} from 'app/containers/Database/actions';
@@ -14,21 +15,34 @@ import LoadingBar from 'app/components/LoadingBar';
 import Bundle from 'app/components/Bundle';
 import {DEFAULT_COMPARISON_ID} from 'app/constants';
 
-import Theme from 'app/Theme';
+import Theme, {MuiTheme} from 'app/Theme';
 
 const Body = styled.div`
   padding-top: 50px;
+  padding-bottom: 50px;
   min-height: 60vh;
+  background: ${MuiTheme.palette.background.contentFrame};
 `;
 
 const Footer = styled.footer`
+  background: ${MuiTheme.palette.primary[500]};
+  color: white;
   h4,
   h5 {
     font-family: 'Clicker Script', cursive;
     font-weight: bold;
   }
+  h4.logo-text {
+    color: ${MuiTheme.palette.secondary[400]};
+  }
   a {
     color: white;
+  }
+  p {
+    color: ${MuiTheme.palette.primary[50]};
+  }
+  .copyright {
+    background: ${MuiTheme.palette.primary[600]};
   }
 `;
 
@@ -106,7 +120,7 @@ export class App extends Component {
           onNewComparison={this.onNewComparison}
           comparisons={this.props.comparisons}
         />
-        <Body className="grey lighten-3">
+        <Body>
           <Switch>
             <Route exact path="/" render={this.renderHomePage} />
             <Route path="/compare/:comparisonId" render={this.renderHomePage} />
@@ -118,32 +132,35 @@ export class App extends Component {
             <Route component={NotFound} />
           </Switch>
         </Body>
-        <Footer className={`page-footer ${Theme.colorClass.primary}`}>
-          <div className="container">
-            <div className="row">
-              <div className="col s12 m3">
-                <h4 className="amber-text">Goldilocks Weather</h4>
-                <p className="grey-text text-lighten-4">
-                  weather that{"'"}s{' '}
-                  <em>
-                    <u>just</u>
-                  </em>{' '}
-                  right
-                </p>
-              </div>
-              <div className="col s12 m3">
-                <h4>Links</h4>
-                <ul>
-                  <li>
-                    <Link to="/FAQ">FAQ</Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="footer-copyright">
-            <div className="container">© 2017 goldilocksweather.com</div>
-          </div>
+        <Footer>
+          <Grid container spacing={0}>
+            <Grid item md={2} xs={1} />
+            <Grid item md={3} xs={11}>
+              <h4 className="logo-text">Goldilocks Weather</h4>
+              <p>
+                weather that{"'"}s{' '}
+                <em>
+                  <u>just</u>
+                </em>{' '}
+                right
+              </p>
+            </Grid>
+            <Grid item md={2} xs={1} hidden={{mdUp: true}} />
+            <Grid item md={7} xs={11}>
+              <h4>Links</h4>
+              <ul>
+                <li>
+                  <Link to="/FAQ">FAQ</Link>
+                </li>
+              </ul>
+            </Grid>
+          </Grid>
+          <Grid container spacing={0} className="copyright">
+            <Grid item md={2} xs={1} />
+            <Grid item md={3} xs={11}>
+              <p>© 2017 goldilocksweather.com</p>
+            </Grid>
+          </Grid>
         </Footer>
       </div>
     );

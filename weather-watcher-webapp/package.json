@@ -15,7 +15,7 @@
     "build:server": "BABEL_ENV=server babel app --ignore **/*.test.js -d ./es5/app && BABEL_ENV=server babel server --ignore **/*.test.js -d ./es5/server",
     "build:clean": "npm run test:clean && rm -rf ./build && rm -rf es5",
     "build:dll": "node ./internals/scripts/dependencies.js",
-    "start": "IS_SERVER=1 BABEL_ENV=server NODE_ENV=development babel-watch --exclude app/containers/ClimbCalculator --exclude app/components server",
+    "start": "IS_SERVER=1 BABEL_ENV=server NODE_ENV=development babel-watch --exclude app --exclude app/containers/ClimbCalculator --exclude app/components server",
     "start:inspect": "IS_SERVER=1 BABEL_ENV=server NODE_ENV=development babel-watch --inspect --exclude app/components server",
     "start:prod": "IS_SERVER=1 NODE_ENV=production node es5/server",
     "presetup": "npm i chalk shelljs",

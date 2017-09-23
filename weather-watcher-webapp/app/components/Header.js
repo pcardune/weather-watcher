@@ -5,7 +5,7 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import {addComparisonPoint} from 'app/containers/Database/actions';
-import Theme from 'app/Theme';
+import Theme, {MuiTheme} from 'app/Theme';
 import {round} from 'app/utils/math';
 import trackEvent from 'app/trackEvent';
 
@@ -15,8 +15,9 @@ import LocationTypeahead, {LocationTypeaheadWrapper} from './LocationTypeahead';
 const NavBar = styled.div`
   text-align: center;
   position: relative;
+  background: ${MuiTheme.palette.primary[500]};
   ${SmartLink} {
-    color: ${props => props.theme.colors.textOnPrimary};
+    color: white;
     display: inline-block;
     text-decoration: none;
 
@@ -25,23 +26,25 @@ const NavBar = styled.div`
       font-weight: bold;
       margin-bottom: 0;
       font-size: 5em;
+      color: ${MuiTheme.palette.secondary[400]};
     }
     h5 {
       margin-bottom: 1em;
       font-weight: 300;
+      color: ${MuiTheme.palette.secondary[50]};
     }
   }
 `;
 
 const QuickLinks = styled.div`
-  background: ${props => props.theme.colors.primaryDark};
+  background: ${MuiTheme.palette.primary[600]};
   text-align: center;
   ${LocationTypeaheadWrapper}, ${SmartLink} {
     display: inline-block;
     padding: 10px;
   }
   ${SmartLink} {
-    color: ${props => props.theme.colors.textOnPrimary};
+    color: white;
     text-decoration: none;
     cursor: pointer;
     font-size: 24px;
@@ -108,10 +111,10 @@ export default class Header extends Component {
   render() {
     return (
       <div>
-        <NavBar className={Theme.colorClass.primary}>
+        <NavBar>
           <SmartLink to="/">
-            <h1 className="amber-text text-lighten-2">Goldilocks Weather</h1>
-            <h5 className="amber-text text-lighten-5">
+            <h1>Goldilocks Weather</h1>
+            <h5>
               weather that{"'"}s{' '}
               <em>
                 <u>just</u>
@@ -120,7 +123,7 @@ export default class Header extends Component {
             </h5>
           </SmartLink>
         </NavBar>
-        <QuickLinks className={Theme.colorClass.primaryDark}>
+        <QuickLinks>
           {this.props.comparisons.valueSeq().map(comparison =>
             <SmartLink
               key={comparison.id}

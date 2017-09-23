@@ -11,6 +11,12 @@ import {
   getFirebaseMirror,
 } from 'redux-firebase-mirror';
 import Helmet from 'react-helmet';
+import {SheetsRegistry} from 'react-jss/lib/jss';
+import JssProvider from 'react-jss/lib/JssProvider';
+import {create} from 'jss';
+import preset from 'jss-preset-default';
+import {MuiThemeProvider} from 'material-ui/styles';
+import createGenerateClassName from 'material-ui/styles/createGenerateClassName';
 
 import firebase from 'app/firebaseApp';
 import App from 'app/containers/App';
@@ -24,7 +30,7 @@ import configureStore from 'app/store';
 import {FB_APP_ID} from 'app/constants';
 import firebaseStorageAPI from 'app/firebaseStorageAPI';
 
-import Theme from 'app/Theme';
+import Theme, {MuiTheme} from 'app/Theme';
 
 const initialState = {};
 
@@ -81,38 +87,33 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 module.exports = async (req, res) => {
-  let lastWrite = new Date().getTime();
   const write = (description, content) => {
     res.write(content);
-    const time = new Date().getTime();
-    console.log(
-      `rendered ${description}: ${content.length} bytes, ${time - lastWrite} ms`
-    );
-    lastWrite = time;
   };
   const store = await getSharedStore();
-  //if (req.path === '/initialState.js') {
-  //  const state = JSON.stringify({
-  //    firebaseMirror: getDehydratedState(store.getState()),
-  //  }).replace(/</g, '\\u003c');
-  //  write('state', `window.REDUX_INITIAL_STATE = (${state});`);
-  //  res.end();
-  //  return;
-  //}
   const context = {};
   const sheet = new ServerStyleSheet();
   firebaseStorageAPI.startRecording();
+
+  const sheetsRegistry = new SheetsRegistry();
+  const jss = create(preset());
+  jss.options.createGenerateClassName = createGenerateClassName;
   const main = renderToString(
     sheet.collectStyles(
       <Provider store={store}>
         <ThemeProvider theme={Theme}>
           <StaticRouter location={req.url} context={context}>
-            <App store={store} />
+            <JssProvider registry={sheetsRegistry} jss={jss}>
+              <MuiThemeProvider theme={MuiTheme} sheetsManager={new Map()}>
+                <App store={store} />
+              </MuiThemeProvider>
+            </JssProvider>
           </StaticRouter>
         </ThemeProvider>
       </Provider>
     )
   );
+  const css = sheetsRegistry.toString();
   const paths = firebaseStorageAPI.stopRecording();
   const dataToInject = {};
   paths.forEach(p => {
@@ -234,6 +235,7 @@ module.exports = async (req, res) => {
     }
   </style>
   ${sheet.getStyleTags()}
+  <style id="jss-server-side">${css}</style>
   </head>
   <body ${helmet.bodyAttributes.toString()}>
     <noscript>

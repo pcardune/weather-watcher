@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import React, {PureComponent, Component} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-mini';
+import {Hidden} from 'material-ui';
 
 import SmartLink from 'app/components/SmartLink';
 import LoadingIndicator from 'app/components/LoadingIndicator';
@@ -53,17 +54,6 @@ const Row = styled.tr`
   background: ${props =>
     props.selected ? props.theme.colors.primaryLight : 'transparent'};
   cursor: pointer;
-
-  ${props => (props.phoneOnly ? HideOnDesktop(props) : '')} ${props =>
-      props.desktopOnly ? HideOnPhone(props) : ''};
-`;
-
-const HideOnDesktop = props => props.theme.media.desktop`
-  display: none;
-`;
-
-const HideOnPhone = props => props.theme.media.phone`
-  display: none;
 `;
 
 export function LoadingRow() {
@@ -181,64 +171,66 @@ export default class ForecastRow extends Component {
   renderPhoneCells() {
     const {date} = this.props;
     return (
-      <Cell className="hide-on-large-only" colSpan="8">
-        {this.renderPointLink()}
-        <div>
-          <RowLabel>Temp: </RowLabel>
-          <PointForecastRollup
-            date={date}
-            property="temperature"
-            point={this.props.point}
-            type="min"
-          />
-          ºF /{' '}
-          <PointForecastRollup
-            date={date}
-            property="temperature"
-            point={this.props.point}
-            type="max"
-          />
-          ºF
-        </div>
-        <div>
-          <RowLabel>Wind: </RowLabel>
-          <PointForecastRollup
-            date={date}
-            property="windSpeed"
-            point={this.props.point}
-          />
-          mph
-        </div>
-        <div>
-          <RowLabel>Rain: </RowLabel>
-          <PointForecastRollup
-            date={date}
-            property="probabilityOfPrecipitation"
-            point={this.props.point}
-          />
-          % /{' '}
-          <PointForecastRollup
-            date={date}
-            property="quantitativePrecipitation"
-            point={this.props.point}
-          />
-          {'"'}
-        </div>
-        <div>
-          <RowLabel />
-          {this.renderShortForecast()}
-        </div>
-      </Cell>
+      <Hidden lgUp>
+        <Cell colSpan="8">
+          {this.renderPointLink()}
+          <div>
+            <RowLabel>Temp: </RowLabel>
+            <PointForecastRollup
+              date={date}
+              property="temperature"
+              point={this.props.point}
+              type="min"
+            />
+            ºF /{' '}
+            <PointForecastRollup
+              date={date}
+              property="temperature"
+              point={this.props.point}
+              type="max"
+            />
+            ºF
+          </div>
+          <div>
+            <RowLabel>Wind: </RowLabel>
+            <PointForecastRollup
+              date={date}
+              property="windSpeed"
+              point={this.props.point}
+            />
+            mph
+          </div>
+          <div>
+            <RowLabel>Rain: </RowLabel>
+            <PointForecastRollup
+              date={date}
+              property="probabilityOfPrecipitation"
+              point={this.props.point}
+            />
+            % /{' '}
+            <PointForecastRollup
+              date={date}
+              property="quantitativePrecipitation"
+              point={this.props.point}
+            />
+            {'"'}
+          </div>
+          <div>
+            <RowLabel />
+            {this.renderShortForecast()}
+          </div>
+        </Cell>
+      </Hidden>
     );
   }
 
   renderDesktopCells() {
     const {date} = this.props;
     return [
-      <Cell key="point-link" className="hide-on-med-and-down">
+      <Cell key="point-link">
         {this.renderPointLink()}
       </Cell>,
-      <Cell key="temp-min" className="hide-on-med-and-down">
+      <Cell key="temp-min">
         <PointForecastRollup
           date={date}
           property="temperature"
@@ -246,7 +238,7 @@ export default class ForecastRow extends Component {
           type="min"
         />
       </Cell>,
-      <Cell key="temp-max" className="hide-on-med-and-down">
+      <Cell key="temp-max">
         <PointForecastRollup
           date={date}
           property="temperature"
@@ -254,7 +246,7 @@ export default class ForecastRow extends Component {
           type="max"
         />
       </Cell>,
-      <Cell key="wind-speed" className="hide-on-med-and-down">
+      <Cell key="wind-speed">
         <PointForecastRollup
           date={date}
           property="windSpeed"
@@ -262,7 +254,7 @@ export default class ForecastRow extends Component {
           type="max"
         />
       </Cell>,
-      <Cell key="probPrecip" className="hide-on-med-and-down">
+      <Cell key="probPrecip">
         <PointForecastRollup
           date={date}
           property="probabilityOfPrecipitation"
@@ -270,7 +262,7 @@ export default class ForecastRow extends Component {
           type="max"
         />
       </Cell>,
-      <Cell key="quantPrecip" className="hide-on-med-and-down">
+      <Cell key="quantPrecip">
         <PointForecastRollup
           date={date}
           property="quantitativePrecipitation"
@@ -278,10 +270,14 @@ export default class ForecastRow extends Component {
           type="sum"
         />
       </Cell>,
-      <ShortForecastCell key="short-forecast" className="hide-on-med-and-down">
+      <ShortForecastCell key="short-forecast">
         {this.renderShortForecast()}
       </ShortForecastCell>,
-    ];
+    ].map((cell, index) =>
+      <Hidden mdDown key={index}>
+        {cell}
+      </Hidden>
+    );
   }
 
   render() {

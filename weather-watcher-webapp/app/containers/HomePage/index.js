@@ -11,12 +11,23 @@ import styled from 'styled-components';
 import {compose} from 'redux';
 import {subscribeProps} from 'redux-firebase-mirror';
 import {withRouter} from 'react-router';
+import {
+  Icon,
+  Card,
+  CardHeader,
+  CardContent,
+  Grid,
+  Button,
+  AppBar,
+  Toolbar,
+  Typography,
+  withStyles,
+} from 'material-ui';
 
 import LoadingBar from 'app/components/LoadingBar';
+import PageBody from 'app/components/PageBody';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
-import Button from 'app/components/Button';
-import {Card, CardHeader, CardBody} from 'app/components/Card';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
 import {augmentedComparisonById} from 'app/containers/Database/subscriptions';
@@ -46,6 +57,10 @@ const InnerPane = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.divider};
 `;
 
+@withStyles({
+  title: {flex: 1},
+  customizeButton: {position: 'relative', top: 30},
+})
 export class HomePage extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
@@ -116,34 +131,30 @@ export class HomePage extends Component {
     const hasPoints =
       !comparison.isLoading && comparison.comparisonPoints.length > 0;
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col s12">
+      <PageBody>
+        <Grid container spacing={24} direction="column">
+          <Grid item>
             <Card>
-              <CardHeader title="Daily Forecast Comparison">
+              <Toolbar>
+                <Typography
+                  type="title"
+                  color="inherit"
+                  className={this.props.classes.title}
+                >
+                  Daily Forecast Comparison
+                </Typography>
                 <Button
-                  floating
-                  accent
-                  icon="settings"
-                  className="halfway-fab"
+                  fab
+                  className={this.props.classes.customizeButton}
+                  color="accent"
                   disabled={
                     this.state.showAddForm || this.state.showCustomizeForm
                   }
                   onClick={this.toggleCustomize}
-                />
-                {/* <ButtonBar>
-                    <Button
-                    accent
-                    disabled={
-                    this.state.showAddForm || this.state.showCustomizeForm
-                    }
-                    onClick={this.onClickAddLocation}
-                    >
-                    Add Location
-                    </Button>
-
-                    </ButtonBar>*/}
-              </CardHeader>
+                >
+                  <Icon>settings</Icon>
+                </Button>
+              </Toolbar>
               {comparison.isLoading && <LoadingBar />}
               <AssignToRouterContext
                 contextKey="title"
@@ -154,63 +165,55 @@ export class HomePage extends Component {
                 value={`Find out what the weather is at ${comparison.name}`}
               />
 
-              <CardBody>
-                {(this.state.showAddForm || this.state.showCustomizeForm) &&
-                  <div className="row">
-                    <div className="col s12">
-                      {this.state.showAddForm &&
-                        <InnerPane>
-                          <AddComparisonPointForm
-                            onClose={this.hideAddForm}
-                            onAdd={this.onAddComparisonPoint}
-                          />
-                        </InnerPane>}
-                      {this.state.showCustomizeForm &&
-                        <InnerPane>
-                          <CustomizeScoreForm
-                            onClose={this.toggleCustomize}
-                            scoreConfig={comparison.scoreConfig}
-                            onChange={this.onChangeScoreConfig}
-                          />
-                        </InnerPane>}
-                    </div>
-                  </div>}
-                <div className="row">
-                  <div className="col s12">
-                    {hasPoints
-                      ? <MultiDayForecastComparison
-                          onChangeDate={this.onChangeDate}
-                          date={this.props.date}
-                          comparison={comparison}
-                          onRemoveComparisonPoint={this.onRemoveComparisonPoint}
-                        />
-                      : <HelpText>
-                          {comparison.isLoading
-                            ? 'Loading...'
-                            : 'Add a location to start comparing forecasts.'}
-                        </HelpText>}
-                  </div>
-                </div>
-              </CardBody>
+              {(this.state.showAddForm || this.state.showCustomizeForm) &&
+                <CardContent>
+                  {this.state.showAddForm &&
+                    <InnerPane>
+                      <AddComparisonPointForm
+                        onClose={this.hideAddForm}
+                        onAdd={this.onAddComparisonPoint}
+                      />
+                    </InnerPane>}
+                  {this.state.showCustomizeForm &&
+                    <InnerPane>
+                      <CustomizeScoreForm
+                        onClose={this.toggleCustomize}
+                        scoreConfig={comparison.scoreConfig}
+                        onChange={this.onChangeScoreConfig}
+                      />
+                    </InnerPane>}
+                </CardContent>}
+              <CardContent>
+                {hasPoints
+                  ? <MultiDayForecastComparison
+                      onChangeDate={this.onChangeDate}
+                      date={this.props.date}
+                      comparison={comparison}
+                      onRemoveComparisonPoint={this.onRemoveComparisonPoint}
+                    />
+                  : <HelpText>
+                      {comparison.isLoading
+                        ? 'Loading...'
+                        : 'Add a location to start comparing forecasts.'}
+                    </HelpText>}
+              </CardContent>
             </Card>
+          </Grid>
+          <Grid item>
             {hasPoints &&
               <Card>
                 <CardHeader title="Weekly Score Comparison" />
-                <CardBody>
-                  <div className="row">
-                    <div className="col s12">
-                      <ComparisonChart
-                        comparison={comparison}
-                        date={this.props.date}
-                        onClickDate={this.onChangeDate}
-                      />
-                    </div>
-                  </div>
-                </CardBody>
+                <CardContent>
+                  <ComparisonChart
+                    comparison={comparison}
+                    date={this.props.date}
+                    onClickDate={this.onChangeDate}
+                  />
+                </CardContent>
               </Card>}
-          </div>
-        </div>
-      </div>
+          </Grid>
+        </Grid>
+      </PageBody>
     );
   }
 }

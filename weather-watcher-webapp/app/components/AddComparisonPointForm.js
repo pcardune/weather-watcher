@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {Button} from 'material-ui';
 
 import {round} from 'app/utils/math';
-import Button from './Button';
 import {FormField, Input, Label, HelpText, ButtonBar} from './forms';
 import LocationTypeahead from './LocationTypeahead';
 
@@ -125,10 +125,10 @@ export default class AddComparisonPointForm extends Component {
           </div>
         </LocationInfo>
         <ButtonBar>
-          <Button flat type="button" onClick={this.props.onClose}>
+          <Button color="accent" onClick={this.props.onClose}>
             Cancel
           </Button>
-          <Button type="button" onClick={this.onClickAdd}>
+          <Button color="accent" onClick={this.onClickAdd}>
             Add
           </Button>
         </ButtonBar>
