@@ -6,12 +6,12 @@ import {
   REMOVE_COMPARISON_POINT,
 } from './constants';
 
-export function createComparison({name}) {
+export function createComparison({id, name}) {
   return {
     type: CREATE_COMPARISON,
-    comparison: {
-      name,
-    },
+    id,
+    name,
+    promise: new PromiseCallback(),
   };
 }
 

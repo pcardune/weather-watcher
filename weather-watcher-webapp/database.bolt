@@ -24,5 +24,17 @@ type ComparisonPoint {
  noaaPointId: String | Null,
 }
 
+path /comparisons/{comparisonId} is Comparison {
+  write() {
+    createOnly(this) || (writeOnce(this.id) && writeOnce(this.creator))
+  }
+}
+
+type Comparison {
+ id: String,
+ name: String,
+ creator: String,
+}
+
 createOnly(value) { prior(value) == null && value != null }
 writeOnce(value) { prior(value) == null || value == prior(value) }

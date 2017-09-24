@@ -57,11 +57,25 @@ const InnerPane = styled.div`
   border-bottom: 1px solid ${props => props.theme.colors.divider};
 `;
 
+@withRouter
+@connect(
+  (state, {location}) => ({
+    scoreConfig: getScoreConfigFromLocation(location),
+    date: clampDateToForecastDates(getDateFromLocation(location)),
+  }),
+  {
+    onAddComparisonPoint: addComparisonPoint,
+    onRemoveComparisonPoint: removeComparisonPoint,
+  }
+)
+@subscribeProps({
+  comparison: augmentedComparisonById,
+})
 @withStyles({
   title: {flex: 1},
   customizeButton: {position: 'relative', top: 30},
 })
-export class HomePage extends Component {
+export default class HomePage extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
@@ -129,7 +143,9 @@ export class HomePage extends Component {
   render() {
     const {comparison} = this.props;
     const hasPoints =
-      !comparison.isLoading && comparison.comparisonPoints.length > 0;
+      !comparison.isLoading &&
+      comparison.comparisonPoints &&
+      comparison.comparisonPoints.length > 0;
     return (
       <PageBody>
         <Grid container spacing={24} direction="column">
@@ -217,20 +233,3 @@ export class HomePage extends Component {
     );
   }
 }
-
-export default compose(
-  withRouter,
-  connect(
-    (state, {location}) => ({
-      scoreConfig: getScoreConfigFromLocation(location),
-      date: clampDateToForecastDates(getDateFromLocation(location)),
-    }),
-    {
-      onAddComparisonPoint: addComparisonPoint,
-      onRemoveComparisonPoint: removeComparisonPoint,
-    }
-  ),
-  subscribeProps({
-    comparison: augmentedComparisonById,
-  })
-)(HomePage);

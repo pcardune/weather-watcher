@@ -27,6 +27,24 @@
         },
         ".write": "data.val() == null && newData.val() != null || (data.child('id').val() == null || newData.child('id').val() == data.child('id').val()) && (data.child('name').val() == null || newData.child('name').val() == data.child('name').val()) && (data.child('latitude').val() == null || newData.child('latitude').val() == data.child('latitude').val()) && (data.child('longitude').val() == null || newData.child('longitude').val() == data.child('longitude').val()) && (data.child('placeId').val() == null || newData.child('placeId').val() == data.child('placeId').val())"
       }
+    },
+    "comparisons": {
+      "$comparisonId": {
+        ".validate": "newData.hasChildren(['id', 'name', 'creator'])",
+        "id": {
+          ".validate": "newData.isString()"
+        },
+        "name": {
+          ".validate": "newData.isString()"
+        },
+        "creator": {
+          ".validate": "newData.isString()"
+        },
+        "$other": {
+          ".validate": "false"
+        },
+        ".write": "data.val() == null && newData.val() != null || (data.child('id').val() == null || newData.child('id').val() == data.child('id').val()) && (data.child('creator').val() == null || newData.child('creator').val() == data.child('creator').val())"
+      }
     }
   }
 }

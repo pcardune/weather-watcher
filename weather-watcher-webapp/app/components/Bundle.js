@@ -39,6 +39,6 @@ export default class Bundle extends Component {
   }
 
   render() {
-    return this.state.mod ? this.props.children(this.state.mod) : null;
+    return this.props.children(this.state.mod);
   }
 }

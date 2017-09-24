@@ -1,3 +1,4 @@
+import {List} from 'immutable';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
@@ -6,11 +7,13 @@ import {Link, Route, Switch, withRouter} from 'react-router-dom';
 import {compose} from 'redux';
 import {connect} from 'react-redux';
 import {subscribeProps} from 'redux-firebase-mirror';
-import {Grid} from 'material-ui';
+import {Grid, withStyles} from 'material-ui';
+import classNames from 'classnames';
 
-import {myComparisons} from 'app/containers/Database/subscriptions';
+import {myComparisons, getUserId} from 'app/containers/Database/subscriptions';
 import {createComparison} from 'app/containers/Database/actions';
-import Header from 'app/components/Header';
+import MainDrawer from 'app/components/MainDrawer';
+import MainAppBar from 'app/components/MainAppBar';
 import LoadingBar from 'app/components/LoadingBar';
 import Bundle from 'app/components/Bundle';
 import {DEFAULT_COMPARISON_ID} from 'app/constants';
@@ -58,12 +61,74 @@ function NotFound() {
   return <div>Not found</div>;
 }
 
-export class App extends Component {
+const styles = theme => ({
+  root: {
+    width: '100%',
+    zIndex: 1,
+  },
+  contentShift: {
+    marginLeft: 0,
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  },
+  appFrame: {
+    position: 'relative',
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+  },
+  content: {
+    width: '100%',
+    marginLeft: -theme.drawerWidth,
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.contentFrame,
+    paddingTop: theme.spacing.unit * 3,
+    paddingBottom: theme.spacing.unit * 3,
+    transition: theme.transitions.create('margin', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    height: 'calc(100% - 56px)',
+    marginTop: 76,
+    [theme.breakpoints.up('sm')]: {
+      content: {
+        height: 'calc(100% - 64px)',
+        marginTop: 64,
+      },
+    },
+  },
+});
+
+@withRouter
+@subscribeProps({
+  comparisons: myComparisons,
+})
+@connect(state => ({uid: getUserId(state)}), {
+  createComparison,
+})
+@withStyles(styles)
+export default class App extends Component {
   static propTypes = {
     store: PropTypes.object.isRequired,
     createComparison: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
-    comparisons: PropTypes.object.isRequired,
+    comparisons: PropTypes.object,
+  };
+
+  static defaultProps = {comparisons: List()};
+
+  state = {
+    open: false,
+  };
+
+  handleDrawerOpen = () => {
+    this.setState({open: true});
+  };
+
+  handleDrawerClose = () => {
+    this.setState({open: false});
   };
 
   onNewComparison = () => {
@@ -114,24 +179,45 @@ export class App extends Component {
   };
 
   renderSite = () => {
+    const {classes} = this.props;
     return (
-      <div>
-        <Header
-          onNewComparison={this.onNewComparison}
-          comparisons={this.props.comparisons}
-        />
-        <Body>
-          <Switch>
-            <Route exact path="/" render={this.renderHomePage} />
-            <Route path="/compare/:comparisonId" render={this.renderHomePage} />
-            <Route
-              path="/locations/:comparisonPointId"
-              render={this.renderComparisonPointPage}
-            />
-            <Route path="/faq" render={this.renderFAQ} />
-            <Route component={NotFound} />
-          </Switch>
-        </Body>
+      <div className={classes.root}>
+        <div className={classes.appFrame}>
+          <MainAppBar
+            open={this.state.open}
+            onNewComparison={this.onNewComparison}
+            comparisons={this.props.comparisons}
+            handleDrawerClose={this.handleDrawerClose}
+            handleDrawerOpen={this.handleDrawerOpen}
+          />
+          <MainDrawer
+            open={this.state.open}
+            onNewComparison={this.onNewComparison}
+            comparisons={this.props.comparisons}
+            handleDrawerClose={this.handleDrawerClose}
+            handleDrawerOpen={this.handleDrawerOpen}
+          />
+          <main
+            className={classNames(
+              classes.content,
+              this.state.open && classes.contentShift
+            )}
+          >
+            <Switch>
+              <Route exact path="/" render={this.renderHomePage} />
+              <Route
+                path="/compare/:comparisonId"
+                render={this.renderHomePage}
+              />
+              <Route
+                path="/locations/:comparisonPointId"
+                render={this.renderComparisonPointPage}
+              />
+              <Route path="/faq" render={this.renderFAQ} />
+              <Route component={NotFound} />
+            </Switch>
+          </main>
+        </div>
         <Footer>
           <Grid container spacing={0}>
             <Grid item md={2} xs={1} />
@@ -192,13 +278,3 @@ export class App extends Component {
     );
   }
 }
-
-export default compose(
-  withRouter,
-  subscribeProps({
-    comparisons: myComparisons,
-  }),
-  connect(null, {
-    createComparison,
-  })
-)(App);
