@@ -21,6 +21,7 @@ import {
   createComparison,
 } from 'app/containers/Database/actions';
 
+import NewComparisonButton from './NewComparisonButton';
 import SmartLink from './SmartLink';
 
 const styles = theme => ({
@@ -83,16 +84,6 @@ export default class MainDrawer extends Component {
     open: PropTypes.bool.isRequired,
   };
 
-  onClickNewComparison = async () => {
-    const id = firebase.database().ref('/comparisons').push().key;
-    await this.props.onCreateComparison({name: 'New Comparison', id}).promise;
-    this.props.history.push(`/compare/${id}`);
-    trackEvent('Create', {
-      content_ids: [id],
-      content_type: 'comparison',
-    });
-  };
-
   renderComparisonsList(type) {
     let filter;
     if (type === 'public') {
@@ -145,9 +136,9 @@ export default class MainDrawer extends Component {
             <ListSubheader>Your Comparisons</ListSubheader>
             {this.renderComparisonsList('creator')}
             <ListItem>
-              <Button raised color="accent" onClick={this.onClickNewComparison}>
+              <NewComparisonButton raised color="accent">
                 + New Comparison
-              </Button>
+              </NewComparisonButton>
             </ListItem>
           </List>
         </div>

@@ -227,6 +227,9 @@ module.exports = async (req, res) => {
       line-height: 1.5;
       font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
+    a {
+      text-decoration: none;
+    }
 
     #app {
       background-color: #fff;

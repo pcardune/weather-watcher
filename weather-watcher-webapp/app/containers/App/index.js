@@ -63,6 +63,7 @@ function NotFound() {
 
 const styles = theme => ({
   root: {
+    backgroundColor: theme.palette.background.contentFrame,
     width: '100%',
     zIndex: 1,
   },
@@ -83,7 +84,6 @@ const styles = theme => ({
     width: '100%',
     marginLeft: -theme.drawerWidth,
     flexGrow: 1,
-    backgroundColor: theme.palette.background.contentFrame,
     paddingTop: theme.spacing.unit * 3,
     paddingBottom: theme.spacing.unit * 3,
     transition: theme.transitions.create('margin', {
@@ -91,6 +91,7 @@ const styles = theme => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
     height: 'calc(100% - 56px)',
+    minHeight: 'calc(100vh - 234px)',
     marginTop: 76,
     [theme.breakpoints.up('sm')]: {
       content: {
@@ -260,10 +261,6 @@ export default class App extends Component {
           <meta
             name="description"
             content="Find the weather that's just right"
-          />
-          <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css"
           />
           <link
             href="https://fonts.googleapis.com/icon?family=Material+Icons"

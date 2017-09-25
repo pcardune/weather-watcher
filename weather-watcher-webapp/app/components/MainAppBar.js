@@ -15,7 +15,7 @@ import {
 } from 'material-ui';
 
 import {addComparisonPoint} from 'app/containers/Database/actions';
-import Theme, {MuiTheme} from 'app/Theme';
+import {MuiTheme} from 'app/Theme';
 import {round} from 'app/utils/math';
 import trackEvent from 'app/trackEvent';
 import Logo from 'app/components/Logo';

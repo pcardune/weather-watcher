@@ -8,7 +8,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import styled from 'styled-components';
-import {compose} from 'redux';
 import {subscribeProps} from 'redux-firebase-mirror';
 import {withRouter} from 'react-router';
 import {
@@ -18,7 +17,9 @@ import {
   CardContent,
   Grid,
   Button,
-  AppBar,
+  IconButton,
+  Menu,
+  MenuItem,
   Toolbar,
   Typography,
   withStyles,
@@ -30,6 +31,7 @@ import MultiDayForecastComparison from 'app/components/MultiDayForecastCompariso
 import {AugmentedComparisonShape} from 'app/propTypes';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
+import EditComparisonDialog from 'app/components/EditComparisonDialog';
 import {augmentedComparisonById} from 'app/containers/Database/subscriptions';
 import ComparisonChart from 'app/components/ComparisonChart';
 import AssignToRouterContext from 'app/components/AssignToRouterContext';
@@ -83,6 +85,7 @@ export default class HomePage extends Component {
     onRemoveComparisonPoint: PropTypes.func.isRequired,
     onAddComparisonPoint: PropTypes.func.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
+    classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -92,6 +95,8 @@ export default class HomePage extends Component {
   state = {
     showAddForm: false,
     showCustomizeForm: false,
+    showMenu: false,
+    menuAnchorEl: null,
   };
 
   componentDidMount() {
@@ -106,10 +111,6 @@ export default class HomePage extends Component {
       this.props.comparison,
       comparisonPointId
     );
-  };
-
-  toggleCustomize = () => {
-    this.setState({showCustomizeForm: !this.state.showCustomizeForm});
   };
 
   onClickAddLocation = () => {
@@ -140,6 +141,22 @@ export default class HomePage extends Component {
     );
   };
 
+  onClickMenu = event =>
+    this.setState({showMenu: true, menuAnchorEl: event.currentTarget});
+  onRequestCloseMenu = () => this.setState({showMenu: false});
+
+  onClickCustomize = () => {
+    this.onRequestCloseMenu();
+    this.setState({showCustomizeForm: true});
+  };
+  onClickDoneCustomize = () => this.setState({showCustomizeForm: false});
+
+  onClickSettings = () => {
+    this.onRequestCloseMenu();
+    this.setState({showEditDialog: true});
+  };
+  onRequestCloseEditDialog = () => this.setState({showEditDialog: false});
+
   render() {
     const {comparison} = this.props;
     const hasPoints =
@@ -157,19 +174,34 @@ export default class HomePage extends Component {
                   color="inherit"
                   className={this.props.classes.title}
                 >
-                  Daily Forecast Comparison
+                  {comparison.name}
                 </Typography>
-                <Button
-                  fab
-                  className={this.props.classes.customizeButton}
-                  color="accent"
-                  disabled={
-                    this.state.showAddForm || this.state.showCustomizeForm
-                  }
-                  onClick={this.toggleCustomize}
-                >
-                  <Icon>settings</Icon>
-                </Button>
+                <div style={{position: 'relative'}}>
+                  <IconButton color="contrast" onClick={this.onClickMenu}>
+                    <Icon>more_vert</Icon>
+                  </IconButton>
+                  <Menu
+                    open={this.state.showMenu}
+                    onRequestClose={this.onRequestCloseMenu}
+                    anchorEl={this.state.menuAnchorEl}
+                  >
+                    <MenuItem onClick={this.onClickCustomize}>
+                      Customize Scoring
+                    </MenuItem>
+                    <MenuItem onClick={this.onClickSettings} divider>
+                      Change Settings
+                    </MenuItem>
+                    <MenuItem onClick={this.onClickDelete}>
+                      Delete Comparison
+                    </MenuItem>
+                  </Menu>
+                </div>
+                <EditComparisonDialog
+                  comparison={comparison}
+                  open={this.state.showEditDialog}
+                  onRequestClose={this.onRequestCloseEditDialog}
+                  type="edit"
+                />
               </Toolbar>
               {comparison.isLoading && <LoadingBar />}
               <AssignToRouterContext
@@ -193,26 +225,29 @@ export default class HomePage extends Component {
                   {this.state.showCustomizeForm &&
                     <InnerPane>
                       <CustomizeScoreForm
-                        onClose={this.toggleCustomize}
+                        onClose={this.onClickDoneCustomize}
                         scoreConfig={comparison.scoreConfig}
                         onChange={this.onChangeScoreConfig}
                       />
                     </InnerPane>}
                 </CardContent>}
-              <CardContent>
-                {hasPoints
-                  ? <MultiDayForecastComparison
+              {hasPoints
+                ? <CardContent>
+                    <Typography>Daily Forecasts</Typography>
+                    <MultiDayForecastComparison
                       onChangeDate={this.onChangeDate}
                       date={this.props.date}
                       comparison={comparison}
                       onRemoveComparisonPoint={this.onRemoveComparisonPoint}
                     />
-                  : <HelpText>
+                  </CardContent>
+                : <CardContent>
+                    <HelpText>
                       {comparison.isLoading
                         ? 'Loading...'
                         : 'Add a location to start comparing forecasts.'}
-                    </HelpText>}
-              </CardContent>
+                    </HelpText>
+                  </CardContent>}
             </Card>
           </Grid>
           <Grid item>
