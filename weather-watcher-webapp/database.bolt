@@ -26,11 +26,18 @@ type ComparisonPoint {
 
 path /comparisons/{comparisonId} is Comparison {
   write() {
-    createOnly(this) || (
+    (this == null && isCurrentUser(prior(this.creator))) || (isCurrentUser(this.creator) &&
+    (this == null || (
       writeOnce(this.id) &&
       writeOnce(this.creator) &&
       writeOnce(this.createdOn)
-    )
+    )))
+  }
+}
+
+path /comparisons/{comparisonId}/comparisonPointIds {
+  write() {
+    isCurrentUser(prior(root).comparisons[comparisonId].creator)
   }
 }
 
@@ -43,3 +50,5 @@ type Comparison {
 
 createOnly(value) { prior(value) == null && value != null }
 writeOnce(value) { prior(value) == null || value == prior(value) }
+isSignedIn() { auth != null }
+isCurrentUser(uid) { isSignedIn() && auth.uid == uid }

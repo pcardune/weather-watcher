@@ -1,18 +1,19 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-} from 'material-ui';
+import {Button} from 'material-ui';
 
 import EditComparisonDialog from './EditComparisonDialog';
 
 export default class NewComparisonButton extends Component {
-  static propTypes = {};
+  static propTypes = {
+    navigateOnSave: PropTypes.bool,
+    onComparisonCreated: PropTypes.func,
+  };
+
+  static defaultProps = {
+    navigateOnSave: false,
+    onComparisonCreated: () => {},
+  };
 
   state = {
     open: false,
@@ -30,14 +31,17 @@ export default class NewComparisonButton extends Component {
   handleChange = name => event => this.setState({[name]: event.target.value});
 
   render() {
+    const {navigateOnSave, onComparisonCreated, ...props} = this.props;
     return (
       <span>
         <EditComparisonDialog
           open={this.state.open}
           onRequestClose={this.onClose}
           type="create"
+          navigateOnSave={navigateOnSave}
+          onComparisonCreated={onComparisonCreated}
         />
-        <Button {...this.props} onClick={this.onClick} />
+        <Button {...props} onClick={this.onClick} />
       </span>
     );
   }

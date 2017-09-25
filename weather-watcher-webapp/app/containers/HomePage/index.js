@@ -11,12 +11,12 @@ import styled from 'styled-components';
 import {subscribeProps} from 'redux-firebase-mirror';
 import {withRouter} from 'react-router';
 import {
+  Button,
   Icon,
   Card,
   CardHeader,
   CardContent,
   Grid,
-  Button,
   IconButton,
   Menu,
   MenuItem,
@@ -25,6 +25,7 @@ import {
   withStyles,
 } from 'material-ui';
 
+import firebase from 'app/firebaseApp';
 import LoadingBar from 'app/components/LoadingBar';
 import PageBody from 'app/components/PageBody';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
@@ -32,6 +33,7 @@ import {AugmentedComparisonShape} from 'app/propTypes';
 import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
 import EditComparisonDialog from 'app/components/EditComparisonDialog';
+import AlertDialog from 'app/components/AlertDialog';
 import {augmentedComparisonById} from 'app/containers/Database/subscriptions';
 import ComparisonChart from 'app/components/ComparisonChart';
 import AssignToRouterContext from 'app/components/AssignToRouterContext';
@@ -96,6 +98,7 @@ export default class HomePage extends Component {
     showAddForm: false,
     showCustomizeForm: false,
     showMenu: false,
+    showConfirmDelete: false,
     menuAnchorEl: null,
   };
 
@@ -157,12 +160,28 @@ export default class HomePage extends Component {
   };
   onRequestCloseEditDialog = () => this.setState({showEditDialog: false});
 
+  onClickDelete = () => {
+    this.onRequestCloseMenu();
+    this.setState({showConfirmDelete: true});
+  };
+  onRequestCloseConfirmDelete = () => this.setState({showConfirmDelete: false});
+
+  onConfirmDelete = () => {
+    this.props.history.push('/');
+    firebase
+      .database()
+      .ref(`comparisons/${this.props.comparison.id}`)
+      .set(null);
+  };
+
   render() {
     const {comparison} = this.props;
     const hasPoints =
       !comparison.isLoading &&
       comparison.comparisonPoints &&
       comparison.comparisonPoints.length > 0;
+    const user = firebase.auth().currentUser;
+    const isCreator = user && user.uid === comparison.creator;
     return (
       <PageBody>
         <Grid container spacing={24} direction="column">
@@ -188,12 +207,14 @@ export default class HomePage extends Component {
                     <MenuItem onClick={this.onClickCustomize}>
                       Customize Scoring
                     </MenuItem>
-                    <MenuItem onClick={this.onClickSettings} divider>
-                      Change Settings
-                    </MenuItem>
-                    <MenuItem onClick={this.onClickDelete}>
-                      Delete Comparison
-                    </MenuItem>
+                    {isCreator &&
+                      <MenuItem onClick={this.onClickSettings} divider>
+                        Change Settings
+                      </MenuItem>}
+                    {isCreator &&
+                      <MenuItem onClick={this.onClickDelete}>
+                        Delete Comparison
+                      </MenuItem>}
                   </Menu>
                 </div>
                 <EditComparisonDialog
@@ -202,6 +223,17 @@ export default class HomePage extends Component {
                   onRequestClose={this.onRequestCloseEditDialog}
                   type="edit"
                 />
+                <AlertDialog
+                  open={this.state.showConfirmDelete}
+                  onRequestClose={this.onRequestCloseConfirmDelete}
+                  title="Delete this comparison?"
+                  description="This can not be undone."
+                >
+                  <Button>Cancel</Button>
+                  <Button raised color="accent" onClick={this.onConfirmDelete}>
+                    Delete
+                  </Button>
+                </AlertDialog>
               </Toolbar>
               {comparison.isLoading && <LoadingBar />}
               <AssignToRouterContext

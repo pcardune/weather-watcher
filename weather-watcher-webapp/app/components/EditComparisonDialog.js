@@ -26,23 +26,42 @@ export default class EditComparisonDialog extends Component {
     type: PropTypes.oneOf(['create', 'edit']).isRequired,
     comparison: ComparisonShape,
     onCreateComparison: PropTypes.func.isRequired,
+    onComparisonCreated: PropTypes.func,
     history: PropTypes.object.isRequired,
+    navigateOnSave: PropTypes.bool,
   };
 
   static defaultProps = {
     comparison: null,
+    navigateOnSave: false,
+    onComparisonCreated: () => {},
   };
 
-  state = {
-    name: this.props.comparison ? this.props.comparison.name : '',
-  };
+  state = this.getInitialStateForComparison(this.props.comparison);
+
+  getInitialStateForComparison(comparison) {
+    return {
+      name: comparison ? comparison.name : '',
+    };
+  }
+
+  componentWillReceiveProps(newProps) {
+    if (newProps.comparison !== this.props.comparison) {
+      this.setState(this.getInitialStateForComparison(newProps.comparison));
+    }
+  }
 
   handleChange = name => event => this.setState({[name]: event.target.value});
 
   onClickCreate = async () => {
     const id = firebase.database().ref('/comparisons').push().key;
-    await this.props.onCreateComparison({name: this.state.name, id}).promise;
-    this.props.history.push(`/compare/${id}`);
+    const comparison = {id, name: this.state.name};
+    const promise = this.props.onCreateComparison(comparison).promise;
+    this.props.onComparisonCreated(comparison);
+    await promise;
+    if (this.props.navigateOnSave) {
+      this.props.history.push(`/compare/${id}`);
+    }
     this.props.onRequestClose();
     trackEvent('Create', {
       content_ids: [id],

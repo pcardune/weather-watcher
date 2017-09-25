@@ -136,7 +136,7 @@ export default class MainDrawer extends Component {
             <ListSubheader>Your Comparisons</ListSubheader>
             {this.renderComparisonsList('creator')}
             <ListItem>
-              <NewComparisonButton raised color="accent">
+              <NewComparisonButton navigateOnSave raised color="accent">
                 + New Comparison
               </NewComparisonButton>
             </ListItem>
