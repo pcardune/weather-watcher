@@ -30,7 +30,7 @@
     },
     "comparisons": {
       "$comparisonId": {
-        ".validate": "newData.hasChildren(['id', 'name', 'creator'])",
+        ".validate": "newData.hasChildren(['id', 'name', 'creator', 'createdOn'])",
         "id": {
           ".validate": "newData.isString()"
         },
@@ -40,10 +40,13 @@
         "creator": {
           ".validate": "newData.isString()"
         },
+        "createdOn": {
+          ".validate": "newData.isNumber()"
+        },
         "$other": {
           ".validate": "false"
         },
-        ".write": "data.val() == null && newData.val() != null || (data.child('id').val() == null || newData.child('id').val() == data.child('id').val()) && (data.child('creator').val() == null || newData.child('creator').val() == data.child('creator').val())"
+        ".write": "data.val() == null && newData.val() != null || (data.child('id').val() == null || newData.child('id').val() == data.child('id').val()) && (data.child('creator').val() == null || newData.child('creator').val() == data.child('creator').val()) && (data.child('createdOn').val() == null || newData.child('createdOn').val() == data.child('createdOn').val())"
       }
     }
   }

@@ -26,6 +26,7 @@ export function* watchCreateComparison() {
         id,
         name,
         creator: user.uid,
+        createdOn: firebase.database.ServerValue.TIMESTAMP,
         comparisonPointIds: {},
       })
       .then(promise.resolve)

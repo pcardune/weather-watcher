@@ -26,7 +26,11 @@ type ComparisonPoint {
 
 path /comparisons/{comparisonId} is Comparison {
   write() {
-    createOnly(this) || (writeOnce(this.id) && writeOnce(this.creator))
+    createOnly(this) || (
+      writeOnce(this.id) &&
+      writeOnce(this.creator) &&
+      writeOnce(this.createdOn)
+    )
   }
 }
 
@@ -34,6 +38,7 @@ type Comparison {
  id: String,
  name: String,
  creator: String,
+ createdOn: Number,
 }
 
 createOnly(value) { prior(value) == null && value != null }
