@@ -1,16 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogActions,
-  List,
-  ListItem,
-} from 'material-ui';
-
+import {Button, DialogTitle, DialogActions, List, ListItem} from 'material-ui';
 import {ComparisonShape} from 'app/propTypes';
 import NewComparisonButton from './NewComparisonButton';
+import Dialog from './Dialog';
 
 export default class ComparisonPickerDialog extends Component {
   static propTypes = {

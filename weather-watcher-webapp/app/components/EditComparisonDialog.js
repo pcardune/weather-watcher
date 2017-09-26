@@ -4,17 +4,20 @@ import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {
   Button,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
 } from 'material-ui';
+import withResponsiveFullScreen from 'material-ui/Dialog/withResponsiveFullScreen';
 
 import {ComparisonShape} from 'app/propTypes';
 import firebase from 'app/firebaseApp';
 import trackEvent from 'app/trackEvent';
 import {createComparison} from 'app/containers/Database/actions';
+import Dialog from './Dialog';
+
+const ResponsiveDialog = withResponsiveFullScreen()(Dialog);
 
 @withRouter
 @connect(null, {
@@ -92,7 +95,7 @@ export default class EditComparisonDialog extends Component {
           </Button>;
 
     return (
-      <Dialog open={open} onRequestClose={onRequestClose}>
+      <ResponsiveDialog open={open} onRequestClose={onRequestClose}>
         <DialogTitle>
           {title}
         </DialogTitle>
@@ -113,7 +116,7 @@ export default class EditComparisonDialog extends Component {
           <Button onClick={this.props.onRequestClose}>Cancel</Button>
           {button}
         </DialogActions>
-      </Dialog>
+      </ResponsiveDialog>
     );
   }
 }

@@ -48,6 +48,7 @@ import {
   removeComparisonPoint,
 } from 'app/containers/Database/actions';
 import trackEvent from 'app/trackEvent';
+import CardBar from 'app/components/CardBar';
 
 const HelpText = styled.p`
   text-align: center;
@@ -97,9 +98,7 @@ export default class HomePage extends Component {
   state = {
     showAddForm: false,
     showCustomizeForm: false,
-    showMenu: false,
     showConfirmDelete: false,
-    menuAnchorEl: null,
   };
 
   componentDidMount() {
@@ -144,26 +143,13 @@ export default class HomePage extends Component {
     );
   };
 
-  onClickMenu = event =>
-    this.setState({showMenu: true, menuAnchorEl: event.currentTarget});
-  onRequestCloseMenu = () => this.setState({showMenu: false});
-
-  onClickCustomize = () => {
-    this.onRequestCloseMenu();
-    this.setState({showCustomizeForm: true});
-  };
+  onClickCustomize = () => this.setState({showCustomizeForm: true});
   onClickDoneCustomize = () => this.setState({showCustomizeForm: false});
 
-  onClickSettings = () => {
-    this.onRequestCloseMenu();
-    this.setState({showEditDialog: true});
-  };
+  onClickSettings = () => this.setState({showEditDialog: true});
   onRequestCloseEditDialog = () => this.setState({showEditDialog: false});
 
-  onClickDelete = () => {
-    this.onRequestCloseMenu();
-    this.setState({showConfirmDelete: true});
-  };
+  onClickDelete = () => this.setState({showConfirmDelete: true});
   onRequestCloseConfirmDelete = () => this.setState({showConfirmDelete: false});
 
   onConfirmDelete = () => {
@@ -187,23 +173,10 @@ export default class HomePage extends Component {
         <Grid container spacing={24} direction="column">
           <Grid item>
             <Card>
-              <Toolbar>
-                <Typography
-                  type="title"
-                  color="inherit"
-                  className={this.props.classes.title}
-                >
-                  {comparison.name}
-                </Typography>
-                <div style={{position: 'relative'}}>
-                  <IconButton color="contrast" onClick={this.onClickMenu}>
-                    <Icon>more_vert</Icon>
-                  </IconButton>
-                  <Menu
-                    open={this.state.showMenu}
-                    onRequestClose={this.onRequestCloseMenu}
-                    anchorEl={this.state.menuAnchorEl}
-                  >
+              <CardBar
+                title={comparison.name}
+                menu={
+                  <Menu>
                     <MenuItem onClick={this.onClickCustomize}>
                       Customize Scoring
                     </MenuItem>
@@ -216,7 +189,8 @@ export default class HomePage extends Component {
                         Delete Comparison
                       </MenuItem>}
                   </Menu>
-                </div>
+                }
+              >
                 <EditComparisonDialog
                   comparison={comparison}
                   open={this.state.showEditDialog}
@@ -234,7 +208,7 @@ export default class HomePage extends Component {
                     Delete
                   </Button>
                 </AlertDialog>
-              </Toolbar>
+              </CardBar>
               {comparison.isLoading && <LoadingBar />}
               <AssignToRouterContext
                 contextKey="title"
@@ -263,9 +237,13 @@ export default class HomePage extends Component {
                       />
                     </InnerPane>}
                 </CardContent>}
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card>
+              <CardHeader title="Daily Forecasts" />
               {hasPoints
                 ? <CardContent>
-                    <Typography>Daily Forecasts</Typography>
                     <MultiDayForecastComparison
                       onChangeDate={this.onChangeDate}
                       date={this.props.date}
@@ -282,8 +260,8 @@ export default class HomePage extends Component {
                   </CardContent>}
             </Card>
           </Grid>
-          <Grid item>
-            {hasPoints &&
+          {hasPoints &&
+            <Grid item>
               <Card>
                 <CardHeader title="Weekly Score Comparison" />
                 <CardContent>
@@ -293,8 +271,8 @@ export default class HomePage extends Component {
                     onClickDate={this.onChangeDate}
                   />
                 </CardContent>
-              </Card>}
-          </Grid>
+              </Card>
+            </Grid>}
         </Grid>
       </PageBody>
     );

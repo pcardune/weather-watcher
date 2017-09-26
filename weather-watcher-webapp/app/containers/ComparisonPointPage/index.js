@@ -28,6 +28,7 @@ import LoadingBar from 'app/components/LoadingBar';
 import WeatherAlertList from 'app/components/WeatherAlertList';
 import ComparisonPickerDialog from 'app/components/ComparisonPickerDialog';
 import CardBar from 'app/components/CardBar';
+import PageBody from 'app/components/PageBody';
 import trackEvent from 'app/trackEvent';
 
 const DescriptionList = styled.dl`
@@ -123,93 +124,98 @@ export default class ComparisonPointPage extends PureComponent {
     const user = firebase.auth().currentUser;
 
     return (
-      <Grid container>
-        <Grid item xs={2} hidden={{smDown: true}} />
-        <Grid item xs={12} md={8}>
-          <AssignToRouterContext
-            contextKey="title"
-            value={comparisonPoint.name}
-          />
-          <AssignToRouterContext
-            contextKey="description"
-            value={`Find out what the weather is at ${comparisonPoint.name}`}
-          />
-          <Card>
-            <CardBar
-              title={comparisonPoint.name}
-              menu={
-                <Menu>
-                  <MenuItem onClick={this.onClickAddToComparison}>
-                    Add to Comparison
-                  </MenuItem>
-                </Menu>
-              }
-            >
-              <ComparisonPickerDialog
-                open={this.state.showAddToComparison}
-                onRequestClose={this.onRequestCloseAddToComparison}
-                comparisons={this.props.comparisons
-                  .valueSeq()
-                  .toArray()
-                  .filter(c => user && c.creator === user.uid)}
-                title="Add to Comparison"
-                onSelect={this.onSelectComparison}
-              />
-              <Snackbar
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-                open={this.state.showSnackbar}
-                autoHideDuration={6000}
-                onRequestClose={this.onRequestCloseSnackbar}
-                message={this.state.snackbarMessage}
-              />
-            </CardBar>
-            <CardContent>
-              <WeatherAlertList alerts={currentAlerts} />
-              <DescriptionList>
-                <dt>Elevation:</dt>
-                <dd>
-                  <Number
-                    value={
-                      comparisonPoint.noaaGridForecast &&
-                      comparisonPoint.noaaGridForecast.properties.elevation
-                        .value
-                    }
-                    from="m"
-                    to="ft"
-                  />
-                  ft.
-                </dd>
-              </DescriptionList>
-            </CardContent>
-            <CardContent>
-              <table>
-                <ForecastTableHeader />
-                <tbody>
-                  {getForecastDates().map(date =>
-                    <ForecastRow
-                      key={`${comparisonPoint.id}-${date.getTime()}`}
-                      point={comparisonPoint}
-                      date={date}
-                      getName={() => moment(date).format('dddd')}
-                    />
-                  )}
-                </tbody>
-              </table>
-            </CardContent>
-            <CardContent>
-              <a
-                target="_blank"
-                href={`http://forecast.weather.gov/MapClick.php?lon=${comparisonPoint.longitude}&lat=${comparisonPoint.latitude}`}
+      <PageBody>
+        <Grid container spacing={0} direction="column">
+          <Grid item>
+            <AssignToRouterContext
+              contextKey="title"
+              value={comparisonPoint.name}
+            />
+            <AssignToRouterContext
+              contextKey="description"
+              value={`Find out what the weather is at ${comparisonPoint.name}`}
+            />
+            <Card>
+              <CardBar
+                title={comparisonPoint.name}
+                menu={
+                  <Menu>
+                    <MenuItem onClick={this.onClickAddToComparison}>
+                      Add to Comparison
+                    </MenuItem>
+                  </Menu>
+                }
               >
-                Forecast information from NOAA
-              </a>
-            </CardContent>
-          </Card>
+                <ComparisonPickerDialog
+                  open={this.state.showAddToComparison}
+                  onRequestClose={this.onRequestCloseAddToComparison}
+                  comparisons={this.props.comparisons
+                    .valueSeq()
+                    .toArray()
+                    .filter(c => user && c.creator === user.uid)}
+                  title="Add to Comparison"
+                  onSelect={this.onSelectComparison}
+                />
+                <Snackbar
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                  open={this.state.showSnackbar}
+                  autoHideDuration={6000}
+                  onRequestClose={this.onRequestCloseSnackbar}
+                  message={this.state.snackbarMessage}
+                />
+              </CardBar>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card>
+              <CardContent>
+                <WeatherAlertList alerts={currentAlerts} />
+                <DescriptionList>
+                  <dt>Elevation:</dt>
+                  <dd>
+                    <Number
+                      value={
+                        comparisonPoint.noaaGridForecast &&
+                        comparisonPoint.noaaGridForecast.properties.elevation
+                          .value
+                      }
+                      from="m"
+                      to="ft"
+                    />
+                    ft.
+                  </dd>
+                </DescriptionList>
+              </CardContent>
+              <CardContent>
+                <table>
+                  <ForecastTableHeader />
+                  <tbody>
+                    {getForecastDates().map(date =>
+                      <ForecastRow
+                        key={`${comparisonPoint.id}-${date.getTime()}`}
+                        point={comparisonPoint}
+                        date={date}
+                        getName={() => moment(date).format('dddd')}
+                      />
+                    )}
+                  </tbody>
+                </table>
+              </CardContent>
+              <CardContent>
+                <a
+                  target="_blank"
+                  href={`http://forecast.weather.gov/MapClick.php?lon=${comparisonPoint.longitude}&lat=${comparisonPoint.latitude}`}
+                >
+                  Forecast information from NOAA
+                </a>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-      </Grid>
+      </PageBody>
     );
   }
 }

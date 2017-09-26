@@ -50,12 +50,15 @@ export default class CardBar extends Component {
             onRequestClose={this.onRequestCloseMenu}
             anchorEl={this.state.menuAnchorEl}
           >
-            {React.Children.map(menu.props.children, item =>
-              React.cloneElement(item, {
-                onClick: item.props.onClick
-                  ? this.closeAndCall(item.props.onClick)
-                  : null,
-              })
+            {React.Children.map(
+              menu.props.children,
+              item =>
+                item &&
+                React.cloneElement(item, {
+                  onClick: item.props.onClick
+                    ? this.closeAndCall(item.props.onClick)
+                    : null,
+                })
             )}
           </menu.type>}
       </Toolbar>

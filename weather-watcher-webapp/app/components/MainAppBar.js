@@ -10,8 +10,10 @@ import {
   Toolbar,
   Typography,
   Button,
+  IconButton,
   withStyles,
   Icon,
+  Hidden,
 } from 'material-ui';
 
 import {addComparisonPoint} from 'app/containers/Database/actions';
@@ -65,6 +67,7 @@ const SearchBox = styled.div`
 
 const styles = theme => ({
   appBar: {
+    width: '100%',
     position: 'absolute',
     transition: theme.transitions.create(['margin', 'width'], {
       easing: theme.transitions.easing.sharp,
@@ -109,7 +112,6 @@ const styles = theme => ({
   hide: {
     display: 'none',
   },
-  logo: {},
   sublogo: {
     color: theme.palette.secondary[50],
   },
@@ -120,10 +122,11 @@ const styles = theme => ({
 @withStyles(styles)
 export default class MainAppBar extends Component {
   static propTypes = {
-    //    onNewComparison: PropTypes.func.isRequired,
-    comparisons: PropTypes.object.isRequired,
     history: PropTypes.object.isRequired,
     onAddComparisonPoint: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired,
+    open: PropTypes.bool.isRequired,
+    handleDrawerOpen: PropTypes.func.isRequired,
   };
 
   onChangeLocation = async (suggestion, typeahead) => {
@@ -141,7 +144,6 @@ export default class MainAppBar extends Component {
       placeId,
     });
     this.props.history.push(`/locations/${id}`);
-    console.log(suggestion);
     try {
       trackEvent('Search', {
         search_string: suggestion.label.slice(
@@ -163,64 +165,103 @@ export default class MainAppBar extends Component {
   render() {
     const {classes} = this.props;
     return (
-      <AppBar
+      <div
         className={classNames(
           classes.appBar,
           this.props.open && classes.appBarShift
         )}
       >
-        <Toolbar
-          disableGutters
-          className={classNames(
-            classes.toolbar,
-            this.props.open && classes.toolbarShift
-          )}
-        >
-          <Grid container spacing={0} align="center">
-            <Grid
-              item
-              xs={2}
-              className={classNames(
-                classes.menu,
-                this.props.open && classes.menuShift
-              )}
+        <Hidden mdUp>
+          <div
+            style={{
+              paddingLeft: 12,
+              paddingRight: 12,
+              position: 'absolute',
+              width: '100vw',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: 64,
+              }}
             >
-              <Button
-                color="contrast"
+              <IconButton
+                style={{position: 'absolute', left: 0}}
+                disableRipple
                 aria-label="open drawer"
                 onClick={this.props.handleDrawerOpen}
                 className={classNames(classes.menuButton)}
               >
                 <Icon>menu</Icon>
-              </Button>
-            </Grid>
-            <Grid item xs={2}>
-              <SmartLink to="/">
-                <Typography type="headline" className={classes.logo} noWrap>
-                  <Logo />
-                </Typography>
-                <Typography
-                  component="span"
-                  type="subheading"
-                  className={classes.sublogo}
-                  noWrap
+              </IconButton>
+              <Typography type="headline" noWrap align="center">
+                <Logo />
+              </Typography>
+            </div>
+            <SearchBox>
+              <LocationTypeahead onChange={this.onChangeLocation} />
+            </SearchBox>
+          </div>
+        </Hidden>
+        <Hidden smDown>
+          <AppBar position="static">
+            <Toolbar
+              disableGutters
+              className={classNames(
+                classes.toolbar,
+                this.props.open && classes.toolbarShift
+              )}
+            >
+              <Grid container spacing={0} align="center">
+                <Grid
+                  item
+                  xs={2}
+                  className={classNames(
+                    classes.menu,
+                    this.props.open && classes.menuShift
+                  )}
                 >
-                  weather that{"'"}s{' '}
-                  <em>
-                    <u>just</u>
-                  </em>{' '}
-                  right
-                </Typography>
-              </SmartLink>
-            </Grid>
-            <Grid item xs={6}>
-              <SearchBox>
-                <LocationTypeahead onChange={this.onChangeLocation} />
-              </SearchBox>
-            </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
+                  <Button
+                    color="contrast"
+                    aria-label="open drawer"
+                    onClick={this.props.handleDrawerOpen}
+                    className={classNames(classes.menuButton)}
+                  >
+                    <Icon>menu</Icon>
+                  </Button>
+                </Grid>
+                <Grid item xs={2}>
+                  <SmartLink to="/">
+                    <Typography type="headline" noWrap>
+                      <Logo />
+                    </Typography>
+                    <Typography
+                      component="span"
+                      type="subheading"
+                      className={classes.sublogo}
+                      noWrap
+                    >
+                      weather that{"'"}s{' '}
+                      <em>
+                        <u>just</u>
+                      </em>{' '}
+                      right
+                    </Typography>
+                  </SmartLink>
+                </Grid>
+                <Grid item xs={6}>
+                  <SearchBox>
+                    <LocationTypeahead onChange={this.onChangeLocation} />
+                  </SearchBox>
+                </Grid>
+              </Grid>
+            </Toolbar>
+          </AppBar>
+        </Hidden>
+      </div>
     );
   }
 }

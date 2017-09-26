@@ -92,8 +92,8 @@ const styles = theme => ({
     }),
     height: 'calc(100% - 56px)',
     minHeight: 'calc(100vh - 234px)',
-    marginTop: 76,
-    [theme.breakpoints.up('sm')]: {
+    marginTop: 100,
+    [theme.breakpoints.up('md')]: {
       content: {
         height: 'calc(100% - 64px)',
         marginTop: 64,
@@ -186,9 +186,6 @@ export default class App extends Component {
         <div className={classes.appFrame}>
           <MainAppBar
             open={this.state.open}
-            onNewComparison={this.onNewComparison}
-            comparisons={this.props.comparisons}
-            handleDrawerClose={this.handleDrawerClose}
             handleDrawerOpen={this.handleDrawerOpen}
           />
           <MainDrawer

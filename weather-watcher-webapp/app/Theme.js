@@ -49,14 +49,6 @@ export const MuiTheme = createMuiTheme({
   },
   drawerWidth: 240,
   overrides: {
-    MuiCardHeader: {
-      root: {
-        backgroundColor: darkGrey[500],
-      },
-      title: {
-        color: 'white',
-      },
-    },
     MuiToolbar: {
       root: {
         backgroundColor: darkGrey[500],

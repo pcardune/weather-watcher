@@ -2,12 +2,13 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import {
-  Dialog,
   DialogContent,
   DialogContentText,
   DialogTitle,
   DialogActions,
 } from 'material-ui';
+
+import Dialog from './Dialog';
 
 export default class AlertDialog extends Component {
   static propTypes = {
