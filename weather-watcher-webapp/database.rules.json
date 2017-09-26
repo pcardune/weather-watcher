@@ -47,6 +47,9 @@
           ".validate": "false"
         },
         ".write": "newData.val() == null && (auth != null && auth.uid == data.child('creator').val()) || auth != null && auth.uid == newData.child('creator').val() && (newData.val() == null || (data.child('id').val() == null || newData.child('id').val() == data.child('id').val()) && (data.child('creator').val() == null || newData.child('creator').val() == data.child('creator').val()) && (data.child('createdOn').val() == null || newData.child('createdOn').val() == data.child('createdOn').val()))",
+        ".indexOn": [
+          "creator"
+        ],
         "comparisonPointIds": {
           ".validate": "true",
           ".write": "auth != null && auth.uid == root.child('comparisons').child($comparisonId).child('creator').val()"

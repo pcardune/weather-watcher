@@ -33,6 +33,9 @@ path /comparisons/{comparisonId} is Comparison {
       writeOnce(this.createdOn)
     )))
   }
+  index() {
+    ["creator"]
+  }
 }
 
 path /comparisons/{comparisonId}/comparisonPointIds {
