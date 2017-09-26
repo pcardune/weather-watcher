@@ -171,7 +171,7 @@ export default class MainAppBar extends Component {
           this.props.open && classes.appBarShift
         )}
       >
-        <Hidden mdUp>
+        <Hidden mdUp implementation="css">
           <div
             style={{
               paddingLeft: 12,
@@ -206,7 +206,7 @@ export default class MainAppBar extends Component {
             </SearchBox>
           </div>
         </Hidden>
-        <Hidden smDown>
+        <Hidden smDown implementation="css">
           <AppBar position="static">
             <Toolbar
               disableGutters

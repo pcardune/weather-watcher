@@ -12,6 +12,7 @@ export const LocationTypeaheadWrapper = styled.div`
   }
 
   .geosuggest__input {
+    width: 100%;
     ${inputStyle} border: 1px solid ${props =>
         props.theme.colors.divider} !important;
   }

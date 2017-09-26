@@ -7,7 +7,6 @@ import {
   List,
   ListSubheader,
   ListItem,
-  ListItemText,
   Divider,
   Button,
   withStyles,
@@ -15,7 +14,6 @@ import {
 } from 'material-ui';
 
 import firebase from 'app/firebaseApp';
-import trackEvent from 'app/trackEvent';
 import {
   addComparisonPoint,
   createComparison,
@@ -25,28 +23,6 @@ import NewComparisonButton from './NewComparisonButton';
 import SmartLink from './SmartLink';
 
 const styles = theme => ({
-  appBar: {
-    position: 'absolute',
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: theme.drawerWidth,
-    width: `calc(100% - ${theme.drawerWidth}px)`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
-  menuButton: {
-    marginLeft: 12,
-    marginRight: 20,
-  },
-  hide: {
-    display: 'none',
-  },
   drawerPaper: {
     borderRight: 'none !important',
     position: 'relative',
@@ -114,13 +90,10 @@ export default class MainDrawer extends Component {
     const {classes} = this.props;
     return (
       <Drawer
-        type="persistent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
         open={this.props.open}
+        onRequestClose={this.props.handleDrawerClose}
       >
-        <div className={classes.drawerInner}>
+        <div>
           <div className={classes.drawerHeader}>
             <Button onClick={this.props.handleDrawerClose}>
               <Icon>chevron_left</Icon>

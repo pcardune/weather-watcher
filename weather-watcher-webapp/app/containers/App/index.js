@@ -82,7 +82,6 @@ const styles = theme => ({
   },
   content: {
     width: '100%',
-    marginLeft: -theme.drawerWidth,
     flexGrow: 1,
     paddingTop: theme.spacing.unit * 3,
     paddingBottom: theme.spacing.unit * 3,
@@ -138,6 +137,19 @@ export default class App extends Component {
     }).comparison;
     this.props.history.push(`/compare/${comparison.id}`);
   };
+
+  componentDidMount() {
+    let lastpath;
+    this.unlisten = this.props.history.listen(location => {
+      if (location.pathname !== lastpath) {
+        this.setState({open: false});
+      }
+    });
+  }
+
+  componentWillUnmount() {
+    this.unlisten();
+  }
 
   renderHomePage = ({match: {params: {comparisonId}}}) => {
     return (
