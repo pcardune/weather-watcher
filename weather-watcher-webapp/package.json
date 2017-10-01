@@ -151,7 +151,7 @@
     "react-router-redux": "^4.0.8",
     "react-truncate": "^2.1.4",
     "redux": "3.6.0",
-    "redux-firebase-mirror": "^0.0.11",
+    "redux-firebase-mirror": "^0.0.12",
     "redux-immutable": "3.0.8",
     "redux-logger": "^3.0.6",
     "redux-persist": "^4.8.0",
