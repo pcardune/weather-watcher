@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {
   Drawer,
   List,
   ListSubheader,
   ListItem,
+  ListItemText,
   Divider,
   Button,
   withStyles,
@@ -14,11 +14,8 @@ import {
 } from 'material-ui';
 
 import firebase from 'app/firebaseApp';
-import {
-  addComparisonPoint,
-  createComparison,
-} from 'app/containers/Database/actions';
 
+import {getUser} from 'app/containers/Database/subscriptions';
 import NewComparisonButton from './NewComparisonButton';
 import SmartLink from './SmartLink';
 
@@ -44,20 +41,36 @@ const styles = theme => ({
   },
 });
 
-@withRouter
-@connect(null, {
-  onAddComparisonPoint: addComparisonPoint,
-  onCreateComparison: createComparison,
-})
+@connect(state => ({
+  user: getUser(state),
+}))
 @withStyles(styles)
 export default class MainDrawer extends Component {
   static propTypes = {
-    onCreateComparison: PropTypes.func.isRequired,
     comparisons: PropTypes.object.isRequired,
     handleDrawerClose: PropTypes.func.isRequired,
-    history: PropTypes.object.isRequired,
     classes: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
+    user: PropTypes.object,
+  };
+
+  static defaultProps = {
+    user: null,
+  };
+
+  onClickSignOut = async () => {
+    await firebase.auth().signOut();
+    window.location = '/';
+  };
+
+  onClickSignIn = async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const user = firebase.auth().currentUser;
+    if (user && user.isAnonymous) {
+      user.linkWithRedirect(provider);
+    } else {
+      firebase.auth().signInWithRedirect(provider);
+    }
   };
 
   renderComparisonsList(type) {
@@ -103,8 +116,6 @@ export default class MainDrawer extends Component {
           <List className={classes.list}>
             <ListSubheader>Comparisons</ListSubheader>
             {this.renderComparisonsList('public')}
-          </List>
-          <List className={classes.list}>
             <Divider />
             <ListSubheader>Your Comparisons</ListSubheader>
             {this.renderComparisonsList('creator')}
@@ -113,6 +124,15 @@ export default class MainDrawer extends Component {
                 + New Comparison
               </NewComparisonButton>
             </ListItem>
+            <Divider />
+            <ListSubheader>Acount</ListSubheader>
+            {this.props.user && !this.props.user.isAnonymous
+              ? <ListItem button onClick={this.onClickSignOut}>
+                  <ListItemText primary="Sign Out" />
+                </ListItem>
+              : <ListItem button onClick={this.onClickSignIn}>
+                  <ListItemText primary="Sign In With Google" />
+                </ListItem>}
           </List>
         </div>
       </Drawer>

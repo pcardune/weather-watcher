@@ -12,17 +12,13 @@ import {subscribeProps} from 'redux-firebase-mirror';
 import {withRouter} from 'react-router';
 import {
   Button,
-  Icon,
   Card,
   CardHeader,
   CardContent,
+  CardActions,
   Grid,
-  IconButton,
   Menu,
   MenuItem,
-  Toolbar,
-  Typography,
-  withStyles,
 } from 'material-ui';
 
 import firebase from 'app/firebaseApp';
@@ -30,7 +26,6 @@ import LoadingBar from 'app/components/LoadingBar';
 import PageBody from 'app/components/PageBody';
 import MultiDayForecastComparison from 'app/components/MultiDayForecastComparison';
 import {AugmentedComparisonShape} from 'app/propTypes';
-import AddComparisonPointForm from 'app/components/AddComparisonPointForm';
 import CustomizeScoreForm from 'app/components/CustomizeScoreForm';
 import EditComparisonDialog from 'app/components/EditComparisonDialog';
 import AlertDialog from 'app/components/AlertDialog';
@@ -76,10 +71,6 @@ const InnerPane = styled.div`
 @subscribeProps({
   comparison: augmentedComparisonById,
 })
-@withStyles({
-  title: {flex: 1},
-  customizeButton: {position: 'relative', top: 30},
-})
 export default class HomePage extends Component {
   static propTypes = {
     location: PropTypes.object.isRequired,
@@ -88,7 +79,6 @@ export default class HomePage extends Component {
     onRemoveComparisonPoint: PropTypes.func.isRequired,
     onAddComparisonPoint: PropTypes.func.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
-    classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {
@@ -96,7 +86,6 @@ export default class HomePage extends Component {
   };
 
   state = {
-    showAddForm: false,
     showCustomizeForm: false,
     showConfirmDelete: false,
   };
@@ -113,14 +102,6 @@ export default class HomePage extends Component {
       this.props.comparison,
       comparisonPointId
     );
-  };
-
-  onClickAddLocation = () => {
-    this.setState({showAddForm: !this.state.showAddForm});
-  };
-
-  hideAddForm = () => {
-    this.setState({showAddForm: false});
   };
 
   onAddComparisonPoint = args => {
@@ -151,6 +132,11 @@ export default class HomePage extends Component {
 
   onClickDelete = () => this.setState({showConfirmDelete: true});
   onRequestCloseConfirmDelete = () => this.setState({showConfirmDelete: false});
+
+  onClickSignIn = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().currentUser.linkWithRedirect(provider);
+  };
 
   onConfirmDelete = () => {
     this.props.history.push('/');
@@ -219,15 +205,8 @@ export default class HomePage extends Component {
                 value={`Find out what the weather is at ${comparison.name}`}
               />
 
-              {(this.state.showAddForm || this.state.showCustomizeForm) &&
+              {this.state.showCustomizeForm &&
                 <CardContent>
-                  {this.state.showAddForm &&
-                    <InnerPane>
-                      <AddComparisonPointForm
-                        onClose={this.hideAddForm}
-                        onAdd={this.onAddComparisonPoint}
-                      />
-                    </InnerPane>}
                   {this.state.showCustomizeForm &&
                     <InnerPane>
                       <CustomizeScoreForm
@@ -239,6 +218,25 @@ export default class HomePage extends Component {
                 </CardContent>}
             </Card>
           </Grid>
+          {isCreator &&
+            user.isAnonymous &&
+            <Grid item>
+              <Card>
+                <CardContent>
+                  Sign in with Google to save your comparison!
+                </CardContent>
+                <CardActions>
+                  <Button
+                    raised
+                    color="accent"
+                    disableRipple
+                    onClick={this.onClickSignIn}
+                  >
+                    Sign In With Google
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>}
           <Grid item>
             <Card>
               <CardHeader title="Daily Forecasts" />
