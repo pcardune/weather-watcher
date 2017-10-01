@@ -60,7 +60,8 @@ const SearchBox = styled.div`
       margin: 0px;
       padding: 10px;
       border-radius: 5px;
-      color: white;
+      color: ${props =>
+        props.phone ? MuiTheme.palette.primary[700] : 'white'};
     }
   }
 `;
@@ -114,6 +115,14 @@ const styles = theme => ({
   },
   sublogo: {
     color: theme.palette.secondary[50],
+  },
+  headline: {
+    backgroundColor: theme.palette.primary[500],
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    padding: 10,
   },
 });
 
@@ -188,20 +197,23 @@ export default class MainAppBar extends Component {
                 height: 64,
               }}
             >
+              <div className={classes.headline}>
+                <Typography type="headline" noWrap align="center">
+                  <Logo />
+                </Typography>
+              </div>
               <IconButton
-                style={{position: 'absolute', left: 0}}
+                style={{position: 'absolute', left: 0, top: 3}}
                 disableRipple
                 aria-label="open drawer"
                 onClick={this.props.handleDrawerOpen}
                 className={classNames(classes.menuButton)}
+                color="contrast"
               >
                 <Icon>menu</Icon>
               </IconButton>
-              <Typography type="headline" noWrap align="center">
-                <Logo />
-              </Typography>
             </div>
-            <SearchBox>
+            <SearchBox phone>
               <LocationTypeahead onChange={this.onChangeLocation} />
             </SearchBox>
           </div>

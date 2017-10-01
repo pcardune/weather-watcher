@@ -53,6 +53,7 @@ export const MuiTheme = createMuiTheme({
       root: {
         backgroundColor: darkGrey[500],
         color: 'white',
+        borderRadius: 2,
       },
     },
   },
