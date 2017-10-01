@@ -9,6 +9,7 @@ import {
 import {List, Map} from 'immutable';
 import {createSelector} from 'reselect';
 
+import firebase from 'app/firebaseApp';
 import firebaseStorageAPI from 'app/firebaseStorageAPI';
 
 import {InterpolatedGridForecast, InterpolatedScoreFunction} from './scoring';
@@ -36,8 +37,26 @@ function flatten(a) {
   return b;
 }
 
+export const getDatabaseDomain = state => state.get('database');
+
+export const getUser = createSelector([getDatabaseDomain], databaseDomain =>
+  databaseDomain.get('user')
+);
+
+export const getUserId = createSelector(
+  [getUser],
+  user => (user ? user.get('uid') : null)
+);
+
 const SelectorConfig = {
-  comparisons: {},
+  comparisons: {
+    transformValue: comparison => {
+      if (comparison) {
+        comparison.comparisonPointIds = comparison.comparisonPointIds || {};
+      }
+      return comparison;
+    },
+  },
   comparisonPoints: {},
   noaaPoints: {},
   noaaGridForecasts: {},
@@ -68,6 +87,7 @@ function createItemSelector(key, parentSelector) {
       const item = process.env.IS_SERVER
         ? firebaseStorageAPI.getValueAtPath(mirror, path)
         : parent.get(id);
+      // TODO: hasReceivedValue doesn't work with complex Path Specs...
       const isLoading = !hasReceivedValue(path);
       let value = item;
       if (item) {
@@ -92,10 +112,8 @@ const Items = fromPairs(
   Object.keys(Root).map(key => [key, createItemSelector(key, Root[key])])
 );
 
-const getMyComparisons = createSelector([Items.comparisons], getComparison =>
-  List(
-    BUILTIN_COMPARISON_IDS.map(id => getComparison(id).value).filter(c => !!c)
-  )
+const getMyComparisons = createSelector([Root.comparisons], comparisons =>
+  List(comparisons.valueSeq().toJS().filter(c => !!c))
 );
 
 export function getGridForecastId(noaaPoint) {
@@ -156,6 +174,7 @@ const getAugmentedComparisonPointGetter = createSelector(
               value: daily,
               isLoading: isDailyLoading,
             } = getNoaaDailyForecast(getForecastId(noaaPoint));
+            const noaaDailyForecast = getLatest(daily);
             const {value: grid, isLoading: isGridLoading} = getNoaaGridForecast(
               getGridForecastId(noaaPoint)
             );
@@ -164,12 +183,13 @@ const getAugmentedComparisonPointGetter = createSelector(
               getForecastZoneId(noaaPoint)
             );
             const alerts = (alertIds || []).map(id => getNoaaAlert(id).value);
+            const isLoading = !noaaGridForecast || !noaaDailyForecast;
             return {
               ...comparisonPoint,
-              isLoadingForecast: isDailyLoading || isGridLoading,
-              isLoading: isDailyLoading || isGridLoading,
+              isLoadingForecast: isLoading,
+              isLoading,
               noaaPoint,
-              noaaDailyForecast: getLatest(daily),
+              noaaDailyForecast,
               noaaGridForecast,
               alerts,
               interpolatedScore: new InterpolatedScoreFunction({
@@ -192,10 +212,9 @@ const getAugmentedComparisonGetter = createSelector(
     memoize((comparisonId, scoreConfig) => {
       const {value: comparison, isLoading} = getComparison(comparisonId);
       if (comparison) {
-        return {
-          ...comparison,
-          scoreConfig,
-          comparisonPoints: Object.values(
+        let comparisonPoints = [];
+        if (comparison.comparisonPointIds) {
+          comparisonPoints = Object.values(
             comparison.comparisonPointIds
           ).map(comparisonPointId => {
             const comparisonPoint = getAugmentedComparisonPoint(
@@ -203,7 +222,12 @@ const getAugmentedComparisonGetter = createSelector(
               scoreConfig
             );
             return {id: comparisonPointId, ...comparisonPoint};
-          }),
+          });
+        }
+        return {
+          ...comparison,
+          scoreConfig,
+          comparisonPoints,
         };
       }
       return {id: comparisonId, isLoading};
@@ -217,12 +241,21 @@ export const comparisonById = new Subscription({
 });
 
 export const myComparisons = new Subscription({
-  paths: state =>
-    flatten(
-      BUILTIN_COMPARISON_IDS.map(comparisonId =>
-        comparisonById.paths(state, {comparisonId})
-      )
-    ),
+  paths: state => {
+    const paths = [
+      ...flatten(
+        BUILTIN_COMPARISON_IDS.map(comparisonId =>
+          comparisonById.paths(state, {comparisonId})
+        )
+      ),
+      {
+        path: '/comparisons',
+        orderByChild: 'creator',
+        filter: {equalTo: getUserId(state)},
+      },
+    ];
+    return paths;
+  },
   value: getMyComparisons,
 });
 
@@ -283,13 +316,15 @@ export const augmentedComparisonById = new Subscription({
     let paths = comparisonById.paths(state, {comparisonId});
     const {value: comparison} = Items.comparisons(state)(comparisonId);
     if (comparison) {
-      Object.values(
-        comparison.comparisonPointIds
-      ).forEach(comparisonPointId => {
-        paths = paths.concat(
-          augmentedComparisonPointById.paths(state, {comparisonPointId})
-        );
-      });
+      if (comparison.comparisonPointIds) {
+        Object.values(
+          comparison.comparisonPointIds
+        ).forEach(comparisonPointId => {
+          paths = paths.concat(
+            augmentedComparisonPointById.paths(state, {comparisonPointId})
+          );
+        });
+      }
     }
     return paths;
   },

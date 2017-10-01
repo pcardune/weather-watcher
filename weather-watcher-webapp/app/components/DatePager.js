@@ -2,11 +2,10 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-mini';
 import styled from 'styled-components';
+import {Hidden, Grid, Button} from 'material-ui';
+import Icon from 'material-ui/Icon';
 
 import {getForecastDates} from 'app/utils/dates';
-import Button from './Button';
-
-const Wrapper = styled.div`margin-bottom: 0px;`;
 
 export default class DatePager extends PureComponent {
   static propTypes = {
@@ -47,36 +46,46 @@ export default class DatePager extends PureComponent {
 
   render() {
     return (
-      <Wrapper className="row valign-wrapper">
-        <div className="col m4 s5 center-align">
+      <Grid container justify="space-around" align="center">
+        <Grid item>
           <Button
             onClick={this.onClickPrevDate}
             disabled={!this.canClickPrevDate()}
-            iconLeft="chevron_left"
-            hideLabelOnMobile
+            raised
+            disableRipple
           >
+            <Hidden mdDown>
+              <Icon>chevron_left</Icon>
+            </Hidden>
             {moment(this.props.currentDate).subtract(1, 'days').format('ddd')}
           </Button>
-        </div>
-        <div className="col m4 s2 center-align">
-          <h3 className="hide-on-med-and-down">
-            {moment(this.props.currentDate).format('dddd')}
-          </h3>
-          <h5 className="hide-on-large-only">
-            {moment(this.props.currentDate).format('ddd')}
-          </h5>
-        </div>
-        <div className="col m4 s5 center-align">
+        </Grid>
+        <Grid item>
+          <Hidden mdDown>
+            <h3>
+              {moment(this.props.currentDate).format('dddd')}
+            </h3>
+          </Hidden>
+          <Hidden lgUp>
+            <h5>
+              {moment(this.props.currentDate).format('ddd')}
+            </h5>
+          </Hidden>
+        </Grid>
+        <Grid item>
           <Button
             onClick={this.onClickNextDate}
             disabled={!this.canClickNextDate()}
-            iconRight="chevron_right"
-            hideLabelOnMobile
+            raised
+            disableRipple
           >
             {moment(this.props.currentDate).add(1, 'days').format('ddd')}
+            <Hidden mdDown>
+              <Icon>chevron_right</Icon>
+            </Hidden>
           </Button>
-        </div>
-      </Wrapper>
+        </Grid>
+      </Grid>
     );
   }
 }

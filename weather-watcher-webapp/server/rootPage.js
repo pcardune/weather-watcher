@@ -11,6 +11,12 @@ import {
   getFirebaseMirror,
 } from 'redux-firebase-mirror';
 import Helmet from 'react-helmet';
+import {SheetsRegistry} from 'react-jss/lib/jss';
+import JssProvider from 'react-jss/lib/JssProvider';
+import {create} from 'jss';
+import preset from 'jss-preset-default';
+import {MuiThemeProvider} from 'material-ui/styles';
+import createGenerateClassName from 'material-ui/styles/createGenerateClassName';
 
 import firebase from 'app/firebaseApp';
 import App from 'app/containers/App';
@@ -24,7 +30,7 @@ import configureStore from 'app/store';
 import {FB_APP_ID} from 'app/constants';
 import firebaseStorageAPI from 'app/firebaseStorageAPI';
 
-import Theme from 'app/Theme';
+import Theme, {MuiTheme} from 'app/Theme';
 
 const initialState = {};
 
@@ -45,15 +51,15 @@ function getAssetPath(name) {
 
 function prefetchDataForStore(store) {
   const db = firebase.database();
-  const dispatchSnapshot = snapshot => {
-    store.dispatch(receiveSnapshots([snapshot]));
+  const dispatchSnapshot = pathSpec => snapshot => {
+    store.dispatch(receiveSnapshots([{pathSpec, snapshot}]));
   };
   ['comparisons', 'comparisonPoints', 'noaaAlerts'].forEach(rootPath => {
-    db.ref(rootPath).on('child_added', dispatchSnapshot);
-    db.ref(rootPath).on('child_changed', dispatchSnapshot);
+    db.ref(rootPath).on('child_added', dispatchSnapshot(rootPath));
+    db.ref(rootPath).on('child_changed', dispatchSnapshot(rootPath));
   });
   db.ref('noaaPoints').on('child_added', snapshot => {
-    dispatchSnapshot(snapshot);
+    dispatchSnapshot('noaaPoints')(snapshot);
     const noaaPoint = snapshot.val();
     [
       `/noaaDailyForecasts/${getForecastId(noaaPoint)}`,
@@ -61,7 +67,7 @@ function prefetchDataForStore(store) {
       `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
       `/noaaAlertsForecasts/${getForecastZoneId(noaaPoint)}`,
     ].forEach(p => {
-      db.ref(p).limitToLast(1).on('value', dispatchSnapshot);
+      db.ref(p).limitToLast(1).on('value', dispatchSnapshot(p));
     });
   });
 }
@@ -81,38 +87,33 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 module.exports = async (req, res) => {
-  let lastWrite = new Date().getTime();
   const write = (description, content) => {
     res.write(content);
-    const time = new Date().getTime();
-    console.log(
-      `rendered ${description}: ${content.length} bytes, ${time - lastWrite} ms`
-    );
-    lastWrite = time;
   };
   const store = await getSharedStore();
-  //if (req.path === '/initialState.js') {
-  //  const state = JSON.stringify({
-  //    firebaseMirror: getDehydratedState(store.getState()),
-  //  }).replace(/</g, '\\u003c');
-  //  write('state', `window.REDUX_INITIAL_STATE = (${state});`);
-  //  res.end();
-  //  return;
-  //}
   const context = {};
   const sheet = new ServerStyleSheet();
   firebaseStorageAPI.startRecording();
+
+  const sheetsRegistry = new SheetsRegistry();
+  const jss = create(preset());
+  jss.options.createGenerateClassName = createGenerateClassName;
   const main = renderToString(
     sheet.collectStyles(
       <Provider store={store}>
         <ThemeProvider theme={Theme}>
           <StaticRouter location={req.url} context={context}>
-            <App store={store} />
+            <JssProvider registry={sheetsRegistry} jss={jss}>
+              <MuiThemeProvider theme={MuiTheme} sheetsManager={new Map()}>
+                <App store={store} />
+              </MuiThemeProvider>
+            </JssProvider>
           </StaticRouter>
         </ThemeProvider>
       </Provider>
     )
   );
+  const css = sheetsRegistry.toString();
   const paths = firebaseStorageAPI.stopRecording();
   const dataToInject = {};
   paths.forEach(p => {
@@ -156,7 +157,6 @@ module.exports = async (req, res) => {
     <!-- DO NOT MODIFY -->
     <!-- End Facebook Pixel Code -->`
       : '';
-
   write(
     'body',
     `<!doctype html>
@@ -171,16 +171,8 @@ module.exports = async (req, res) => {
   <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/weather-watcher-170701.appspot.com/o/_DSC7469.jpg?alt=media&token=22b1912e-f922-41ea-a38c-bd921256ca02" />
   <link rel="manifest" href="manifest.json" />
   <link
-    href="https://fonts.googleapis.com/icon?family=Material+Icons"
-    rel="stylesheet"
-  />
-  <link
     href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
     rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.1/css/materialize.min.css"
   />
   <link rel="icon" type="image/png" href="/favicon.png" />
 
@@ -235,6 +227,9 @@ module.exports = async (req, res) => {
       line-height: 1.5;
       font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
+    a {
+      text-decoration: none;
+    }
 
     #app {
       background-color: #fff;
@@ -243,6 +238,7 @@ module.exports = async (req, res) => {
     }
   </style>
   ${sheet.getStyleTags()}
+  <style id="jss-server-side">${css}</style>
   </head>
   <body ${helmet.bodyAttributes.toString()}>
     <noscript>

@@ -1,8 +1,63 @@
+import {createMuiTheme} from 'material-ui/styles';
+import {grey, amber} from 'material-ui/colors';
 import {css} from 'styled-components';
 
 const sizes = {
   phone: 450,
 };
+
+const darkGrey = {
+  '50': grey['100'],
+  '100': grey['200'],
+  '200': grey['300'],
+  '300': grey['400'],
+  '400': grey['500'],
+  '500': grey['600'],
+  '600': grey['700'],
+  '700': grey['800'],
+  '800': grey['900'],
+  '900': 'black',
+  A100: grey['A100'],
+  A200: grey['A200'],
+  A400: grey['A400'],
+  A700: grey['A700'],
+  contrastDefaultColor: 'light',
+};
+
+const darkAmber = {
+  '50': amber['100'],
+  '100': amber['200'],
+  '200': amber['300'],
+  '300': amber['400'],
+  '400': amber['500'],
+  '500': amber['600'],
+  '600': amber['700'],
+  '700': amber['800'],
+  '800': amber['900'],
+  '900': 'black',
+  A100: amber['A100'],
+  A200: amber['A200'],
+  A400: amber['A400'],
+  A700: amber['A700'],
+  contrastDefaultColor: 'light',
+};
+
+export const MuiTheme = createMuiTheme({
+  palette: {
+    primary: darkGrey,
+    secondary: darkAmber,
+  },
+  drawerWidth: 240,
+  overrides: {
+    MuiToolbar: {
+      root: {
+        backgroundColor: darkGrey[500],
+        color: 'white',
+        borderRadius: 2,
+      },
+    },
+  },
+});
 
 export default {
   // colors taken from the Material UI Color Palette

@@ -22,6 +22,7 @@ module.exports = require('./webpack.base.babel')({
     }),
     new webpack.optimize.UglifyJsPlugin({
       beautify: false,
+      ecma: 6,
       mangle: {
         screw_ie8: true,
         keep_fnames: true,

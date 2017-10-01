@@ -3,14 +3,21 @@ import styled from 'styled-components';
 import React, {PureComponent, Component} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-mini';
+import {Hidden} from 'material-ui';
 
 import SmartLink from 'app/components/SmartLink';
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import RollupNumber from 'app/components/RollupNumber';
 import ScoreNumber from 'app/components/ScoreNumber';
-import ScoreComponentsDescription from 'app/components/ScoreComponentsDescription';
+import getScoreComponentsDescription from 'app/components/getScoreComponentsDescription';
 
 import {AugmentedComparisonPointShape} from 'app/propTypes';
+
+const RowLabel = styled.span`
+  font-size: .8em;
+  color: ${props => props.theme.colors.secondaryText};
+  display: block;
+`;
 
 const Cell = styled.td`
   padding: 5px;
@@ -19,13 +26,16 @@ const Cell = styled.td`
   strong {
     font-weight: 400;
   }
-`;
 
-const RowLabel = styled.span`
-  font-size: .8em;
-  color: ${props => props.theme.colors.secondaryText};
-  display: inline-block;
-  width: 4em;
+  &.phone {
+    > div {
+      display: flex;
+      ${RowLabel} {
+        flex-basis: 4em;
+        flex-shrink: 0;
+      }
+    }
+  }
 `;
 
 export const PointLink = styled(SmartLink)`
@@ -50,20 +60,7 @@ const Row = styled.tr`
   }
 
   border-bottom: 1px solid #eee;
-  background: ${props =>
-    props.selected ? props.theme.colors.primaryLight : 'transparent'};
   cursor: pointer;
-
-  ${props => (props.phoneOnly ? HideOnDesktop(props) : '')} ${props =>
-      props.desktopOnly ? HideOnPhone(props) : ''};
-`;
-
-const HideOnDesktop = props => props.theme.media.desktop`
-  display: none;
-`;
-
-const HideOnPhone = props => props.theme.media.phone`
-  display: none;
 `;
 
 export function LoadingRow() {
@@ -122,18 +119,46 @@ export function getDailyForecastForPoint(point, date) {
   return dailyForecast;
 }
 
+class TruncateToggle extends Component {
+  static propTypes = {
+    children: PropTypes.node.isRequired,
+    truncate: PropTypes.bool,
+  };
+  static defaultProps = {
+    truncate: false,
+  };
+  state = {
+    truncate: this.props.truncate,
+  };
+  toggleTruncate = () => this.setState({truncate: !this.state.truncate});
+  render() {
+    const {children} = this.props;
+    if (this.state.truncate) {
+      return (
+        <Truncate onClick={this.toggleTruncate}>
+          {children}
+        </Truncate>
+      );
+    } else {
+      return (
+        <span onClick={this.toggleTruncate}>
+          {children}
+        </span>
+      );
+    }
+  }
+}
+
 export default class ForecastRow extends Component {
   static propTypes = {
     point: AugmentedComparisonPointShape.isRequired,
     date: PropTypes.instanceOf(Date).isRequired,
-    selected: PropTypes.bool,
     onRemove: PropTypes.func,
     onClick: PropTypes.func,
     getName: PropTypes.func,
   };
 
   static defaultProps = {
-    selected: false,
     onRemove: () => {},
     onClick: () => {},
     getName: props => props.point.name,
@@ -161,84 +186,86 @@ export default class ForecastRow extends Component {
     );
   }
 
-  renderShortForecast() {
+  renderShortForecast({truncate}) {
     const dailyForecast = getDailyForecastForPoint(
       this.props.point,
       this.props.date
     );
     return (
-      <Truncate>
-        {ScoreComponentsDescription({
+      <TruncateToggle truncate={truncate}>
+        {getScoreComponentsDescription({
           badness: this.props.point.interpolatedScore.getBadnessForDate(
             this.props.date
           ),
           dailyForecast,
         })}
-      </Truncate>
+      </TruncateToggle>
     );
   }
 
   renderPhoneCells() {
     const {date} = this.props;
     return (
-      <Cell className="hide-on-large-only" colSpan="8">
-        {this.renderPointLink()}
-        <div>
-          <RowLabel>Temp: </RowLabel>
-          <PointForecastRollup
-            date={date}
-            property="temperature"
-            point={this.props.point}
-            type="min"
-          />
-          ºF /{' '}
-          <PointForecastRollup
-            date={date}
-            property="temperature"
-            point={this.props.point}
-            type="max"
-          />
-          ºF
-        </div>
-        <div>
-          <RowLabel>Wind: </RowLabel>
-          <PointForecastRollup
-            date={date}
-            property="windSpeed"
-            point={this.props.point}
-          />
-          mph
-        </div>
-        <div>
-          <RowLabel>Rain: </RowLabel>
-          <PointForecastRollup
-            date={date}
-            property="probabilityOfPrecipitation"
-            point={this.props.point}
-          />
-          % /{' '}
-          <PointForecastRollup
-            date={date}
-            property="quantitativePrecipitation"
-            point={this.props.point}
-          />
-          {'"'}
-        </div>
-        <div>
-          <RowLabel />
-          {this.renderShortForecast()}
-        </div>
-      </Cell>
+      <Hidden lgUp>
+        <Cell colSpan="8" className="phone">
+          {this.renderPointLink()}
+          <div>
+            <RowLabel>Temp: </RowLabel>
+            <PointForecastRollup
+              date={date}
+              property="temperature"
+              point={this.props.point}
+              type="min"
+            />
+            ºF /{' '}
+            <PointForecastRollup
+              date={date}
+              property="temperature"
+              point={this.props.point}
+              type="max"
+            />
+            ºF
+          </div>
+          <div>
+            <RowLabel>Wind: </RowLabel>
+            <PointForecastRollup
+              date={date}
+              property="windSpeed"
+              point={this.props.point}
+            />
+            mph
+          </div>
+          <div>
+            <RowLabel>Rain: </RowLabel>
+            <PointForecastRollup
+              date={date}
+              property="probabilityOfPrecipitation"
+              point={this.props.point}
+            />
+            % /{' '}
+            <PointForecastRollup
+              date={date}
+              property="quantitativePrecipitation"
+              point={this.props.point}
+            />
+            {'"'}
+          </div>
+          <div>
+            <RowLabel />
+            {this.renderShortForecast({truncate: false})}
+          </div>
+        </Cell>
+      </Hidden>
     );
   }
 
   renderDesktopCells() {
     const {date} = this.props;
     return [
-      <Cell key="point-link" className="hide-on-med-and-down">
+      <Cell key="point-link">
         {this.renderPointLink()}
       </Cell>,
-      <Cell key="temp-min" className="hide-on-med-and-down">
+      <Cell key="temp-min">
         <PointForecastRollup
           date={date}
           property="temperature"
@@ -246,7 +273,7 @@ export default class ForecastRow extends Component {
           type="min"
         />
       </Cell>,
-      <Cell key="temp-max" className="hide-on-med-and-down">
+      <Cell key="temp-max">
         <PointForecastRollup
           date={date}
           property="temperature"
@@ -254,7 +281,7 @@ export default class ForecastRow extends Component {
           type="max"
         />
       </Cell>,
-      <Cell key="wind-speed" className="hide-on-med-and-down">
+      <Cell key="wind-speed">
         <PointForecastRollup
           date={date}
           property="windSpeed"
@@ -262,7 +289,7 @@ export default class ForecastRow extends Component {
           type="max"
         />
       </Cell>,
-      <Cell key="probPrecip" className="hide-on-med-and-down">
+      <Cell key="probPrecip">
         <PointForecastRollup
           date={date}
           property="probabilityOfPrecipitation"
@@ -270,7 +297,7 @@ export default class ForecastRow extends Component {
           type="max"
         />
       </Cell>,
-      <Cell key="quantPrecip" className="hide-on-med-and-down">
+      <Cell key="quantPrecip">
         <PointForecastRollup
           date={date}
           property="quantitativePrecipitation"
@@ -278,15 +305,19 @@ export default class ForecastRow extends Component {
           type="sum"
         />
       </Cell>,
-      <ShortForecastCell key="short-forecast" className="hide-on-med-and-down">
-        {this.renderShortForecast()}
+      <ShortForecastCell key="short-forecast">
+        {this.renderShortForecast({truncate: true})}
       </ShortForecastCell>,
-    ];
+    ].map((cell, index) =>
+      <Hidden mdDown key={index}>
+        {cell}
+      </Hidden>
+    );
   }
 
   render() {
     return (
-      <Row key={this.props.point.id} selected={this.props.selected}>
+      <Row key={this.props.point.id}>
         <Cell style={{position: 'relative'}}>
           {this.renderScoreCellContent()}
         </Cell>

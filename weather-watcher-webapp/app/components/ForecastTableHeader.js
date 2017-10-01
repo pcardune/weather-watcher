@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
 import styled from 'styled-components';
+import {Hidden} from 'material-ui';
 
 const ColumnHeader = styled.th`
   text-align: left;
@@ -24,35 +25,37 @@ const UnitCell = styled.th`
 export default class ForecastTableHeader extends PureComponent {
   render() {
     return (
-      <thead>
-        <tr className="hide-on-med-and-down">
-          <ColumnHeader colSpan={5} />
-          <PrecipitationColumnHeader colSpan={2}>
-            Precipitation
-          </PrecipitationColumnHeader>
-          <ColumnHeader />
-        </tr>
-        <tr className="hide-on-med-and-down">
-          <ColumnHeader>Grade</ColumnHeader>
-          <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
-          <ColumnHeader>Low</ColumnHeader>
-          <ColumnHeader>High</ColumnHeader>
-          <ColumnHeader>Wind</ColumnHeader>
-          <ColumnHeader>Chance</ColumnHeader>
-          <ColumnHeader>Quantity</ColumnHeader>
-          <ColumnHeader width={150}>Forecast</ColumnHeader>
-        </tr>
-        <tr className="hide-on-med-and-down">
-          <UnitCell />
-          <UnitCell />
-          <UnitCell>ºF</UnitCell>
-          <UnitCell>ºF</UnitCell>
-          <UnitCell>mph</UnitCell>
-          <UnitCell>%</UnitCell>
-          <UnitCell>in</UnitCell>
-          <UnitCell />
-        </tr>
-      </thead>
+      <Hidden mdDown>
+        <thead>
+          <tr>
+            <ColumnHeader colSpan={5} />
+            <PrecipitationColumnHeader colSpan={2}>
+              Precipitation
+            </PrecipitationColumnHeader>
+            <ColumnHeader />
+          </tr>
+          <tr>
+            <ColumnHeader>Grade</ColumnHeader>
+            <ColumnHeader style={{minWidth: 200}}>Location</ColumnHeader>
+            <ColumnHeader>Low</ColumnHeader>
+            <ColumnHeader>High</ColumnHeader>
+            <ColumnHeader>Wind</ColumnHeader>
+            <ColumnHeader>Chance</ColumnHeader>
+            <ColumnHeader>Quantity</ColumnHeader>
+            <ColumnHeader width={150}>Forecast</ColumnHeader>
+          </tr>
+          <tr>
+            <UnitCell />
+            <UnitCell />
+            <UnitCell>ºF</UnitCell>
+            <UnitCell>ºF</UnitCell>
+            <UnitCell>mph</UnitCell>
+            <UnitCell>%</UnitCell>
+            <UnitCell>in</UnitCell>
+            <UnitCell />
+          </tr>
+        </thead>
+      </Hidden>
     );
   }
 }

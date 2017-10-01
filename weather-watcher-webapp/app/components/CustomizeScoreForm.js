@@ -6,10 +6,10 @@ import Handle from 'rc-slider/lib/Handle';
 import Tooltip from 'rc-tooltip';
 import styled from 'styled-components';
 import Color from 'color';
+import {Button} from 'material-ui';
 
 import Theme from 'app/Theme';
 import {ScoreConfigShape} from 'app/propTypes';
-import Button from './Button';
 import {FormField, Label, ButtonBar} from './forms';
 
 function gradient(left, right) {
@@ -233,7 +233,7 @@ export default class CustomizeScoreForm extends PureComponent {
           />
         </FormField>
         <ButtonBar>
-          <Button type="button" accent onClick={this.props.onClose}>
+          <Button raised color="accent" onClick={this.props.onClose}>
             Done
           </Button>
         </ButtonBar>

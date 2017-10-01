@@ -5,10 +5,8 @@
 const path = require('path');
 const fs = require('fs');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const logger = require('../../server/logger');
-const cheerio = require('cheerio');
 const pkg = require(path.resolve(process.cwd(), 'package.json'));
 const dllPlugin = pkg.dllPlugin;
 
@@ -134,30 +132,4 @@ function dependencyHandlers() {
       manifest: require(manifestPath), // eslint-disable-line global-require
     });
   });
-}
-
-/**
- * We dynamically generate the HTML content in development so that the different
- * DLL Javascript files are loaded in script tags and available to our application.
- */
-function templateContent() {
-  const html = fs
-    .readFileSync(path.resolve(process.cwd(), 'app/index.html'))
-    .toString();
-
-  if (!dllPlugin) {
-    return html;
-  }
-
-  const doc = cheerio(html);
-  const body = doc.find('body');
-  const dllNames = !dllPlugin.dlls
-    ? ['reactBoilerplateDeps']
-    : Object.keys(dllPlugin.dlls);
-
-  dllNames.forEach(dllName =>
-    body.append(`<script data-dll='true' src='/${dllName}.dll.js'></script>`)
-  );
-
-  return doc.toString();
 }

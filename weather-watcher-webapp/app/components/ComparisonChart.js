@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import moment from 'moment-mini';
 import memoize from 'lodash.memoize';
+import {Hidden} from 'material-ui';
 
 import {AugmentedComparisonShape} from 'app/propTypes';
 import {safeAverage} from 'app/utils/math';
@@ -106,7 +107,7 @@ export default class ComparisonChart extends PureComponent {
     });
     return (
       <Wrapper>
-        <div className="hide-on-med-and-down">
+        <Hidden mdDown>
           <Table>
             <thead>
               <tr>
@@ -166,69 +167,74 @@ export default class ComparisonChart extends PureComponent {
               })}
             </tbody>
           </Table>
-        </div>
-        <div className="hide-on-large-only">
-          {sortedPoints.map(point => {
-            if (point.isLoading) {
-              return (
-                <PhonePointRow key={point.id}>
-                  <PointNameBlock colSpan={dates.length + 1}>
-                    <LoadingIndicator /> Loading...
-                  </PointNameBlock>
-                </PhonePointRow>
-              );
-            } else if (point.isLoadingForecast) {
+        </Hidden>
+        <Hidden lgUp>
+          <div>
+            {sortedPoints.map(point => {
+              if (point.isLoading) {
+                return (
+                  <PhonePointRow key={point.id}>
+                    <PointNameBlock colSpan={dates.length + 1}>
+                      <LoadingIndicator /> Loading...
+                    </PointNameBlock>
+                  </PhonePointRow>
+                );
+              } else if (point.isLoadingForecast) {
+                return (
+                  <PhonePointRow key={point.id}>
+                    <PointNameBlock className="truncate">
+                      {point.name}
+                    </PointNameBlock>
+                    <div colSpan={dates.length}>
+                      <LoadingIndicator /> Loading...
+                    </div>
+                  </PhonePointRow>
+                );
+              }
               return (
                 <PhonePointRow key={point.id}>
                   <PointNameBlock className="truncate">
-                    {point.name}
+                    <PointLink to={`/locations/${point.id}`}>
+                      {point.name}
+                    </PointLink>
                   </PointNameBlock>
-                  <div colSpan={dates.length}>
-                    <LoadingIndicator /> Loading...
-                  </div>
+                  <PhoneTable>
+                    <thead>
+                      <tr>
+                        {dates.map(date =>
+                          <th
+                            key={date}
+                            onClick={this.onClickDate(date)}
+                            selected={moment(date).isSame(
+                              this.props.date,
+                              'day'
+                            )}
+                          >
+                            {moment(date).format('ddd')}
+                          </th>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        {dates.map(date => {
+                          const score = point.interpolatedScore.getAverageScoreForDate(
+                            date
+                          );
+                          return (
+                            <td key={date.getTime()}>
+                              <ScoreNumber score={score} />
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    </tbody>
+                  </PhoneTable>
                 </PhonePointRow>
               );
-            }
-            return (
-              <PhonePointRow key={point.id}>
-                <PointNameBlock className="truncate">
-                  <PointLink to={`/locations/${point.id}`}>
-                    {point.name}
-                  </PointLink>
-                </PointNameBlock>
-                <PhoneTable>
-                  <thead>
-                    <tr>
-                      {dates.map(date =>
-                        <th
-                          key={date}
-                          onClick={this.onClickDate(date)}
-                          selected={moment(date).isSame(this.props.date, 'day')}
-                        >
-                          {moment(date).format('ddd')}
-                        </th>
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      {dates.map(date => {
-                        const score = point.interpolatedScore.getAverageScoreForDate(
-                          date
-                        );
-                        return (
-                          <td key={date.getTime()}>
-                            <ScoreNumber score={score} />
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  </tbody>
-                </PhoneTable>
-              </PhonePointRow>
-            );
-          })}
-        </div>
+            })}
+          </div>
+        </Hidden>
       </Wrapper>
     );
   }

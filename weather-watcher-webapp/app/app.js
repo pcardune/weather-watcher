@@ -20,6 +20,7 @@ import Raven from 'raven-js';
 import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
 import 'react-geosuggest/module/geosuggest.css';
+import {MuiThemeProvider} from 'material-ui/styles';
 
 // Import root app
 import App from 'app/containers/App';
@@ -35,7 +36,7 @@ import loadDatabase from './containers/Database/load';
 import configureStore from './store';
 
 // Import CSS reset and Global Styles
-import Theme from './Theme';
+import Theme, {MuiTheme} from './Theme';
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 
@@ -69,6 +70,20 @@ function trackFBPageView() {
 }
 history.listen(trackFBPageView);
 
+class Main extends React.Component {
+  // Remove the server-side injected CSS.
+  componentDidMount() {
+    const jssStyles = document.getElementById('jss-server-side');
+    if (jssStyles && jssStyles.parentNode) {
+      jssStyles.parentNode.removeChild(jssStyles);
+    }
+  }
+
+  render() {
+    return <App {...this.props} />;
+  }
+}
+
 const initialState = {};
 Promise.all([
   configureStore(initialState),
@@ -84,7 +99,9 @@ Promise.all([
     <Provider store={store}>
       <ThemeProvider theme={Theme}>
         <Router history={history}>
-          <App store={store} />
+          <MuiThemeProvider theme={MuiTheme}>
+            <Main store={store} />
+          </MuiThemeProvider>
         </Router>
       </ThemeProvider>
     </Provider>,
