@@ -5,7 +5,6 @@
     "redux-saga/yield-effects": 2,
   },
   "plugins": [
-    "redux-saga",
     "react",
     "jsx-a11y"
   ],

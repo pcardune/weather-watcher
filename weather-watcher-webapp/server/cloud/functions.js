@@ -1,6 +1,6 @@
 import moment from 'moment-mini';
+import {NUM_FORECAST_DAYS_BACK} from 'app/constants';
 import {NOAAPoint, NOAAGridDataForecast} from './noaa';
-
 let db;
 export async function init(database) {
   db = database;
@@ -83,11 +83,11 @@ export async function updateNOAAPoint(noaaPoint) {
 
   // fetch previous 3 days of grid forecasts.
   // get last 3 grid forecasts that were stored
-  const allGridForecasts = await Promise.all([
-    fetchRelativeDayGridForecast(gridForecast, -3),
-    fetchRelativeDayGridForecast(gridForecast, -2),
-    fetchRelativeDayGridForecast(gridForecast, -1),
-  ]);
+  const promises = [];
+  for (let i = 1; i <= NUM_FORECAST_DAYS_BACK; i++) {
+    promises.push(fetchRelativeDayGridForecast(gridForecast, -i));
+  }
+  const allGridForecasts = await Promise.all(promises);
   allGridForecasts.push(gridForecast);
   const fullProps = {};
   const includeProps = [
@@ -95,15 +95,21 @@ export async function updateNOAAPoint(noaaPoint) {
     'windSpeed',
     'probabilityOfPrecipitation',
     'quantitativePrecipitation',
+    'weather',
   ];
   includeProps.forEach(prop => {
     fullProps[prop] = {};
   });
   allGridForecasts.forEach(gf => {
     includeProps.forEach(prop => {
-      gf.data.properties[prop].values.forEach(value => {
-        fullProps[prop][value.validTime] = value.value;
-      });
+      const propData = gf.data.properties[prop];
+      if (propData.values) {
+        propData.values.forEach(value => {
+          if (value.validTime && value.value) {
+            fullProps[prop][value.validTime] = value.value;
+          }
+        });
+      }
     });
   });
   const threeDayProps = {};
@@ -112,21 +118,24 @@ export async function updateNOAAPoint(noaaPoint) {
     const validTimes = Object.keys(fullProps[prop]);
     validTimes.sort();
     validTimes.forEach(validTime => {
-      threeDayProps[prop].push({
-        validTime,
-        value: fullProps[prop][validTime],
-      });
+      const timestamp = new Date(validTime.split('/')[0]).getTime();
+      const value = fullProps[prop][validTime];
+      if (timestamp !== undefined && value !== undefined) {
+        threeDayProps[prop].push([timestamp, value]);
+      }
     });
   });
+  const [longitude, latitude] = gridForecast.data.geometry.coordinates[0][0];
   const rollup = {
     id: gridForecast.data.id,
-    properties: {
-      ...threeDayProps,
-      gridId: gridForecast.data.properties.gridId,
-      gridX: gridForecast.data.properties.gridX,
-      gridY: gridForecast.data.properties.gridY,
-      updateTime: gridForecast.data.properties.updateTime,
-    },
+    ...threeDayProps,
+    gridId: gridForecast.data.properties.gridId,
+    gridX: gridForecast.data.properties.gridX,
+    gridY: gridForecast.data.properties.gridY,
+    updateTime: new Date(gridForecast.data.properties.updateTime).getTime(),
+    latitude,
+    longitude,
+    elevation: gridForecast.data.properties.elevation,
   };
   await db.ref(`noaaPointRollups/${noaaPoint.getFirebaseId()}`).set(rollup);
   console.log(

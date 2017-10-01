@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop, no-console */
-
+import 'babel-polyfill';
 import admin from 'firebase-admin';
 import {init, updateComparisonPointForecasts} from './functions';
 const functions = require('firebase-functions');
