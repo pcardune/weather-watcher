@@ -51,15 +51,15 @@ function getAssetPath(name) {
 
 function prefetchDataForStore(store) {
   const db = firebase.database();
-  const dispatchSnapshot = snapshot => {
-    store.dispatch(receiveSnapshots([snapshot]));
+  const dispatchSnapshot = pathSpec => snapshot => {
+    store.dispatch(receiveSnapshots([{pathSpec, snapshot}]));
   };
   ['comparisons', 'comparisonPoints', 'noaaAlerts'].forEach(rootPath => {
-    db.ref(rootPath).on('child_added', dispatchSnapshot);
-    db.ref(rootPath).on('child_changed', dispatchSnapshot);
+    db.ref(rootPath).on('child_added', dispatchSnapshot(rootPath));
+    db.ref(rootPath).on('child_changed', dispatchSnapshot(rootPath));
   });
   db.ref('noaaPoints').on('child_added', snapshot => {
-    dispatchSnapshot(snapshot);
+    dispatchSnapshot('noaaPoints')(snapshot);
     const noaaPoint = snapshot.val();
     [
       `/noaaDailyForecasts/${getForecastId(noaaPoint)}`,
@@ -67,7 +67,7 @@ function prefetchDataForStore(store) {
       `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
       `/noaaAlertsForecasts/${getForecastZoneId(noaaPoint)}`,
     ].forEach(p => {
-      db.ref(p).limitToLast(1).on('value', dispatchSnapshot);
+      db.ref(p).limitToLast(1).on('value', dispatchSnapshot(p));
     });
   });
 }
