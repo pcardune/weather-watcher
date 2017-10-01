@@ -125,7 +125,7 @@ export default class ComparisonPointPage extends PureComponent {
 
     return (
       <PageBody>
-        <Grid container spacing={0} direction="column">
+        <Grid container spacing={24} direction="column">
           <Grid item>
             <AssignToRouterContext
               contextKey="title"
@@ -190,7 +190,7 @@ export default class ComparisonPointPage extends PureComponent {
                 </DescriptionList>
               </CardContent>
               <CardContent>
-                <table>
+                <table style={{width: '100%'}}>
                   <ForecastTableHeader />
                   <tbody>
                     {getForecastDates().map(date =>
