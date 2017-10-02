@@ -107,7 +107,6 @@ export default class EditComparisonDialog extends Component {
               onChange={this.handleChange('name')}
               margin="normal"
               fullWidth
-              helperText="help"
               InputProps={{placeholder: 'Name'}}
             />
           </form>
