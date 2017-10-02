@@ -17,6 +17,7 @@ const Wrapper = styled.div``;
 
 const Table = styled.table`
   font-size: 18px;
+  width: 100%;
   td {
     text-align: center;
     padding: 5px;
@@ -38,6 +39,7 @@ const PhonePointRow = styled.div`
 `;
 
 const PhoneTable = styled.table`
+  width: 100%;
   table-layout: fixed;
   thead,
   tr,

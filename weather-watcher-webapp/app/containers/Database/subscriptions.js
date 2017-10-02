@@ -129,19 +129,6 @@ export function getForecastZoneId(noaaPoint) {
   return noaaPoint.properties.forecastZone.split('/').slice(-1)[0];
 }
 
-function getLatest(dateKeyedObject) {
-  if (!dateKeyedObject) {
-    return undefined;
-  }
-  const keys = Object.keys(dateKeyedObject);
-  if (!keys.length) {
-    return undefined;
-  }
-  keys.sort();
-  const lastKey = keys[keys.length - 1];
-  return dateKeyedObject[lastKey];
-}
-
 const getAugmentedComparisonPointGetter = createSelector(
   [
     Items.comparisonPoints,

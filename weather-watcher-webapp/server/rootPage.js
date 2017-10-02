@@ -241,11 +241,6 @@ module.exports = async (req, res) => {
   })}</style>
   </head>
   <body ${helmet.bodyAttributes.toString()}>
-    <noscript>
-      If you're seeing this message, that means
-      <strong>JavaScript has been disabled on your browser</strong>, please
-      <strong>enable JS</strong> to make this app work.
-    </noscript>
     <div
       id="app"
       class="grey lighten-3"
