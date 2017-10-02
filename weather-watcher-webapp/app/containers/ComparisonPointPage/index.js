@@ -9,15 +9,11 @@ import {withRouter} from 'react-router';
 import {Snackbar, Grid, Card, CardContent, Menu, MenuItem} from 'material-ui';
 
 import firebase from 'app/firebaseApp';
-import {ComparisonPointShape, ScoreConfigShape} from 'app/propTypes';
+import {ComparisonPointShape} from 'app/propTypes';
 import {
   augmentedComparisonPointById,
   myComparisons,
 } from 'app/containers/Database/subscriptions';
-import {
-  InterpolatedGridForecast,
-  InterpolatedScoreFunction,
-} from 'app/containers/Database/scoring';
 import ForecastTableHeader from 'app/components/ForecastTableHeader';
 import Number from 'app/components/Number';
 import {getForecastDates} from 'app/utils/dates';
@@ -53,7 +49,6 @@ const DescriptionList = styled.dl`
 export default class ComparisonPointPage extends PureComponent {
   static propTypes = {
     comparisonPoint: ComparisonPointShape,
-    scoreConfig: ScoreConfigShape,
     comparisons: PropTypes.object,
   };
 
@@ -98,31 +93,17 @@ export default class ComparisonPointPage extends PureComponent {
   };
 
   render() {
-    let {comparisonPoint} = this.props;
+    const {comparisonPoint} = this.props;
 
     if (comparisonPoint.isLoading || comparisonPoint.isLoadingForecast) {
       return <LoadingBar />;
     }
-
-    const scoreConfig = this.props.scoreConfig;
-    const noaaGridForecast = this.props.comparisonPoint.noaaGridForecast;
-
-    comparisonPoint = {
-      ...comparisonPoint,
-      interpolatedScore: new InterpolatedScoreFunction({
-        interpolatedGridForecast: new InterpolatedGridForecast(
-          noaaGridForecast
-        ),
-        scoreConfig,
-      }),
-    };
 
     const currentAlerts = comparisonPoint.alerts.filter(
       alert => alert && new Date(alert.properties.expires) >= new Date()
     );
 
     const user = firebase.auth().currentUser;
-
     return (
       <PageBody>
         <Grid container spacing={24} direction="column">
@@ -178,9 +159,8 @@ export default class ComparisonPointPage extends PureComponent {
                   <dd>
                     <Number
                       value={
-                        comparisonPoint.noaaGridForecast &&
-                        comparisonPoint.noaaGridForecast.properties.elevation
-                          .value
+                        comparisonPoint.noaaPointRollup &&
+                        comparisonPoint.noaaPointRollup.elevation.value
                       }
                       from="m"
                       to="ft"

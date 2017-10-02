@@ -6,24 +6,39 @@ import {InterpolatedSequence, safeAverage, sum, mode} from 'app/utils/math';
 import {SCORE_MULTIPLIERS, SCORE_COMPONENTS} from 'app/constants';
 
 export class InterpolatedGridForecast {
-  constructor(noaaGridForecast) {
+  constructor(noaaPointRollup) {
     this.timeSeries = {};
-    this.noaaGridForecast = noaaGridForecast;
-    if (noaaGridForecast) {
-      Object.keys(noaaGridForecast.properties).forEach(prop => {
-        const values = noaaGridForecast.properties[prop].values;
+    this.noaaPointRollup = noaaPointRollup;
+    if (noaaPointRollup) {
+      [
+        'temperature',
+        'windSpeed',
+        'probabilityOfPrecipitation',
+        'quantitativePrecipitation',
+      ].forEach(prop => {
+        const values = noaaPointRollup[prop];
         if (values) {
           this.timeSeries[prop] = new InterpolatedSequence(
             values.map(props => {
-              const {validTime, value} = props;
+              const [time, value] = props;
               return {
                 value,
-                time: new Date(validTime.split('/')[0]).getTime(),
+                time,
               };
             })
           );
         }
       });
+      this.timeSeries.weather = new InterpolatedSequence(
+        noaaPointRollup.weather.map(props => {
+          const [time, value] = props;
+          return {
+            value,
+            time,
+          };
+        }),
+        ({value: lowValue}) => lowValue
+      );
     }
   }
 
@@ -162,13 +177,10 @@ export class InterpolatedScoreFunction {
   }
 
   getScoresForDate(date, interval = 'PT1H') {
-    if (!this.grid.noaaGridForecast) {
+    if (!this.grid.noaaPointRollup) {
       return [];
     }
-    const [
-      longitude,
-      latitude,
-    ] = this.grid.noaaGridForecast.geometry.coordinates[0][0];
+    const {longitude, latitude} = this.grid.noaaPointRollup;
     const times = SunCalc.getTimes(date, latitude, longitude);
     return this.getScoresForInterval(
       moment(date).set('hour', times.sunrise.getHours()).valueOf(),
@@ -189,13 +201,10 @@ export class InterpolatedScoreFunction {
 
   getAverageScoreForDate = memoize(
     date => {
-      if (!this.grid.noaaGridForecast) {
+      if (!this.grid.noaaPointRollup) {
         return {score: 0, scoreComponents: {}, scoreDescriptors: {}};
       }
-      const [
-        longitude,
-        latitude,
-      ] = this.grid.noaaGridForecast.geometry.coordinates[0][0];
+      const {longitude, latitude} = this.grid.noaaPointRollup;
       const times = SunCalc.getTimes(
         moment(date).startOf('date').valueOf(),
         latitude,

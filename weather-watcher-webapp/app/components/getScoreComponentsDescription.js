@@ -5,6 +5,8 @@ export default function getScoreComponentsDescription({
   badness,
   dailyForecast,
 }) {
+  // TODO: make this actually better than the plain daily forecast
+  return dailyForecast;
   const componentsByScore = {
     red: [],
     yellow: [],
@@ -28,7 +30,7 @@ export default function getScoreComponentsDescription({
   });
   return strings.list(
     [
-      dailyForecast.day.shortForecast,
+      dailyForecast,
       componentsByScore.yellow.length > 0 &&
         `somewhat ${strings.list(
           componentsByScore.yellow.map(a => a.descriptor)

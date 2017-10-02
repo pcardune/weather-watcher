@@ -115,9 +115,14 @@ export function mode(elements) {
  *
  * @param {Array<{time: number, value: number}>} timeSeries - the timeSeries to search. Must be pre-sorted.
  * @param {number} timestamp - the timestamp to return a value for
+ * @param {function} interpolate - the function to use to interplate between the two nearest values.
  * @return ?number - the value at the given time, or null if the time is out of range.
  */
-export function getTimeSeriesValue(timeSeries, timestamp) {
+export function getTimeSeriesValue(
+  timeSeries,
+  timestamp,
+  interpolate = interpolateTimestampedValues
+) {
   if (typeof timestamp === 'string') {
     timestamp = new Date(timestamp);
   }
@@ -153,20 +158,21 @@ export function getTimeSeriesValue(timeSeries, timestamp) {
   if (!timeSeries[high] || !timeSeries[low]) {
     return null;
   }
-  return interpolateTimestampedValues(
-    timeSeries[high],
-    timeSeries[low],
-    timestamp
-  );
+  return interpolate(timeSeries[high], timeSeries[low], timestamp);
 }
 
 export class InterpolatedSequence {
-  constructor(timeSeries) {
+  constructor(timeSeries, interpolateFunc) {
     this.timeSeries = timeSeries;
+    this.interpolateFunc = interpolateFunc;
   }
 
   interpolate(time) {
-    return getTimeSeriesValue(this.timeSeries, new Date(time).getTime());
+    return getTimeSeriesValue(
+      this.timeSeries,
+      new Date(time).getTime(),
+      this.interpolateFunc
+    );
   }
 }
 

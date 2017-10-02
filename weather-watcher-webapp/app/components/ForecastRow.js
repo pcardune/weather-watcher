@@ -101,22 +101,26 @@ class PointForecastRollup extends PureComponent {
 }
 
 export function getDailyForecastForPoint(point, date) {
-  const dailyForecast = {
-    day: {},
-    night: {},
-  };
-  if (point.noaaDailyForecast) {
-    point.noaaDailyForecast.properties.periods.forEach(period => {
-      if (moment(new Date(period.startTime)).isSame(date, 'day')) {
-        if (period.isDaytime) {
-          dailyForecast.day = period;
-        } else {
-          dailyForecast.night = period;
-        }
-      }
-    });
-  }
-  return dailyForecast;
+  const weatherProps =
+    point.interpolatedScore.grid.timeSeries.weather.interpolate(
+      date.getTime()
+    ) || [];
+
+  let desc = [];
+  weatherProps.forEach(({coverage, intensity, weather}) => {
+    let s = '';
+    if (coverage) {
+      s += coverage + ' of ';
+    }
+    if (intensity) {
+      s += intensity + ' ';
+    }
+    if (weather) {
+      s += weather;
+    }
+    desc.push(s);
+  });
+  return desc.join(' then ').replace(/_/g, ' ');
 }
 
 class TruncateToggle extends Component {

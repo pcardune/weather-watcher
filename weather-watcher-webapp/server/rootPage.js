@@ -62,9 +62,7 @@ function prefetchDataForStore(store) {
     dispatchSnapshot('noaaPoints')(snapshot);
     const noaaPoint = snapshot.val();
     [
-      `/noaaDailyForecasts/${getForecastId(noaaPoint)}`,
-      `/noaaGridForecasts/${getGridForecastId(noaaPoint)}`,
-      `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
+      `/noaaPointRollups/${getForecastId(noaaPoint)}`,
       `/noaaAlertsForecasts/${getForecastZoneId(noaaPoint)}`,
     ].forEach(p => {
       db.ref(p).limitToLast(1).on('value', dispatchSnapshot(p));
@@ -169,7 +167,7 @@ module.exports = async (req, res) => {
   <meta property="og:title" content="${context.title || ''}" />
   <meta property="og:description" content="${context.description || ''}" />
   <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/weather-watcher-170701.appspot.com/o/_DSC7469.jpg?alt=media&token=22b1912e-f922-41ea-a38c-bd921256ca02" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
     rel="stylesheet"
