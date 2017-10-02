@@ -101,10 +101,11 @@ class PointForecastRollup extends PureComponent {
 }
 
 export function getDailyForecastForPoint(point, date) {
-  const weatherProps =
-    point.interpolatedScore.grid.timeSeries.weather.interpolate(
-      date.getTime()
-    ) || [];
+  const weather = point.interpolatedScore.grid.timeSeries.weather;
+  if (!weather) {
+    return '';
+  }
+  const weatherProps = weather.interpolate(date.getTime()) || [];
 
   let desc = [];
   weatherProps.forEach(({coverage, intensity, weather}) => {

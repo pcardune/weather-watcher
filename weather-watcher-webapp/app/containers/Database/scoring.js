@@ -29,16 +29,18 @@ export class InterpolatedGridForecast {
           );
         }
       });
-      this.timeSeries.weather = new InterpolatedSequence(
-        noaaPointRollup.weather.map(props => {
-          const [time, value] = props;
-          return {
-            value,
-            time,
-          };
-        }),
-        ({value: lowValue}) => lowValue
-      );
+      if (noaaPointRollup.weather) {
+        this.timeSeries.weather = new InterpolatedSequence(
+          noaaPointRollup.weather.map(props => {
+            const [time, value] = props;
+            return {
+              value,
+              time,
+            };
+          }),
+          ({value: lowValue}) => lowValue
+        );
+      }
     }
   }
 
