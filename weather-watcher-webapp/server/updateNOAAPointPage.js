@@ -1,3 +1,4 @@
+import path from 'path';
 import admin from 'firebase-admin';
 import fs from 'fs';
 import {NOAAPoint} from './cloud/noaa';
@@ -5,7 +6,7 @@ import {updateNOAAPoint, init} from './cloud/functions';
 
 let serviceAccount;
 let firebase;
-if (fs.existsSync('../serviceAccountKey.json')) {
+if (fs.existsSync(path.resolve(__dirname, '../serviceAccountKey.json'))) {
   serviceAccount = require('../serviceAccountKey.json');
   firebase = admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),

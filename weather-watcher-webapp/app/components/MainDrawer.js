@@ -86,8 +86,8 @@ export default class MainDrawer extends Component {
       .valueSeq()
       .filter(filter)
       .toArray()
-      .map(comparison =>
-        <ListItem disableGutters button key={comparison.id}>
+      .map((comparison, i) =>
+        <ListItem disableGutters button key={comparison.id + i}>
           <SmartLink
             className={this.props.classes.navLink}
             activeClassName="selected"

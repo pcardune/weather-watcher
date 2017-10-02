@@ -1,6 +1,8 @@
 export const FORECAST_BAD = 60;
 export const FORECAST_OK = 85;
-export const NUM_FORECAST_DAYS = 7;
+export const NUM_FORECAST_DAYS = 9;
+export const NUM_FORECAST_DAYS_AHEAD = 7;
+export const NUM_FORECAST_DAYS_BACK = 0;
 export const OUR_EMAIL = 'thebears@goldilocksweather.com';
 export const OUR_URL = 'goldilocksweather.com';
 export const SCORE_COMPONENTS = {

@@ -1,11 +1,8 @@
 {
   "extends": "../.eslintrc",
   "rules": {
-    "redux-saga/no-yield-in-race": 2,
-    "redux-saga/yield-effects": 2,
   },
   "plugins": [
-    "redux-saga",
     "react",
     "jsx-a11y"
   ],

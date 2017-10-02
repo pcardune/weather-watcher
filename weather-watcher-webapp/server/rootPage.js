@@ -32,6 +32,7 @@ import firebaseStorageAPI from 'app/firebaseStorageAPI';
 
 import Theme, {MuiTheme} from 'app/Theme';
 
+const minify = require('html-minifier').minify;
 const initialState = {};
 
 let manifest;
@@ -62,9 +63,7 @@ function prefetchDataForStore(store) {
     dispatchSnapshot('noaaPoints')(snapshot);
     const noaaPoint = snapshot.val();
     [
-      `/noaaDailyForecasts/${getForecastId(noaaPoint)}`,
-      `/noaaGridForecasts/${getGridForecastId(noaaPoint)}`,
-      `/noaaHourlyForecasts/${getForecastId(noaaPoint)}`,
+      `/noaaPointRollups/${getForecastId(noaaPoint)}`,
       `/noaaAlertsForecasts/${getForecastZoneId(noaaPoint)}`,
     ].forEach(p => {
       db.ref(p).limitToLast(1).on('value', dispatchSnapshot(p));
@@ -157,9 +156,7 @@ module.exports = async (req, res) => {
     <!-- DO NOT MODIFY -->
     <!-- End Facebook Pixel Code -->`
       : '';
-  write(
-    'body',
-    `<!doctype html>
+  let html = `<!doctype html>
 <html lang="en" ${helmet.htmlAttributes.toString()}>
 <head>
   <meta charSet="utf-8" />
@@ -169,7 +166,7 @@ module.exports = async (req, res) => {
   <meta property="og:title" content="${context.title || ''}" />
   <meta property="og:description" content="${context.description || ''}" />
   <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/weather-watcher-170701.appspot.com/o/_DSC7469.jpg?alt=media&token=22b1912e-f922-41ea-a38c-bd921256ca02" />
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="/manifest.json" />
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
     rel="stylesheet"
@@ -237,15 +234,13 @@ module.exports = async (req, res) => {
       min-width: 100%;
     }
   </style>
-  ${sheet.getStyleTags()}
-  <style id="jss-server-side">${css}</style>
+  ${minify(sheet.getStyleTags(), {minifyCss: true, collapseWhitespace: true})}
+  <style id="jss-server-side">${minify(css, {
+    minifyCss: true,
+    collapseWhitespace: true,
+  })}</style>
   </head>
   <body ${helmet.bodyAttributes.toString()}>
-    <noscript>
-      If you're seeing this message, that means
-      <strong>JavaScript has been disabled on your browser</strong>, please
-      <strong>enable JS</strong> to make this app work.
-    </noscript>
     <div
       id="app"
       class="grey lighten-3"
@@ -264,7 +259,7 @@ module.exports = async (req, res) => {
     <script src="${getAssetPath('main.js')}"></script>
   </body>
 </html>
-  `
-  );
+  `;
+  write('body', html);
   res.end();
 };
