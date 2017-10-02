@@ -32,6 +32,7 @@ import firebaseStorageAPI from 'app/firebaseStorageAPI';
 
 import Theme, {MuiTheme} from 'app/Theme';
 
+const minify = require('html-minifier').minify;
 const initialState = {};
 
 let manifest;
@@ -155,9 +156,7 @@ module.exports = async (req, res) => {
     <!-- DO NOT MODIFY -->
     <!-- End Facebook Pixel Code -->`
       : '';
-  write(
-    'body',
-    `<!doctype html>
+  let html = `<!doctype html>
 <html lang="en" ${helmet.htmlAttributes.toString()}>
 <head>
   <meta charSet="utf-8" />
@@ -235,8 +234,11 @@ module.exports = async (req, res) => {
       min-width: 100%;
     }
   </style>
-  ${sheet.getStyleTags()}
-  <style id="jss-server-side">${css}</style>
+  ${minify(sheet.getStyleTags(), {minifyCss: true, collapseWhitespace: true})}
+  <style id="jss-server-side">${minify(css, {
+    minifyCss: true,
+    collapseWhitespace: true,
+  })}</style>
   </head>
   <body ${helmet.bodyAttributes.toString()}>
     <noscript>
@@ -262,7 +264,7 @@ module.exports = async (req, res) => {
     <script src="${getAssetPath('main.js')}"></script>
   </body>
 </html>
-  `
-  );
+  `;
+  write('body', html);
   res.end();
 };
