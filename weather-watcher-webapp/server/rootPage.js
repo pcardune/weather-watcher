@@ -93,6 +93,108 @@ module.exports = async (req, res) => {
     res.write(content);
   };
   res.set('Content-Type', 'text/html');
+  const pixelCode =
+    process.env.NODE_ENV === 'production'
+      ? `
+    <!-- Facebook Pixel Code -->
+    <script>
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+      document,'script','https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '126948057955894'); // Insert your pixel ID here.
+      fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=126948057955894&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- DO NOT MODIFY -->
+    <!-- End Facebook Pixel Code -->`
+      : '';
+
+  write(
+    'top',
+    `<!doctype html>
+<html lang="en">
+<head>
+  <meta charSet="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/manifest.json" />
+  <link
+    async defer
+    href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
+    rel="stylesheet"
+  />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link
+    href="https://fonts.googleapis.com/css?family=Clicker+Script"
+    rel="stylesheet"
+    async
+    defer
+  />
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
+  <script async defer>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '${FB_APP_ID}',
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v2.10'
+      });
+      ${process.env.NODE_ENV === 'production'
+        ? 'FB.AppEvents.logPageView();'
+        : ''}
+      if (window.afterFBLoaded) {
+        window.afterFBLoaded(FB);
+      }
+    };
+
+    (function(d, s, id){
+       var js, fjs = d.getElementsByTagName(s)[0];
+       if (d.getElementById(id)) {return;}
+       js = d.createElement(s); js.id = id;
+       js.src = "//connect.facebook.net/en_US/sdk.js";
+       fjs.parentNode.insertBefore(js, fjs);
+     }(document, 'script', 'facebook-jssdk'));
+  </script>
+  ${pixelCode}
+
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      line-height: 1.5;
+      font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+    a {
+      text-decoration: none;
+    }
+
+    #app {
+      background-color: #fff;
+      min-height: 100%;
+      min-width: 100%;
+    }
+  </style>
+  ${process.env.NODE_ENV === 'development'
+    ? '<script src="/reactBoilerplateDeps.dll.js"></script>'
+    : ''}
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700"
+      rel="stylesheet"
+      async defer
+    />
+
+    <script>window.REDUX_INITIAL_STATE = (${JSON.stringify({
+      firebaseMirror: dehydrated,
+    }).replace(/</g, '\\u003c')});</script>
+    <script async defer src="${getAssetPath('main.js')}"></script>
+`
+  );
   const cookies = cookie.parse(req.headers.cookie || '');
 
   const store = await getSharedStore();
@@ -146,55 +248,16 @@ module.exports = async (req, res) => {
     res.end();
     return;
   }
-  const pixelCode =
-    process.env.NODE_ENV === 'production'
-      ? `
-    <!-- Facebook Pixel Code -->
-    <script>
-      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-      n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-      document,'script','https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '126948057955894'); // Insert your pixel ID here.
-      fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=126948057955894&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- DO NOT MODIFY -->
-    <!-- End Facebook Pixel Code -->`
-      : '';
-  let html = `<!doctype html>
-<html lang="en" ${helmet.htmlAttributes.toString()}>
-<head>
-  <meta charSet="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta property="og:url" content="https://www.goldilocksweather.com${req.originalUrl}" />
+  let html = `
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.goldilocksweather.com${req.originalUrl}" />
   <meta property="og:title" content="${context.title || ''}" />
   <meta property="og:description" content="${context.description || ''}" />
   <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/weather-watcher-170701.appspot.com/o/_DSC7469.jpg?alt=media&token=22b1912e-f922-41ea-a38c-bd921256ca02" />
-  <link rel="manifest" href="/manifest.json" />
-  <link
-    async defer
-    href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
-    rel="stylesheet"
-  />
-  <link rel="icon" type="image/png" href="/favicon.png" />
-
-  <meta name="mobile-web-app-capable" content="yes" />
-  <link
-    href="https://fonts.googleapis.com/css?family=Clicker+Script"
-    rel="stylesheet"
-    async
-    defer
-  />
   <title>Goldilocks Weather</title>
   ${helmet.title.toString()}
   ${helmet.meta.toString()}
   ${helmet.link.toString()}
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
   <!--link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
@@ -202,50 +265,6 @@ module.exports = async (req, res) => {
     crossOrigin=""
   /-->
 
-  <script>
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '${FB_APP_ID}',
-        cookie     : true,
-        xfbml      : true,
-        version    : 'v2.10'
-      });
-      ${process.env.NODE_ENV === 'production'
-        ? 'FB.AppEvents.logPageView();'
-        : ''}
-      if (window.afterFBLoaded) {
-        window.afterFBLoaded(FB);
-      }
-    };
-
-    (function(d, s, id){
-       var js, fjs = d.getElementsByTagName(s)[0];
-       if (d.getElementById(id)) {return;}
-       js = d.createElement(s); js.id = id;
-       js.src = "//connect.facebook.net/en_US/sdk.js";
-       fjs.parentNode.insertBefore(js, fjs);
-     }(document, 'script', 'facebook-jssdk'));
-  </script>
-  ${pixelCode}
-
-  <style>
-    html,
-    body {
-      height: 100%;
-      width: 100%;
-      line-height: 1.5;
-      font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-    a {
-      text-decoration: none;
-    }
-
-    #app {
-      background-color: #fff;
-      min-height: 100%;
-      min-width: 100%;
-    }
-  </style>
   ${minify(sheet.getStyleTags(), {minifyCss: true, collapseWhitespace: true})}
   <style id="jss-server-side">${minify(css, {
     minifyCss: true,
@@ -257,19 +276,6 @@ module.exports = async (req, res) => {
       id="app"
       class="grey lighten-3"
     >${main}</div>
-    <link
-      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700"
-      rel="stylesheet"
-      async defer
-    />
-    ${process.env.NODE_ENV === 'development'
-      ? '<script src="/reactBoilerplateDeps.dll.js"></script>'
-      : ''}
-
-    <script>window.REDUX_INITIAL_STATE = (${JSON.stringify({
-      firebaseMirror: dehydrated,
-    }).replace(/</g, '\\u003c')});</script>
-    <script async src="${getAssetPath('main.js')}"></script>
   </body>
 </html>
   `;
