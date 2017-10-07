@@ -2,9 +2,10 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-mini';
 import styled from 'styled-components';
-import {Hidden, Grid, Button} from 'material-ui';
+import {Grid, Button} from 'material-ui';
 import Icon from 'material-ui/Icon';
 
+import Hidden from 'app/components/Hidden';
 import {getForecastDates} from 'app/utils/dates';
 
 export default class DatePager extends PureComponent {

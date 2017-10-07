@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import React, {PureComponent, Component} from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment-mini';
-import {Hidden} from 'material-ui';
 
+import Hidden from 'app/components/Hidden';
 import SmartLink from 'app/components/SmartLink';
 import LoadingIndicator from 'app/components/LoadingIndicator';
 import RollupNumber from 'app/components/RollupNumber';

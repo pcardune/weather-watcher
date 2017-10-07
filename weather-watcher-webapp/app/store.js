@@ -23,7 +23,7 @@ export default async function configureStore(initialState = {}) {
   /* eslint-disable no-underscore-dangle */
   const composeEnhancers =
     process.env.NODE_ENV !== 'production' &&
-    typeof window === 'object' &&
+    !process.env.IS_SERVER &&
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
       ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
       : compose;

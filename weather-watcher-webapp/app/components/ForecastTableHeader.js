@@ -1,6 +1,7 @@
 import React, {PureComponent} from 'react';
 import styled from 'styled-components';
-import {Hidden} from 'material-ui';
+
+import Hidden from 'app/components/Hidden';
 
 const ColumnHeader = styled.th`
   text-align: left;

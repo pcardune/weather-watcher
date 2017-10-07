@@ -13,9 +13,9 @@ import {
   IconButton,
   withStyles,
   Icon,
-  Hidden,
 } from 'material-ui';
 
+import Hidden from 'app/components/Hidden';
 import {addComparisonPoint} from 'app/containers/Database/actions';
 import {MuiTheme} from 'app/Theme';
 import {round} from 'app/utils/math';

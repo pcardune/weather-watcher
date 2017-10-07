@@ -17,6 +17,7 @@ import {create} from 'jss';
 import preset from 'jss-preset-default';
 import {MuiThemeProvider} from 'material-ui/styles';
 import createGenerateClassName from 'material-ui/styles/createGenerateClassName';
+import cookie from 'cookie';
 
 import firebase from 'app/firebaseApp';
 import App from 'app/containers/App';
@@ -89,11 +90,17 @@ module.exports = async (req, res) => {
   const write = (description, content) => {
     res.write(content);
   };
+
+  const cookies = cookie.parse(req.headers.cookie || '');
+
   const store = await getSharedStore();
-  const context = {};
   const sheet = new ServerStyleSheet();
   firebaseStorageAPI.startRecording();
-
+  let innerWidth = 375;
+  if (cookies.VW) {
+    innerWidth = parseInt(cookies.VW, 10);
+  }
+  const context = {innerWidth};
   const sheetsRegistry = new SheetsRegistry();
   const jss = create(preset());
   jss.options.createGenerateClassName = createGenerateClassName;

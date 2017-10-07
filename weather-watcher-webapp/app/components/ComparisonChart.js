@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import moment from 'moment-mini';
 import memoize from 'lodash.memoize';
-import {Hidden} from 'material-ui';
 
+import Hidden from 'app/components/Hidden';
 import {AugmentedComparisonShape} from 'app/propTypes';
 import {safeAverage} from 'app/utils/math';
 import {getForecastDates} from 'app/utils/dates';

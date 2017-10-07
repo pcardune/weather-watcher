@@ -21,6 +21,7 @@ import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
 import 'react-geosuggest/module/geosuggest.css';
 import {MuiThemeProvider} from 'material-ui/styles';
+import cookie from 'cookie';
 
 // Import root app
 import App from 'app/containers/App';
@@ -37,6 +38,8 @@ import configureStore from './store';
 
 // Import CSS reset and Global Styles
 import Theme, {MuiTheme} from './Theme';
+
+document.cookie = cookie.serialize('VW', window.innerWidth);
 
 const DEBUG = process.env.NODE_ENV !== 'production';
 
