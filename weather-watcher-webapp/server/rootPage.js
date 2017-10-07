@@ -189,9 +189,6 @@ module.exports = async (req, res) => {
       async defer
     />
 
-    <script>window.REDUX_INITIAL_STATE = (${JSON.stringify({
-      firebaseMirror: dehydrated,
-    }).replace(/</g, '\\u003c')});</script>
     <script async defer src="${getAssetPath('main.js')}"></script>
 `
   );
@@ -249,6 +246,9 @@ module.exports = async (req, res) => {
     return;
   }
   let html = `
+    <script>window.REDUX_INITIAL_STATE = (${JSON.stringify({
+      firebaseMirror: dehydrated,
+    }).replace(/</g, '\\u003c')});</script>
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.goldilocksweather.com${req.originalUrl}" />
   <meta property="og:title" content="${context.title || ''}" />
