@@ -42,7 +42,10 @@ const addProdMiddlewares = (app, options) => {
   // smaller (applies also to assets). You can read more about that technique
   // and other good practices on official Express.js docs http://mxs.is/googmy
   app.use(compression());
-  app.use(publicPath, express.static(outputPath));
+  app.use(
+    publicPath,
+    express.static(outputPath, {immutable: true, maxAge: 1000 * 60 * 60 * 24})
+  );
 };
 
 /**

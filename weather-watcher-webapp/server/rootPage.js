@@ -81,8 +81,10 @@ async function getSharedStore() {
   return sharedStore;
 }
 if (process.env.NODE_ENV === 'production') {
+  console.log('Prefetching data...');
   getSharedStore().then(prefetchDataForStore);
 } else {
+  console.log('Data prefetching is skipped in development');
   getSharedStore();
 }
 
@@ -190,12 +192,12 @@ module.exports = async (req, res) => {
   ${helmet.meta.toString()}
   ${helmet.link.toString()}
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
-  <link
+  <!--link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
     integrity="sha512-wcw6ts8Anuw10Mzh9Ytw4pylW8+NAD4ch3lqm9lzAsTxg0GFeJgoAtxuCLREZSC5lUXdVyo/7yfsqFjQ4S+aKw=="
     crossOrigin=""
-  />
+  /-->
 
   <script>
     window.fbAsyncInit = function() {
@@ -263,7 +265,7 @@ module.exports = async (req, res) => {
     <script>window.REDUX_INITIAL_STATE = (${JSON.stringify({
       firebaseMirror: dehydrated,
     }).replace(/</g, '\\u003c')});</script>
-    <script src="${getAssetPath('main.js')}"></script>
+    <script async src="${getAssetPath('main.js')}"></script>
   </body>
 </html>
   `;
