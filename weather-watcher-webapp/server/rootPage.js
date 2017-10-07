@@ -177,6 +177,7 @@ module.exports = async (req, res) => {
   <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/weather-watcher-170701.appspot.com/o/_DSC7469.jpg?alt=media&token=22b1912e-f922-41ea-a38c-bd921256ca02" />
   <link rel="manifest" href="/manifest.json" />
   <link
+    async
     href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/5.0.0/sanitize.min.css"
     rel="stylesheet"
   />
@@ -186,12 +187,13 @@ module.exports = async (req, res) => {
   <link
     href="https://fonts.googleapis.com/css?family=Clicker+Script"
     rel="stylesheet"
+    async
   />
   <title>Goldilocks Weather</title>
   ${helmet.title.toString()}
   ${helmet.meta.toString()}
   ${helmet.link.toString()}
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
+  <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAK8WIt0WlA2L-e7Hpqmri9b-dZwhyNbEk&libraries=places"></script>
   <!--link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.1.0/dist/leaflet.css"
