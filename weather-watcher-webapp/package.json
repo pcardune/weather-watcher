@@ -17,7 +17,7 @@
     "build:dll": "node ./internals/scripts/dependencies.js",
     "start": "IS_SERVER=1 BABEL_ENV=server NODE_ENV=development babel-watch --exclude app/containers --exclude app/containers/ClimbCalculator --exclude app/components server",
     "start:inspect": "IS_SERVER=1 BABEL_ENV=server NODE_ENV=development babel-watch --inspect server",
-    "start:prod": "IS_SERVER=1 NODE_ENV=production pm2 start es5/server/index.js -i max --attach",
+    "start:prod": "IS_SERVER=1 NODE_ENV=production pm2 start es5/server/index.js -i 2 --attach",
     "presetup": "npm i chalk shelljs",
     "setup": "node ./internals/scripts/setup.js",
     "postsetup": "npm run build:dll",
