@@ -65,21 +65,35 @@ async function fetchRelativeDayGridForecast(gridForecast, delta = 0) {
 }
 
 export async function updateNOAAPoint(noaaPoint) {
-  const gridForecast = await noaaPoint.fetchGridDataForecast();
-  await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
-  console.log('Updated grid forecast', gridForecast.getFirebasePath());
-
-  const dailyForecast = await noaaPoint.fetchDailyForecast();
-  await db.ref(dailyForecast.getFirebasePath()).set(dailyForecast.data);
-  console.log('Updated daily forecast', dailyForecast.getFirebasePath());
-
-  const alertsForecast = await noaaPoint.fetchAlertsForecast();
-  await db.ref(alertsForecast.getFirebasePath()).set(alertsForecast.alertIds);
-  const alerts = alertsForecast.getAlerts();
-  for (const alert of alerts) {
-    await db.ref(alert.getFirebasePath()).set(alert.data);
+  let gridForecast;
+  try {
+    gridForecast = await noaaPoint.fetchGridDataForecast();
+    await db.ref(gridForecast.getFirebasePath()).set(gridForecast.data);
+    console.log('Updated grid forecast', gridForecast.getFirebasePath());
+  } catch (e) {
+    console.error('failed to update grid forecast', e);
+    throw e;
   }
-  console.log('Updated alerts forecast', alertsForecast.getFirebasePath());
+
+  try {
+    const dailyForecast = await noaaPoint.fetchDailyForecast();
+    await db.ref(dailyForecast.getFirebasePath()).set(dailyForecast.data);
+    console.log('Updated daily forecast', dailyForecast.getFirebasePath());
+  } catch (e) {
+    console.error('failed to update daily forecast', e);
+  }
+
+  try {
+    const alertsForecast = await noaaPoint.fetchAlertsForecast();
+    await db.ref(alertsForecast.getFirebasePath()).set(alertsForecast.alertIds);
+    const alerts = alertsForecast.getAlerts();
+    for (const alert of alerts) {
+      await db.ref(alert.getFirebasePath()).set(alert.data);
+    }
+    console.log('Updated alerts forecast', alertsForecast.getFirebasePath());
+  } catch (e) {
+    console.error('Failed to udpate forecast alerts', e);
+  }
 
   // fetch previous 3 days of grid forecasts.
   // get last 3 grid forecasts that were stored

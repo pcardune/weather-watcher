@@ -22,6 +22,11 @@ export default async (req, res) => {
     .database()
     .ref(NOAAPoint.getFirebasePath(req.params.noaaPointId))
     .once('value');
-  await updateNOAAPoint(new NOAAPoint({data: snapshot.val()}));
+  try {
+    await updateNOAAPoint(new NOAAPoint({data: snapshot.val()}));
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
   res.send('all done...');
 };
